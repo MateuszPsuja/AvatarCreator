@@ -1,0 +1,147 @@
+<!-- svg-avatar.component.html -->
+<!-- 14-layer flat 2D vector avatar — viewBox 200×200 square canvas -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 200 200"
+     class="avatar-svg"
+     [style]="cssVarsStyle">
+
+  <!-- Clip definition: hides hair above hat brim level -->
+  <defs>
+    <clipPath id="hat-clip">
+      <rect x="0" y="56" width="200" height="144"/>
+    </clipPath>
+    <clipPath id="helmet-clip">
+      <ellipse cx="100" cy="78" rx="57" ry="62"/>
+    </clipPath>
+  </defs>
+
+  <!-- 1. Profession body / shoulders -->
+  <g class="layer-body" [innerHTML]="safe(professionBody)"></g>
+
+  <!-- 2. Neck (hidden for astronaut — collar covers it) -->
+  @if (!isAstronaut) {
+    @if (isWoman) {
+      <rect class="layer-neck" x="90" y="135" width="20" height="22" rx="8"
+            fill="var(--skin-base)" />
+    } @else {
+      <rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8"
+            fill="var(--skin-base)" />
+    }
+  }
+
+  <!-- Whole head group — ears, hair, face, glasses, accessory all move together -->
+  <g class="layer-head" [class.animate-idle]="animationsEnabled">
+
+    <!-- 3. Ears (slightly smaller for woman; clipped inside helmet for astronaut) -->
+    <g class="layer-ears" [attr.clip-path]="helmetClipUrl">
+      @if (isWoman) {
+        <ellipse cx="48" cy="90" rx="7" ry="9" fill="var(--skin-ear)" />
+        <ellipse cx="152" cy="90" rx="7" ry="9" fill="var(--skin-ear)" />
+      } @else {
+        <ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)" />
+        <ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)" />
+      }
+    </g>
+
+    <!-- 4. Hair back (clipped when hat/helmet is worn) -->
+    <g class="layer-hair-back" [innerHTML]="safe(hairBack)"
+       [attr.clip-path]="hairClipUrl"></g>
+
+    <!-- 5. Face (woman: more oval/narrower chin; man: wider jaw) -->
+    @if (isWoman) {
+      <ellipse class="layer-face" cx="100" cy="86" rx="49" ry="55"
+               fill="var(--skin-base)" />
+    } @else {
+      <ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56"
+               fill="var(--skin-base)" />
+    }
+
+    <!-- 6. Eyes -->
+    <g class="layer-eyes">
+      <g [innerHTML]="safe(eyeSclera)"></g>
+      <g class="pupils"
+         [attr.transform]="'translate(' + pupilOffset().x + ',' + pupilOffset().y + ')'">
+        <g [innerHTML]="safe(eyeIris)"></g>
+      </g>
+    </g>
+
+    <!-- 6b. Eyelashes (woman only) -->
+    @if (isWoman) {
+      <g class="layer-lashes">
+        <!-- Left eye lashes -->
+        <line x1="65" y1="78" x2="62" y2="74" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="70" y1="76" x2="68" y2="72" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="76" y1="76" x2="78" y2="72" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="82" y1="78" x2="85" y2="74" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Right eye lashes -->
+        <line x1="117" y1="78" x2="114" y2="74" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="122" y1="76" x2="120" y2="72" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="128" y1="76" x2="130" y2="72" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="134" y1="78" x2="137" y2="74" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    }
+
+    <!-- 7. Eyelids (blink) -->
+    <g class="layer-eyelids" [class]="eyeBlinkClass()">
+      <rect class="eyelid-left"  x="63"  y="77" width="22" height="22" rx="11"
+            fill="var(--skin-base)" />
+      <rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11"
+            fill="var(--skin-base)" />
+    </g>
+
+    <!-- 8. Eyebrows (woman: thinner, arched; man: thick, straight) -->
+    <g class="layer-brows">
+      @if (isWoman) {
+        <path d="M64,74 Q74,69 84,73" stroke="var(--hair-color)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M116,73 Q126,69 136,74" stroke="var(--hair-color)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      } @else {
+        <rect x="63"  y="72" width="22" height="5" rx="3" fill="var(--hair-color)" />
+        <rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)" />
+      }
+    </g>
+
+    <!-- 9. Nose (woman: slightly smaller) -->
+    @if (isWoman) {
+      <path class="layer-nose"
+            d="M98,104 Q100,110 102,104"
+            stroke="var(--skin-ear)" stroke-width="1.8"
+            fill="none" stroke-linecap="round" />
+    } @else {
+      <path class="layer-nose"
+            d="M97,105 Q100,112 103,105"
+            stroke="var(--skin-ear)" stroke-width="2"
+            fill="none" stroke-linecap="round" />
+    }
+
+    <!-- 10. Mouth (woman: fuller lips with fill; man: thin stroke) -->
+    @if (isWoman) {
+      <path class="layer-mouth"
+            [attr.d]="mouthPath"
+            stroke="var(--lip-color)" stroke-width="2.5"
+            fill="var(--lip-color)" fill-opacity="0.35" stroke-linecap="round" />
+    } @else {
+      <path class="layer-mouth"
+            [attr.d]="mouthPath"
+            stroke="var(--lip-color)" stroke-width="2.5"
+            fill="none" stroke-linecap="round" />
+    }
+
+    <!-- 11. Facial hair (clipped inside helmet for astronaut) -->
+    <g class="layer-mustache" [innerHTML]="safe(mustacheSvg)"
+       [attr.clip-path]="helmetClipUrl"></g>
+    <g class="layer-beard" [innerHTML]="safe(beardSvg)"
+       [attr.clip-path]="helmetClipUrl"></g>
+
+    <!-- 12. Glasses -->
+    <g class="layer-glasses" [innerHTML]="safe(glassesSvg)"></g>
+
+    <!-- 13. Hair front (on top of face, clipped when hat/helmet is worn) -->
+    <g class="layer-hair-front" [innerHTML]="safe(hairFront)"
+       [attr.clip-path]="hairClipUrl"></g>
+
+    <!-- 14. Profession accessory (hat etc.) -->
+    <g class="layer-accessory" [innerHTML]="safe(professionAcc)"></g>
+
+  </g><!-- /layer-head -->
+
+</svg>

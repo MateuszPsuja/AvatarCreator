@@ -1,0 +1,92 @@
+// svg-avatar.component.scss
+
+.avatar-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+
+  // All SVG children respect transform-box for correct rotation origins
+  * {
+    transform-box: fill-box;
+  }
+}
+
+// Eyelid blink states (toggled by AvatarAnimationService)
+.eyelid-left,
+.eyelid-right {
+  transform-origin: center center;
+  transform: scaleY(0); // default: eyes open (eyelid hidden)
+  transition: transform 0.05s linear;
+}
+
+.layer-eyelids {
+  &.blinking {
+    .eyelid-left,
+    .eyelid-right {
+      transform: scaleY(1); // eyes closed
+    }
+  }
+
+  &.blink-half {
+    .eyelid-left,
+    .eyelid-right {
+      transform: scaleY(0.5); // half-closed
+    }
+  }
+}
+
+// Head idle motion — pure CSS animation (no JS CD overhead)
+.layer-head {
+  transform-origin: 100px 150px; // neck pivot point
+
+  &.animate-idle {
+    animation: head-idle 8s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+@keyframes head-idle {
+  0%, 100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  20% {
+    transform: rotate(1.2deg) translate(0, -1.2px);
+  }
+  50% {
+    transform: rotate(-0.8deg) translate(0, 0.8px);
+  }
+  70% {
+    transform: rotate(1.5deg) translate(0, -1.5px);
+  }
+}
+
+// Pupil group smooth tracking
+.pupils {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+// Mouth shape smooth transition
+.layer-mouth {
+  transition: d 0.06s linear;
+}
+
+// Respect reduced-motion preference
+@media (prefers-reduced-motion: reduce) {
+  .layer-head {
+    animation: none !important;
+    transform: none !important;
+  }
+  .pupils {
+    transition: none;
+  }
+  .layer-mouth {
+    transition: none;
+  }
+  .eyelid-left,
+  .eyelid-right {
+    transition: none;
+  }
+}

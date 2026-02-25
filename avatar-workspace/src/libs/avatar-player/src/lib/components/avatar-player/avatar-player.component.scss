@@ -1,0 +1,19 @@
+// avatar-player.component.scss
+
+.avatar-player {
+  display: inline-flex;
+  position: relative;
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transition: width 0.2s ease, height 0.2s ease;
+  }
+
+  // Speaking: grow avatar
+  &--speaking .player-avatar {
+    width: 72px;
+    height: 72px;
+  }
+}

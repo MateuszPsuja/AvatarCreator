@@ -1,0 +1,28 @@
+// creator.page.scss — minimal layout; everything else is Tailwind in template
+
+.creator-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  grid-template-rows: 100vh;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+    overflow: auto;
+  }
+}
+
+// Preview ambient background
+.creator-preview {
+  background:
+    radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.06) 0%, transparent 70%),
+    hsl(var(--background));
+}
+
+// Speaking ring pulse
+.avatar-speaking .preview-avatar {
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.35),
+              0 0 24px hsl(var(--primary) / 0.15);
+}
