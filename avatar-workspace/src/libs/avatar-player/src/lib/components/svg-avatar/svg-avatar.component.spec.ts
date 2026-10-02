@@ -23,6 +23,13 @@ describe('SvgAvatarComponent', () => {
     profession: 'none',
   };
 
+  /**
+   * Inputs are signals, so they are set through the component ref rather than
+   * assigned to a field. This is the API the parent template actually uses.
+   */
+  const setInput = (name: string, value: unknown) =>
+    fixture.componentRef.setInput(name, value);
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SvgAvatarComponent],
@@ -31,7 +38,7 @@ describe('SvgAvatarComponent', () => {
 
     fixture = TestBed.createComponent(SvgAvatarComponent);
     component = fixture.componentInstance;
-    component.config = mockConfig;
+    setInput('config', mockConfig);
     fixture.detectChanges();
   });
 
@@ -74,25 +81,24 @@ describe('SvgAvatarComponent', () => {
   });
 
   it('should add animate-idle class when animations enabled', () => {
-    component.animationsEnabled = true;
+    setInput('animationsEnabled', true);
     fixture.detectChanges();
     const head = fixture.nativeElement.querySelector('.layer-head');
     expect(head.classList.contains('animate-idle')).toBeTrue();
   });
 
   it('should not add animate-idle class when animations disabled', () => {
-    component.animationsEnabled = false;
+    setInput('animationsEnabled', false);
     fixture.detectChanges();
     const head = fixture.nativeElement.querySelector('.layer-head');
     expect(head.classList.contains('animate-idle')).toBeFalse();
   });
 
   it('should update mouth when viseme changes', () => {
-    const mouth1 = component.mouthPath;
-    component.viseme = 1;
-    const mouth2 = component.mouthPath;
-    // Different visemes should produce different paths
-    expect(mouth1).not.toBe(mouth2);
+    const mouth1 = component.mouthPath();
+    setInput('viseme', 1);
+    fixture.detectChanges();
+    expect(mouth1).not.toBe(component.mouthPath());
   });
 
   it('should have stroke-width 2.5 on mouth', () => {
@@ -101,14 +107,13 @@ describe('SvgAvatarComponent', () => {
   });
 
   it('re-renders when the config changes', () => {
-    // A computed() that reads a plain @Input has no tracked dependency, so it
-    // evaluates once and never invalidates. That froze the avatar on its first
-    // render and made every picker in the creator page do nothing.
+    // These are signal inputs, so the derived computeds cannot go stale. The
+    // bug this guards was a computed reading a plain @Input, which froze the
+    // avatar on its first render and made every picker do nothing.
     const before = fixture.nativeElement.querySelector('.avatar-svg').innerHTML;
     expect(before).not.toContain('helmet-clip');
 
-    component.config = { ...mockConfig, profession: 'astronaut' };
-    component.ngOnChanges({ config: { currentValue: component.config } as never });
+    setInput('config', { ...mockConfig, profession: 'astronaut' });
     fixture.detectChanges();
 
     const after = fixture.nativeElement.querySelector('.avatar-svg').innerHTML;
@@ -116,54 +121,67 @@ describe('SvgAvatarComponent', () => {
   });
 
   it('re-renders when only the profession changes', () => {
-    component.config = { ...mockConfig, profession: 'engineer' };
-    component.ngOnChanges({ config: { currentValue: component.config } as never });
+    setInput('config', { ...mockConfig, profession: 'engineer' });
     fixture.detectChanges();
     const el = fixture.nativeElement.querySelector('.avatar-svg');
     expect(el.innerHTML).toContain('url(#hat-clip)');
   });
 
+  it('re-renders the palette when the skin tone changes', () => {
+    const before = fixture.nativeElement
+      .querySelector('svg')
+      .getAttribute('style')!;
+    setInput('config', { ...mockConfig, skinTone: 'deep' });
+    fixture.detectChanges();
+    const after = fixture.nativeElement.querySelector('svg').getAttribute('style')!;
+    expect(after).not.toBe(before);
+    expect(after).toContain('#4A2912');
+  });
+
   it('moves the mouth when the viseme changes', () => {
-    // The viseme has to be a tracked signal. Reading the plain @Input left
-    // the effect with no dependency, so "Test speech" did nothing.
     const mouth = () =>
       fixture.nativeElement.querySelector('.layer-mouth').getAttribute('d');
 
     const before = mouth();
-    component.viseme = 1;
-    component.ngOnChanges({ viseme: { currentValue: 1 } as never });
+    setInput('viseme', 1);
     fixture.detectChanges();
 
     expect(mouth()).not.toBe(before);
     expect(mouth()).toBe(MOUTH_SHAPES[1]);
   });
 
-  it('keeps the mouth path getter in step with the viseme', () => {
-    component.viseme = 4;
-    component.ngOnChanges({ viseme: { currentValue: 4 } as never });
-    expect(component.mouthPath).toBe(MOUTH_SHAPES[4]);
+  it('keeps the mouth path in step with the viseme', () => {
+    setInput('viseme', 4);
+    fixture.detectChanges();
+    expect(component.mouthPath()).toBe(MOUTH_SHAPES[4]);
   });
 
   it('applies the palette to the root svg, not a function object', () => {
-    // Regression: cssVarsStyle was changed from a getter to a computed but
-    // the template still bound `[style]="cssVarsStyle"`, which passes the
-    // function itself. No style attribute was written, every
-    // var(--skin-base) was invalid, and the whole avatar rendered black.
+    // Regression: cssVarsStyle was changed from a getter to a computed but the
+    // template still bound `[style]="cssVarsStyle"`, which passes the function
+    // itself. No style attribute was written, every var(--skin-base) was
+    // invalid, and the whole avatar rendered black.
     const svg = fixture.nativeElement.querySelector('svg');
     const style = svg.getAttribute('style') || '';
     expect(style).toContain('--skin-base');
     expect(style).toContain('--hair-color');
     expect(style).toContain('--eye-color');
     expect(style).toContain('--skin-shadow');
-    // A serialised function would show up as source text here.
     expect(style).not.toContain('=>');
     expect(style).not.toContain('function');
   });
 
+  it('exposes the shape helpers as signals that follow the config', () => {
+    expect(component.isAstronaut()).toBeFalse();
+    setInput('config', { ...mockConfig, profession: 'astronaut' });
+    expect(component.isAstronaut()).toBeTrue();
+    expect(component.helmetClipUrl()).toBe('url(#helmet-clip)');
+  });
+
   it('must pin facial hair to view-box coordinates', () => {
-    // The stylesheet sets `transform-box: fill-box` on every child so the
-    // head rotation has a sensible origin. That rule also caught the facial
-    // hair, whose transform positions it against the face — under fill-box,
+    // The stylesheet sets `transform-box: fill-box` on every child so the head
+    // rotation has a sensible origin. That rule also caught the facial hair,
+    // whose transform positions it against the face — under fill-box,
     // `translate(100,88)` resolved to 100 bounding-box-widths and threw the
     // beard up over the eyes. These layers must opt back into view-box.
     const styles = (SvgAvatarComponent as unknown as { ɵcmp: { styles: string[] } }).ɵcmp.styles.join('\n');
@@ -175,8 +193,7 @@ describe('SvgAvatarComponent', () => {
     // The avatar markup arrives via [innerHTML], so emulated encapsulation
     // would scope every selector to a content attribute those nodes do not
     // have. The styles would silently stop applying and the skin-coloured
-    // eyelids would render at full size, covering the eyes. ViewEncapsulation
-    // None + `.avatar-svg` namespacing in the SCSS is what makes this work.
+    // eyelids would render at full size, covering the eyes.
     const definition = (SvgAvatarComponent as unknown as { ɵcmp: { encapsulation: number } }).ɵcmp;
     // 0 = None, 1 = Emulated, 2 = None, 3 = ShadowDom
     expect(definition.encapsulation).toBe(0);
