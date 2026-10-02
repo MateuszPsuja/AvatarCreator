@@ -94,17 +94,28 @@ export class SvgAvatarComponent implements OnInit, OnChanges, OnDestroy {
   readonly eyeBlinkClass = signal<string>('');
   readonly pupilOffset = signal<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  /** Palette plus the two pupil-offset custom properties the SCSS reads. */
-  get cssVarsStyle(): SafeStyle {
-    const vars = avatarCssVars(this.config);
+  /**
+   * Palette plus the two pupil-offset custom properties the SCSS reads.
+   *
+   * A computed, not a getter: a getter returns a new SafeStyle on every
+   * change-detection pass, so Angular re-wrote the style attribute each
+   * cycle. Derived from the signal mirrors so it actually invalidates when
+   * the inputs or the pupils move, and not otherwise.
+   */
+  readonly cssVarsStyle = computed<SafeStyle>(() => {
+    const config = this.configSig();
     const p = this.pupilOffset();
+    if (!config) {
+      return this.sanitizer.bypassSecurityTrustStyle('--pupil-x: 0px; --pupil-y: 0px');
+    }
+    const vars = avatarCssVars(config);
     const decls =
       `--pupil-x: ${p.x}px; --pupil-y: ${p.y}px; ` +
       Object.entries(vars)
         .map(([k, v]) => `${k}: ${v}`)
         .join('; ');
     return this.sanitizer.bypassSecurityTrustStyle(decls);
-  }
+  });
 
   /**
    * The markup is regenerated only when the *config* changes — deliberately

@@ -104,8 +104,26 @@ export class TraitPickerComponent<T = string> {
 
   constructor(private sanitizer: DomSanitizer) {}
 
+  /**
+   * Trust-cache for previews, keyed by option value.
+   *
+   * Without this, `preview()` ran on every change-detection pass and returned
+   * a fresh SafeHtml each time, so Angular saw a changed binding and
+   * re-assigned innerHTML — re-parsing the SVG for every option on every
+   * cycle. That destroyed the button's contents between a click's mousedown
+   * and mouseup, so the click event never fired and options needed two
+   * clicks. Caching makes the identity stable and the write disappear.
+   */
+  private readonly previewCache = new Map<string, SafeHtml>();
+
   preview(opt: TraitOption<T>): SafeHtml | null {
     if (!opt.svgPreview) return null;
-    return this.sanitizer.bypassSecurityTrustHtml(opt.svgPreview);
+    const key = `${opt.value}`;
+    let cached = this.previewCache.get(key);
+    if (!cached) {
+      cached = this.sanitizer.bypassSecurityTrustHtml(opt.svgPreview);
+      this.previewCache.set(key, cached);
+    }
+    return cached;
   }
 }
