@@ -22,15 +22,33 @@ export class LipSyncService {
 
   /**
    * Play a viseme sequence, calling onViseme(id) each frame.
+   *
+   * `onEnd` fires exactly once when the sequence finishes or is cancelled, so
+   * callers can clear a "speaking" flag reliably. Do NOT infer the end from
+   * onViseme(0): viseme 0 is silence and occurs at every space, so it would
+   * end the utterance at the first word gap.
+   *
    * Returns a cancel function. Always resets to 0 (silence) on end or cancel.
    */
-  play(visemes: number[], onViseme: (v: number) => void): () => void {
+  play(
+    visemes: number[],
+    onViseme: (v: number) => void,
+    onEnd?: () => void,
+  ): () => void {
     let i = 0;
     let cancelled = false;
+    let finished = false;
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      onViseme(0); // reset to silence
+      onEnd?.();
+    };
 
     const tick = () => {
       if (cancelled || i >= visemes.length) {
-        onViseme(0); // reset to silence
+        finish();
         return;
       }
       onViseme(visemes[i++]);
@@ -40,6 +58,7 @@ export class LipSyncService {
     tick();
     return () => {
       cancelled = true;
+      finish();
     };
   }
 }

@@ -69,11 +69,18 @@ export class SvgAvatarComponent implements OnInit, OnChanges, OnDestroy {
   private readonly configSig = signal<AvatarConfig | null>(null);
   private readonly animatedSig = signal(true);
   private readonly idsPrefixSig = signal('');
+  /**
+   * Viseme, mirrored like the others. Lip sync drives this at ~12fps, and
+   * reading the plain @Input here left the mouth effect with no tracked
+   * dependency — so "Test speech" did nothing at all.
+   */
+  private readonly visemeSig = signal(0);
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config']) this.configSig.set(this.config ?? null);
     if (changes['animationsEnabled']) this.animatedSig.set(this.animationsEnabled);
     if (changes['idsPrefix']) this.idsPrefixSig.set(this.idsPrefix);
+    if (changes['viseme']) this.visemeSig.set(this.viseme);
   }
 
   private readonly sanitizer = inject(DomSanitizer);
@@ -135,15 +142,16 @@ export class SvgAvatarComponent implements OnInit, OnChanges, OnDestroy {
     return this.config ? helmetClipUrl(this.config, this.idsPrefix) : null;
   }
   get mouthPath(): string {
-    return MOUTH_SHAPES[this.viseme] ?? MOUTH_SHAPES[0];
+    return MOUTH_SHAPES[this.visemeSig()] ?? MOUTH_SHAPES[0];
   }
 
   constructor() {
     // Keep the mouth in sync without re-rendering the whole avatar.
     effect(() => {
+      // Both reads are signal-tracked: visemeSig so the mouth follows lip
+      // sync, innerHtml so the path is re-applied after each markup swap,
+      // when the fresh .layer-mouth element is guaranteed to be in the DOM.
       const path = this.mouthPath;
-      // Reading innerHtml() makes this re-run after each markup swap, when
-      // the fresh .layer-mouth element is guaranteed to be in the DOM.
       this.innerHtml();
       this.applyMouthPath(path);
     });

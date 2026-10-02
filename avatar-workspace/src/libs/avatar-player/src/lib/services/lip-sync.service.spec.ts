@@ -116,3 +116,52 @@ describe('LipSyncService', () => {
     });
   });
 });
+
+describe('LipSyncService end-of-utterance handling', () => {
+  let service: LipSyncService;
+
+  beforeEach(() => {
+    service = new LipSyncService();
+  });
+
+  it('fires onEnd exactly once when the sequence finishes', (done) => {
+    const seen: number[] = [];
+    let ends = 0;
+    service.play([1, 2, 0], (v) => seen.push(v), () => ends++);
+    setTimeout(() => {
+      expect(seen.length).toBeGreaterThan(1);
+      expect(ends).toBe(1);
+      expect(seen[seen.length - 1]).toBe(0);
+      done();
+    }, 400);
+  });
+
+  it('fires onEnd when cancelled', () => {
+    let ends = 0;
+    const cancel = service.play([1, 2, 3, 4], () => {}, () => ends++);
+    cancel();
+    expect(ends).toBe(1);
+  });
+
+  it('does not fire onEnd twice when cancelled after finishing', (done) => {
+    let ends = 0;
+    service.play([1], () => {}, () => ends++);
+    setTimeout(() => {
+      expect(ends).toBe(1);
+      done();
+    }, 300);
+  });
+
+  it('emits silence mid-sentence without ending the utterance', (done) => {
+    // The space in "hi there" is viseme 0. Callers used to treat that as the
+    // end of speech and cut the state short at the first word gap.
+    let ends = 0;
+    const seen: number[] = [];
+    service.play([1, 0, 1, 0, 1, 0], (v) => seen.push(v), () => ends++);
+    setTimeout(() => {
+      expect(seen).toContain(0);
+      expect(ends).toBe(1);
+      done();
+    }, 800);
+  });
+});

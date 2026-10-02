@@ -245,11 +245,12 @@ export class CreatorPageComponent implements OnInit {
     const text = this.config().name || 'Hello, I am your avatar!';
     const visemes = this.lipSync.textToVisemes(text);
     this.isSpeaking.set(true);
-    this.lipSyncCancel = this.lipSync.play(visemes, (v) => {
-      this.currentViseme.set(v);
-      if (v === 0) {
-        this.isSpeaking.set(false);
-      }
-    });
+    this.lipSyncCancel = this.lipSync.play(
+      visemes,
+      (v) => this.currentViseme.set(v),
+      // Cleared on a real end-of-utterance, not on viseme 0 — silence occurs
+      // at every space, so the old check stopped the state at the first gap.
+      () => this.isSpeaking.set(false),
+    );
   }
 }

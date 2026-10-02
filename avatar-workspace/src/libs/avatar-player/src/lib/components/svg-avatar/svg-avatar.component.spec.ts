@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SvgAvatarComponent } from './svg-avatar.component';
 import { AvatarAnimationService } from '../../services/avatar-animation.service';
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import { MOUTH_SHAPES } from '@avatar-workspace/avatar-shared';
 
 describe('SvgAvatarComponent', () => {
   let component: SvgAvatarComponent;
@@ -120,6 +121,27 @@ describe('SvgAvatarComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement.querySelector('.avatar-svg');
     expect(el.innerHTML).toContain('url(#hat-clip)');
+  });
+
+  it('moves the mouth when the viseme changes', () => {
+    // The viseme has to be a tracked signal. Reading the plain @Input left
+    // the effect with no dependency, so "Test speech" did nothing.
+    const mouth = () =>
+      fixture.nativeElement.querySelector('.layer-mouth').getAttribute('d');
+
+    const before = mouth();
+    component.viseme = 1;
+    component.ngOnChanges({ viseme: { currentValue: 1 } as never });
+    fixture.detectChanges();
+
+    expect(mouth()).not.toBe(before);
+    expect(mouth()).toBe(MOUTH_SHAPES[1]);
+  });
+
+  it('keeps the mouth path getter in step with the viseme', () => {
+    component.viseme = 4;
+    component.ngOnChanges({ viseme: { currentValue: 4 } as never });
+    expect(component.mouthPath).toBe(MOUTH_SHAPES[4]);
   });
 
   it('must pin facial hair to view-box coordinates', () => {
