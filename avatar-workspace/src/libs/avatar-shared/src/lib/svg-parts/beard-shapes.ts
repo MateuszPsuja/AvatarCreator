@@ -1,6 +1,16 @@
 // libs/avatar-shared/src/lib/svg-parts/beard-shapes.ts
 // 5 beard styles: none, stubble, short, long, goatee
-// Positioned on lower face, below mouth (~y=120+)
+//
+// The outer edge of both full beards follows the face ellipse
+// (cx=100 cy=88 rx=52 ry=56) rather than a hand-typed curve. An earlier
+// version kept its outer edge near x=49 down to y=118, but the face has
+// already narrowed to x=55 by then, so the beard projected past the jaw
+// as a dark wedge on each side.
+//
+// Face half-width by row, which is what the outer curves are matched to:
+//   y=96  -> 51.5   y=110 -> 47.9   y=120 -> 45.0
+//   y=130 -> 37.2   y=140 -> 26.0   chin -> 0 (y=144)
+//
 // Flat fill only, no gradients, stroke-width ≤ 2.5
 // Color: fill="var(--hair-color)"
 
@@ -17,27 +27,33 @@ export const BEARD_SHAPES: Record<BeardStyle, string> = {
           fill="var(--hair-color)" opacity="0.2"/>`,
 
   short: `
-    <!-- Full short beard — anchored on face ellipse at y=96 (rx=52 ry=56 cx=100 cy=88) -->
-    <path d="M49,96 Q48,106 50,114 Q55,126 64,134
-             Q76,144 90,150 Q96,152 100,152
-             Q104,152 110,150 Q124,144 136,134
-             Q145,126 150,114 Q152,106 151,96
-             Q152,108 147,121 Q133,136 100,140
-             Q67,136 53,121 Q48,108 49,96 Z"
+    <!-- Jaw-hugging beard. Outer edge is inset 3px inside the face ellipse so
+         it never projects past the jaw; inner edge sits above it, leaving a
+         band that thins at the cheeks and thickens at the chin. -->
+    <path d="M52,96
+             C52,108 56,120 64,128
+             C72,136 86,143 100,143
+             C114,143 128,136 136,128
+             C144,120 148,108 148,96
+             C146,104 140,114 130,121
+             C120,128 110,131 100,131
+             C90,131 80,128 70,121
+             C60,114 54,104 52,96 Z"
           fill="var(--hair-color)"/>`,
 
   long: `
-    <!-- Full long beard — anchored on face ellipse, flows below chin -->
-    <path d="M49,96 Q47,108 50,118 Q54,132 62,142
-             Q72,156 84,166 Q92,174 98,178
-             Q100,180 100,180 Q100,180 102,178
-             Q108,174 116,166 Q128,156 138,142
-             Q146,132 150,118 Q153,108 151,96
-             Q152,108 147,121 Q133,136 100,140
-             Q67,136 53,121 Q48,108 49,96 Z"
-          fill="var(--hair-color)"/>
-    <!-- Rounded bottom of long beard -->
-    <ellipse cx="100" cy="178" rx="14" ry="5" fill="var(--hair-color)"/>`,
+    <!-- Same jaw-hugging top, then flowing below the chin to a rounded point. -->
+    <path d="M52,96
+             C52,110 58,126 70,138
+             C80,148 90,160 95,172
+             C96,176 104,176 105,172
+             C110,160 120,148 130,138
+             C142,126 148,110 148,96
+             C146,104 140,114 130,121
+             C120,128 110,131 100,131
+             C90,131 80,128 70,121
+             C60,114 54,104 52,96 Z"
+          fill="var(--hair-color)"/>`,
 
   goatee: `
     <!-- Soul patch -->

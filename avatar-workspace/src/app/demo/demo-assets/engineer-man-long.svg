@@ -24,13 +24,18 @@
       <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
       <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
       <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache"></g><g class="layer-beard">
-    <!-- Full short beard — anchored on face ellipse at y=96 (rx=52 ry=56 cx=100 cy=88) -->
-    <path d="M49,96 Q48,106 50,114 Q55,126 64,134
-             Q76,144 90,150 Q96,152 100,152
-             Q104,152 110,150 Q124,144 136,134
-             Q145,126 150,114 Q152,106 151,96
-             Q152,108 147,121 Q133,136 100,140
-             Q67,136 53,121 Q48,108 49,96 Z"
+    <!-- Jaw-hugging beard. Outer edge is inset 3px inside the face ellipse so
+         it never projects past the jaw; inner edge sits above it, leaving a
+         band that thins at the cheeks and thickens at the chin. -->
+    <path d="M52,96
+             C52,108 56,120 64,128
+             C72,136 86,143 100,143
+             C114,143 128,136 136,128
+             C144,120 148,108 148,96
+             C146,104 140,114 130,121
+             C120,128 110,131 100,131
+             C90,131 80,128 70,121
+             C60,114 54,104 52,96 Z"
           fill="var(--hair-color)"/></g><g class="layer-glasses"></g><g class="layer-hair-front" clip-path="url(#hat-clip)">
       <path d="M46,78 Q46,28 100,22 Q154,28 154,78 Q142,54 100,48 Q58,54 46,78 Z"
             fill="var(--hair-color)"/>
