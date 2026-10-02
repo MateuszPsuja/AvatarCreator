@@ -156,25 +156,28 @@ export const PROFESSION_LAYERS: Record<ProfessionType, ProfessionParts> = {
       <!-- Center front seam -->
       <line x1="100" y1="146" x2="100" y2="200" stroke="#E2E8F0" stroke-width="0.8"/>`,
     accessory: `
-      <!-- Chef toque blanche — tall puffy hat -->
-      <!-- Band at forehead — spans full head width -->
-      <rect x="46" y="40" width="108" height="16" rx="5" fill="#FEFEFE" stroke="#E2E8F0" stroke-width="1.2"/>
-      <!-- Tall puffy toque body -->
-      <path d="M54,48 C48,38 44,24 44,10
-               C44,-6 54,-20 68,-28
-               C80,-35 90,-38 100,-38
-               C110,-38 120,-35 132,-28
-               C146,-20 156,-6 156,10
-               C156,24 152,38 146,48 Z"
+      <!-- Chef toque blanche — puffy hat, sized to sit inside the 0–200 canvas.
+           The previous version ran to y=-48, so most of it was off-canvas and
+           read as a shapeless blob. The face top is y=32, so the hat occupies
+           y≈2…59: high enough to look tall, never past the top edge. -->
+      <!-- Band at the forehead — spans the head width -->
+      <rect x="48" y="44" width="104" height="15" rx="4" fill="#FEFEFE" stroke="#E2E8F0" stroke-width="1.2"/>
+      <!-- Puffy toque body -->
+      <path d="M56,46 C52,38 50,28 52,20
+               C54,11 62,6 72,5
+               C80,4 88,4 100,4
+               C112,4 120,4 128,5
+               C138,6 146,11 148,20
+               C150,28 148,38 144,46 Z"
             fill="#FEFEFE" stroke="#E2E8F0" stroke-width="1"/>
-      <!-- Puffy top crown — overlapping rounded bumps -->
-      <ellipse cx="78" cy="-26" rx="24" ry="16" fill="#FEFEFE"/>
-      <ellipse cx="122" cy="-26" rx="24" ry="16" fill="#FEFEFE"/>
-      <ellipse cx="100" cy="-32" rx="26" ry="16" fill="#FEFEFE"/>
-      <!-- Subtle pleat lines -->
-      <path d="M76,46 Q68,16 76,-16" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
-      <path d="M100,46 L100,-28" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
-      <path d="M124,46 Q132,16 124,-16" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>`,
+      <!-- Crown puffs — overlapping rounded bumps, all within the canvas -->
+      <ellipse cx="76" cy="18" rx="20" ry="12" fill="#FEFEFE"/>
+      <ellipse cx="124" cy="18" rx="20" ry="12" fill="#FEFEFE"/>
+      <ellipse cx="100" cy="14" rx="24" ry="13" fill="#FEFEFE"/>
+      <!-- Pleat lines -->
+      <path d="M76,44 Q70,26 76,8" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
+      <path d="M100,44 L100,4" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
+      <path d="M124,44 Q130,26 124,8" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>`,
   },
 
   // ─── Police: Navy uniform, cap with badge ───────────

@@ -15,6 +15,11 @@ import {
 } from './avatar-renderer';
 import { SKIN_TONES } from './skin-tones';
 import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
+import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
+import { HAIR_SHAPES } from './svg-parts/hair-shapes';
+import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
+import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import type { AvatarConfig, Gender, ProfessionType } from './avatar.model';
 
 const PROFESSIONS: ProfessionType[] = [
@@ -255,4 +260,30 @@ describe('buildAvatarSvg — animation hook', () => {
     // A static file has no runtime to drive the animation.
     expect(buildAvatarSvg(makeConfig(), { animated: true })).not.toContain('animate-idle');
   });
+});
+
+describe('part geometry stays on the canvas', () => {
+  // The chef toque used to be drawn up to y=-48, so a third of it sat outside
+  // the 0..200 viewBox and rendered as a shapeless blob. Coordinates outside
+  // the canvas are always a bug, so assert none of them exist.
+  const SOURCES: [string, Record<string, string>][] = [
+    ['profession', PROFESSION_LAYERS as never],
+    ['hair', HAIR_SHAPES as never],
+    ['beard', BEARD_SHAPES as never],
+    ['mustache', MUSTACHE_SHAPES as never],
+    ['glasses', GLASSES_SHAPES as never],
+  ];
+
+  for (const [group, map] of SOURCES) {
+    for (const [name, raw] of Object.entries(map)) {
+      it(`${group}.${name} has no off-canvas coordinates`, () => {
+        const nums = String(raw)
+          .replace(/\s+/g, ' ')
+          .match(/-?\d+(\.\d+)?/g)!
+          .map((n) => parseFloat(n));
+        const off = nums.filter((n) => n < 0 || n > 200);
+        expect(off).withContext(`${group}.${name} → ${off.join(', ')}`).toEqual([]);
+      });
+    }
+  }
 });

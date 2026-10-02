@@ -65,8 +65,12 @@ export class CreatorPageComponent implements OnInit {
   config = signal<AvatarConfig>(this.avatarService.defaultConfig());
 
   // ── Undo / redo ──────────────────────────────────────────────
-  private past: AvatarConfig[] = [];
-  private future: AvatarConfig[] = [];
+  // These are signals, not plain arrays. `canUndo` is a computed, and a
+  // computed only re-evaluates when a tracked signal changes — mutating a
+  // plain array registers no dependency, so the buttons stayed permanently
+  // disabled no matter how many edits were made.
+  private readonly past = signal<AvatarConfig[]>([]);
+  private readonly future = signal<AvatarConfig[]>([]);
   private nameSnapshot: string | null = null;
 
   /** Transient confirmation after save / export / randomize. */
@@ -142,7 +146,7 @@ export class CreatorPageComponent implements OnInit {
     }
     // Seed the history with whatever we started from, so the first undo has
     // somewhere to go back to.
-    this.past = [this.config()];
+    this.past.set([this.config()]);
   }
 
   update<K extends keyof AvatarConfig>(key: K, value: AvatarConfig[K]): void {
@@ -160,33 +164,39 @@ export class CreatorPageComponent implements OnInit {
   commitName(): void {
     if (this.nameSnapshot === null) return;
     if (this.nameSnapshot !== this.config().name) {
-      this.past.push({ ...this.config(), name: this.nameSnapshot });
-      this.future = [];
+      this.past.update((p) => [...p, { ...this.config(), name: this.nameSnapshot! }]);
+      this.future.set([]);
     }
     this.nameSnapshot = null;
   }
 
   private push(): void {
-    this.past.push(this.config());
-    if (this.past.length > HISTORY_LIMIT) this.past.shift();
-    this.future = [];
+    this.past.update((p) => {
+      const next = [...p, this.config()];
+      return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next;
+    });
+    this.future.set([]);
     this.status.set(null);
   }
 
-  readonly canUndo = computed(() => this.past.length > 1);
-  readonly canRedo = computed(() => this.future.length > 0);
+  readonly canUndo = computed(() => this.past().length > 1);
+  readonly canRedo = computed(() => this.future().length > 0);
 
   undo(): void {
-    const prev = this.past.pop();
-    if (!prev) return;
-    this.future.push(this.config());
+    const stack = this.past();
+    if (stack.length <= 1) return;
+    const prev = stack[stack.length - 1];
+    this.past.set(stack.slice(0, -1));
+    this.future.update((f) => [...f, this.config()]);
     this.config.set(prev);
   }
 
   redo(): void {
-    const next = this.future.pop();
-    if (!next) return;
-    this.past.push(this.config());
+    const stack = this.future();
+    const next = stack[stack.length - 1];
+    if (next === undefined) return;
+    this.future.set(stack.slice(0, -1));
+    this.past.update((p) => [...p, this.config()]);
     this.config.set(next);
   }
 

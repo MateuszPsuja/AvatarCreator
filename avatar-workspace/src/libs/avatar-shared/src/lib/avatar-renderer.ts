@@ -25,8 +25,18 @@ import { BEARD_SHAPES } from './svg-parts/beard-shapes';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 
-/** Professions whose accessory covers the top of the head, so hair must clip. */
-export const HAT_PROFESSIONS: ReadonlySet<string> = new Set(['engineer', 'police', 'artist']);
+/**
+ * Professions whose accessory covers the top of the head, so hair must clip.
+ *
+ * `chef` is here because the toque band sits across the forehead; without it
+ * long hair renders straight through the hat.
+ */
+export const HAT_PROFESSIONS: ReadonlySet<string> = new Set([
+  'engineer',
+  'police',
+  'artist',
+  'chef',
+]);
 
 /** Professions with a full helmet, which clips hair AND facial hair. */
 export const HELMET_PROFESSIONS: ReadonlySet<string> = new Set(['astronaut']);
