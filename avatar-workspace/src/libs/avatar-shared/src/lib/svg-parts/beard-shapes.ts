@@ -17,27 +17,27 @@ export const BEARD_SHAPES: Record<BeardStyle, string> = {
           fill="var(--hair-color)" opacity="0.2"/>`,
 
   short: `
-    <!-- Full short beard — hugs face ellipse (rx=52 ry=56 cx=100 cy=88) -->
-    <path d="M48,100 Q46,112 48,124 Q52,136 62,144
-             Q74,152 88,156 Q96,158 100,158
-             Q104,158 112,156 Q126,152 138,144
-             Q148,136 152,124 Q154,112 152,100
-             Q150,114 144,126 Q132,138 100,142
-             Q68,138 56,126 Q50,114 48,100 Z"
+    <!-- Full short beard — anchored on face ellipse at y=96 (rx=52 ry=56 cx=100 cy=88) -->
+    <path d="M49,96 Q48,106 50,114 Q55,126 64,134
+             Q76,144 90,150 Q96,152 100,152
+             Q104,152 110,150 Q124,144 136,134
+             Q145,126 150,114 Q152,106 151,96
+             Q149,108 144,120 Q132,134 100,138
+             Q68,134 56,120 Q51,108 49,96 Z"
           fill="var(--hair-color)"/>`,
 
   long: `
-    <!-- Full long beard — hugs face then flows below chin -->
-    <path d="M48,98 Q44,112 44,126 Q46,142 54,154
-             Q62,166 76,176 Q88,184 96,186
-             Q100,188 100,188 Q100,188 104,186
-             Q112,184 124,176 Q138,166 146,154
-             Q154,142 156,126 Q156,112 152,98
-             Q150,114 144,128 Q132,140 100,144
-             Q68,140 56,128 Q50,114 48,98 Z"
+    <!-- Full long beard — anchored on face ellipse, flows below chin -->
+    <path d="M49,96 Q47,108 50,118 Q54,132 62,142
+             Q72,156 84,166 Q92,174 98,178
+             Q100,180 100,180 Q100,180 102,178
+             Q108,174 116,166 Q128,156 138,142
+             Q146,132 150,118 Q153,108 151,96
+             Q149,108 144,120 Q132,134 100,138
+             Q68,134 56,120 Q51,108 49,96 Z"
           fill="var(--hair-color)"/>
     <!-- Rounded bottom of long beard -->
-    <ellipse cx="100" cy="186" rx="16" ry="6" fill="var(--hair-color)"/>`,
+    <ellipse cx="100" cy="178" rx="14" ry="5" fill="var(--hair-color)"/>`,
 
   goatee: `
     <!-- Soul patch -->
