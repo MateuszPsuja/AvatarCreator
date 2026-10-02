@@ -122,6 +122,17 @@ describe('SvgAvatarComponent', () => {
     expect(el.innerHTML).toContain('url(#hat-clip)');
   });
 
+  it('must pin facial hair to view-box coordinates', () => {
+    // The stylesheet sets `transform-box: fill-box` on every child so the
+    // head rotation has a sensible origin. That rule also caught the facial
+    // hair, whose transform positions it against the face — under fill-box,
+    // `translate(100,88)` resolved to 100 bounding-box-widths and threw the
+    // beard up over the eyes. These layers must opt back into view-box.
+    const styles = (SvgAvatarComponent as unknown as { ɵcmp: { styles: string[] } }).ɵcmp.styles.join('\n');
+    expect(styles).toContain('transform-box: view-box');
+    expect(styles).toMatch(/layer-mustache[\s\S]*?layer-beard[\s\S]*?transform-box: view-box/);
+  });
+
   it('must not use emulated encapsulation', () => {
     // The avatar markup arrives via [innerHTML], so emulated encapsulation
     // would scope every selector to a content attribute those nodes do not
