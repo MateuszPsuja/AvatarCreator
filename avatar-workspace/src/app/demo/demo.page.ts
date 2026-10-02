@@ -12,14 +12,12 @@
 import {
   Component,
   signal,
-  computed,
   inject,
   OnInit,
   ChangeDetectionStrategy,
   ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -32,7 +30,7 @@ const SPEECH_MS = 4000;
 @Component({
   selector: 'app-demo-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './demo.page.html',
   styleUrl: './demo.page.scss',
@@ -53,20 +51,7 @@ export class DemoPageComponent implements OnInit {
 
   private timers = new Map<string, ReturnType<typeof setTimeout>>();
 
-  readonly query = signal('');
   readonly active = signal<DemoAvatar | null>(null);
-
-  readonly filtered = computed(() => {
-    const q = this.query().trim().toLowerCase();
-    if (!q) return this.avatars;
-    return this.avatars.filter(
-      (a) =>
-        a.label.toLowerCase().includes(q) ||
-        a.slug.includes(q) ||
-        a.notes.toLowerCase().includes(q) ||
-        a.config.profession.includes(q),
-    );
-  });
 
   ngOnInit(): void {
     for (const avatar of this.avatars) {

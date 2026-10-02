@@ -69,28 +69,6 @@
   color: hsl(var(--muted-foreground));
 }
 
-.demo-search {
-  width: 100%;
-  margin-bottom: 1.75rem;
-  padding: 0.625rem 0.875rem;
-  font-size: 0.875rem;
-  color: hsl(var(--foreground));
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.15s ease;
-
-  &::placeholder {
-    color: hsl(var(--muted-foreground));
-  }
-
-  &:focus {
-    border-color: hsl(var(--primary));
-  }
-}
-
-.demo-empty,
 .demo-foot {
   color: hsl(var(--muted-foreground));
   font-size: 0.8125rem;

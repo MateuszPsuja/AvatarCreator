@@ -13,25 +13,13 @@
     </div>
 
     <div class="demo-count">
-      <span class="demo-count-num">{{ filtered().length }}</span>
+      <span class="demo-count-num">{{ avatars.length }}</span>
       <span class="demo-count-label">of {{ avatars.length }}</span>
     </div>
   </header>
 
-  <input
-    type="search"
-    class="demo-search"
-    placeholder="Filter — try “astronaut”, “beard”, “engineer”…"
-    [ngModel]="query()"
-    (ngModelChange)="query.set($event)"
-    aria-label="Filter avatars" />
-
-  @if (filtered().length === 0) {
-    <p class="demo-empty">No avatar matches “{{ query() }}”.</p>
-  }
-
   <div class="demo-grid">
-    @for (avatar of filtered(); track avatar.slug) {
+    @for (avatar of avatars; track avatar.slug) {
       <div class="demo-card" [attr.data-slug]="avatar.slug">
 
         <button type="button" class="demo-thumb-btn" (click)="open(avatar)"
