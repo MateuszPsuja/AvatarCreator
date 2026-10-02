@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #F0AC78;--skin-ear: #E09A62;--skin-shadow: #C67C45;--lip-color: #C97050;--hair-color: #1A1A2E;--eye-color: #6B3A2A"><defs><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+      <!-- White chef jacket -->
+      <path d="M30,200 Q30,158 55,150 Q75,143 88,140
+              L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
+              Q125,143 145,150 Q170,158 170,200 Z" fill="#FEFEFE"/>
+      <!-- Mandarin collar -->
+      <rect x="86" y="138" width="28" height="8" rx="3" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+      <!-- Double-breasted buttons (left row) -->
+      <circle cx="88" cy="162" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <circle cx="88" cy="174" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <circle cx="88" cy="186" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <!-- Right row -->
+      <circle cx="96" cy="162" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <circle cx="96" cy="174" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <circle cx="96" cy="186" r="2" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="0.8"/>
+      <!-- Center front seam -->
+      <line x1="100" y1="146" x2="100" y2="200" stroke="#E2E8F0" stroke-width="0.8"/></g><rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8" fill="var(--skin-base)"/><g class="layer-head"><g class="layer-ears"><ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/><ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/></g><g class="layer-hair-back">
+      <path d="M42,80 Q38,30 100,22 Q162,30 158,80 L160,135 Q155,145 148,140
+              Q142,148 132,142 Q122,150 112,142 Q102,148 92,142 Q82,150 72,142
+              Q62,148 52,140 Q45,145 40,135 Z"
+            fill="var(--hair-color)"/></g><ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/><g class="layer-eyes"><g>
+      <circle cx="74" cy="88" r="11" fill="#FFF"/>
+      <circle cx="126" cy="88" r="11" fill="#FFF"/></g><g class="pupils"><g>
+      <circle cx="74" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="74" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="77" cy="85" r="2" fill="#FFF"/>
+      <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-eyelids"><rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/><rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/><g class="layer-mustache">
+    <!-- Thick walrus mustache -->
+    <path d="M78,111 Q82,112 88,114 Q94,117 100,115
+            Q106,117 112,114 Q118,112 122,111
+            L124,113 Q120,120 112,122 Q106,123 100,122
+            Q94,123 88,122 Q80,120 76,113 Z"
+          fill="var(--hair-color)"/></g><g class="layer-beard">
+    <!-- Soul patch -->
+    <ellipse cx="100" cy="126" rx="4" ry="2.5" fill="var(--hair-color)"/>
+    <!-- Compact chin goatee -->
+    <path d="M88,130 Q86,140 92,147 Q96,152 100,153 Q104,152 108,147 Q114,140 112,130
+             Q108,138 100,142 Q92,138 88,130 Z"
+          fill="var(--hair-color)"/></g><g class="layer-glasses"></g><g class="layer-hair-front">
+      <path d="M44,82 Q42,30 100,22 Q158,30 156,82
+              Q148,60 130,50 Q100,42 70,50 Q52,60 44,82 Z"
+            fill="var(--hair-color)"/>
+      <circle cx="44" cy="88" r="8" fill="var(--hair-color)"/>
+      <circle cx="156" cy="88" r="8" fill="var(--hair-color)"/>
+      <circle cx="48" cy="100" r="7" fill="var(--hair-color)"/>
+      <circle cx="152" cy="100" r="7" fill="var(--hair-color)"/></g><g class="layer-accessory">
+      <!-- Chef toque blanche — tall puffy hat -->
+      <!-- Band at forehead — spans full head width -->
+      <rect x="46" y="40" width="108" height="16" rx="5" fill="#FEFEFE" stroke="#E2E8F0" stroke-width="1.2"/>
+      <!-- Tall puffy toque body -->
+      <path d="M54,48 C48,38 44,24 44,10
+               C44,-6 54,-20 68,-28
+               C80,-35 90,-38 100,-38
+               C110,-38 120,-35 132,-28
+               C146,-20 156,-6 156,10
+               C156,24 152,38 146,48 Z"
+            fill="#FEFEFE" stroke="#E2E8F0" stroke-width="1"/>
+      <!-- Puffy top crown — overlapping rounded bumps -->
+      <ellipse cx="78" cy="-26" rx="24" ry="16" fill="#FEFEFE"/>
+      <ellipse cx="122" cy="-26" rx="24" ry="16" fill="#FEFEFE"/>
+      <ellipse cx="100" cy="-32" rx="26" ry="16" fill="#FEFEFE"/>
+      <!-- Subtle pleat lines -->
+      <path d="M76,46 Q68,16 76,-16" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
+      <path d="M100,46 L100,-28" stroke="#F0F0F0" stroke-width="0.7" fill="none"/>
+      <path d="M124,46 Q132,16 124,-16" stroke="#F0F0F0" stroke-width="0.7" fill="none"/></g></g></svg>

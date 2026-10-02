@@ -10,6 +10,7 @@ import {
   inject,
   ElementRef,
   NgZone,
+  ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
@@ -28,6 +29,11 @@ import { AvatarAnimationService } from '../../services/avatar-animation.service'
 @Component({
   selector: 'app-svg-avatar',
   standalone: true,
+  // The markup is injected with [innerHTML], so Angular's emulated
+  // encapsulation would not match it and the styles would silently do
+  // nothing — the eyelids would render at full size and hide the eyes.
+  // Every selector in the SCSS is namespaced under `.avatar-svg` instead.
+  encapsulation: ViewEncapsulation.None,
   template: `<svg xmlns="http://www.w3.org/2000/svg"
      [attr.viewBox]="viewBox"
      class="avatar-svg"

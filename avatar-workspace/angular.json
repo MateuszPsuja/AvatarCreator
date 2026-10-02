@@ -51,6 +51,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*.svg",
+                "input": "src/app/demo/demo-assets",
+                "output": "demo-assets"
               }
             ],
             "styles": [

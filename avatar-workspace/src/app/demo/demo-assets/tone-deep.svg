@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #4A2912;--skin-ear: #3C200E;--skin-shadow: #291505;--lip-color: #5C2E18;--hair-color: #1A1A2E;--eye-color: #6B3A2A"><defs><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+      <path d="M30,200 Q30,158 55,150 Q75,143 88,140
+              L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
+              Q125,143 145,150 Q170,158 170,200 Z" fill="#6B7280"/>
+      <!-- Collar line -->
+      <path d="M88,145 Q90,150 100,151 Q110,150 112,145"
+            fill="none" stroke="#5B6370" stroke-width="1.5" stroke-linecap="round"/></g><rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8" fill="var(--skin-base)"/><g class="layer-head"><g class="layer-ears"><ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/><ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/></g><g class="layer-hair-back">
+      <path d="M42,80 Q38,30 100,22 Q162,30 158,80 L160,135 Q155,145 148,140
+              Q142,148 132,142 Q122,150 112,142 Q102,148 92,142 Q82,150 72,142
+              Q62,148 52,140 Q45,145 40,135 Z"
+            fill="var(--hair-color)"/></g><ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/><g class="layer-eyes"><g>
+      <circle cx="74" cy="88" r="11" fill="#FFF"/>
+      <circle cx="126" cy="88" r="11" fill="#FFF"/></g><g class="pupils"><g>
+      <circle cx="74" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="74" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="77" cy="85" r="2" fill="#FFF"/>
+      <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-eyelids"><rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/><rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/><g class="layer-mustache"></g><g class="layer-beard"></g><g class="layer-glasses"></g><g class="layer-hair-front">
+      <path d="M44,82 Q42,30 100,22 Q158,30 156,82
+              Q148,60 130,50 Q100,42 70,50 Q52,60 44,82 Z"
+            fill="var(--hair-color)"/>
+      <circle cx="44" cy="88" r="8" fill="var(--hair-color)"/>
+      <circle cx="156" cy="88" r="8" fill="var(--hair-color)"/>
+      <circle cx="48" cy="100" r="7" fill="var(--hair-color)"/>
+      <circle cx="152" cy="100" r="7" fill="var(--hair-color)"/></g><g class="layer-accessory"></g></g></svg>

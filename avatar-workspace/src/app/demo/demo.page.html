@@ -1,0 +1,76 @@
+<!-- demo.page.html — read-only gallery of exported avatars -->
+<div class="demo-shell">
+
+  <header class="demo-head">
+    <div class="flex flex-col gap-1">
+      <a routerLink="/" class="demo-back">← Back to creator</a>
+      <h1 class="demo-title">Export gallery</h1>
+      <p class="demo-sub">
+        Every image below is a <code>.svg</code> file this app exported, loaded
+        with <code>&lt;img&gt;</code> and nothing else. If one of these breaks,
+        the export was not self-contained.
+      </p>
+    </div>
+
+    <div class="demo-count">
+      <span class="demo-count-num">{{ filtered().length }}</span>
+      <span class="demo-count-label">of {{ avatars.length }}</span>
+    </div>
+  </header>
+
+  <input
+    type="search"
+    class="demo-search"
+    placeholder="Filter — try “astronaut”, “beard”, “engineer”…"
+    [ngModel]="query()"
+    (ngModelChange)="query.set($event)"
+    aria-label="Filter avatars" />
+
+  @if (filtered().length === 0) {
+    <p class="demo-empty">No avatar matches “{{ query() }}”.</p>
+  }
+
+  <div class="demo-grid">
+    @for (avatar of filtered(); track avatar.slug) {
+      <button type="button" class="demo-card" (click)="open(avatar)">
+        <span class="demo-thumb">
+          <img [src]="src(avatar)" [alt]="avatar.label + ' avatar'" loading="lazy" />
+        </span>
+        <span class="demo-card-label">{{ avatar.label }}</span>
+        <span class="demo-chips">
+          @for (chip of chips(avatar); track chip) {
+            <span class="demo-chip">{{ chip }}</span>
+          }
+        </span>
+      </button>
+    }
+  </div>
+
+  <footer class="demo-foot">
+    Regenerate with <code>npm run demo:build</code>. Files are generated from
+    <code>demo-manifest.ts</code> via the same renderer the app exports from, so
+    a hand edit here would show up as a diff.
+  </footer>
+</div>
+
+<!-- Lightbox -->
+@if (active(); as avatar) {
+  <div class="demo-lightbox" (click)="close()" role="dialog" aria-modal="true">
+    <div class="demo-lightbox-inner" (click)="$event.stopPropagation()">
+      <div class="demo-lightbox-art">
+        <img [src]="src(avatar)" [alt]="avatar.label + ' avatar'" />
+      </div>
+      <div class="demo-lightbox-meta">
+        <h2>{{ avatar.label }}</h2>
+        <p class="demo-lightbox-notes">{{ avatar.notes }}</p>
+        <div class="demo-chips">
+          @for (chip of chips(avatar); track chip) {
+            <span class="demo-chip">{{ chip }}</span>
+          }
+        </div>
+        <p class="demo-lightbox-file">{{ src(avatar) }}</p>
+        <button type="button" class="demo-close" (click)="close()">Close</button>
+      </div>
+    </div>
+  </div>
+}

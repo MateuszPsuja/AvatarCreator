@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "demo:build": "esbuild scripts/generate-demo-avatars.ts --bundle --platform=node --format=esm --outfile=tmp/generate-demo.mjs --log-level=error && node tmp/generate-demo.mjs"
   },
   "private": true,
   "dependencies": {

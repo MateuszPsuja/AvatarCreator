@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #D4845A;--skin-ear: #C0724A;--skin-shadow: #A15532;--lip-color: #A8533A;--hair-color: #1A1A2E;--eye-color: #6B3A2A"><defs><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+      <!-- Blue work shirt -->
+      <path d="M30,200 Q30,158 55,150 Q75,143 88,140
+              L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
+              Q125,143 145,150 Q170,158 170,200 Z" fill="#1E3A5F"/>
+      <!-- Orange hi-vis vest -->
+      <path d="M45,200 Q48,160 65,152 Q78,146 88,144
+              L92,200 Z" fill="#F97316"/>
+      <path d="M155,200 Q152,160 135,152 Q122,146 112,144
+              L108,200 Z" fill="#F97316"/>
+      <!-- Reflective stripes -->
+      <line x1="55" y1="164" x2="88" y2="152" stroke="#FDE68A" stroke-width="2.5"/>
+      <line x1="145" y1="164" x2="112" y2="152" stroke="#FDE68A" stroke-width="2.5"/>
+      <line x1="58" y1="178" x2="90" y2="168" stroke="#FDE68A" stroke-width="2.5"/>
+      <line x1="142" y1="178" x2="110" y2="168" stroke="#FDE68A" stroke-width="2.5"/></g><rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8" fill="var(--skin-base)"/><g class="layer-head"><g class="layer-ears"><ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/><ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/></g><g class="layer-hair-back" clip-path="url(#hat-clip)">
+      <path d="M44,70 Q44,28 100,22 Q156,28 156,70 L156,140 Q156,150 148,150
+              L52,150 Q44,150 44,140 Z"
+            fill="var(--hair-color)"/></g><ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/><g class="layer-eyes"><g>
+      <circle cx="74" cy="88" r="11" fill="#FFF"/>
+      <circle cx="126" cy="88" r="11" fill="#FFF"/></g><g class="pupils"><g>
+      <circle cx="74" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="74" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="77" cy="85" r="2" fill="#FFF"/>
+      <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-eyelids"><rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/><rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/><g class="layer-mustache"></g><g class="layer-beard">
+    <!-- Full short beard — anchored on face ellipse at y=96 (rx=52 ry=56 cx=100 cy=88) -->
+    <path d="M49,96 Q48,106 50,114 Q55,126 64,134
+             Q76,144 90,150 Q96,152 100,152
+             Q104,152 110,150 Q124,144 136,134
+             Q145,126 150,114 Q152,106 151,96
+             Q149,108 144,120 Q132,134 100,138
+             Q68,134 56,120 Q51,108 49,96 Z"
+          fill="var(--hair-color)"/></g><g class="layer-glasses"></g><g class="layer-hair-front" clip-path="url(#hat-clip)">
+      <path d="M46,78 Q46,28 100,22 Q154,28 154,78 Q142,54 100,48 Q58,54 46,78 Z"
+            fill="var(--hair-color)"/>
+      <path d="M46,78 L46,110 Q48,95 52,85 Z" fill="var(--hair-color)"/>
+      <path d="M154,78 L154,110 Q152,95 148,85 Z" fill="var(--hair-color)"/></g><g class="layer-accessory">
+      <!-- Hair cover (hides any hair poking through) -->
+      <ellipse cx="100" cy="52" rx="56" ry="20" fill="#D97706"/>
+      <!-- Hard hat — dome -->
+      <path d="M50,52 Q50,14 100,8 Q150,14 150,52 Z" fill="#F59E0B"/>
+      <!-- Brim -->
+      <rect x="44" y="50" width="112" height="9" rx="4" fill="#D97706"/>
+      <!-- Brim shadow line -->
+      <line x1="48" y1="57" x2="152" y2="57" stroke="#B45309" stroke-width="1"/>
+      <!-- Center ridge -->
+      <line x1="100" y1="10" x2="100" y2="50" stroke="#EAB308" stroke-width="1" opacity="0.4"/></g></g></svg>

@@ -98,4 +98,24 @@ describe('SvgAvatarComponent', () => {
     const mouth = fixture.nativeElement.querySelector('.layer-mouth');
     expect(mouth.getAttribute('stroke-width')).toBe('2.5');
   });
+
+  it('must not use emulated encapsulation', () => {
+    // The avatar markup arrives via [innerHTML], so emulated encapsulation
+    // would scope every selector to a content attribute those nodes do not
+    // have. The styles would silently stop applying and the skin-coloured
+    // eyelids would render at full size, covering the eyes. ViewEncapsulation
+    // None + `.avatar-svg` namespacing in the SCSS is what makes this work.
+    const definition = (SvgAvatarComponent as unknown as { ɵcmp: { encapsulation: number } }).ɵcmp;
+    // 0 = None, 1 = Emulated, 2 = None, 3 = ShadowDom
+    expect(definition.encapsulation).toBe(0);
+  });
+
+  it('hides the eyelids by default so the eyes stay visible', () => {
+    // Guards the real symptom: with the eyelid rule not applied, the 22x22
+    // skin-coloured rects paint over the eyes.
+    const eyelid = fixture.nativeElement.querySelector('.eyelid-left');
+    expect(eyelid).toBeTruthy();
+    const styles = getComputedStyle(eyelid);
+    expect(styles.transform).toContain('matrix(1, 0, 0, 0');
+  });
 });

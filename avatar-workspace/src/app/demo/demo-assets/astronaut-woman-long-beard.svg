@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #FDDBB4;--skin-ear: #F5C89A;--skin-shadow: #E0A473;--lip-color: #E8967A;--hair-color: #E8C96E;--eye-color: #6B3A2A"><defs><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+      <!-- Neck cover — hides skin-tone neck behind collar -->
+      <rect x="82" y="130" width="36" height="20" rx="6" fill="#CFD8DC"/>
+      <!-- Bulky space suit -->
+      <path d="M22,200 Q22,155 50,147 Q72,140 88,138
+              L88,142 Q92,146 100,146 Q108,146 112,142 L112,138
+              Q128,140 150,147 Q178,155 178,200 Z" fill="#CFD8DC"/>
+      <!-- Suit seam lines -->
+      <line x1="60" y1="148" x2="52" y2="200" stroke="#B0BEC5" stroke-width="1.2"/>
+      <line x1="140" y1="148" x2="148" y2="200" stroke="#B0BEC5" stroke-width="1.2"/>
+      <!-- Chest plate -->
+      <rect x="76" y="148" width="48" height="34" rx="8" fill="#B0BEC5" stroke="#90A4AE" stroke-width="1.2"/>
+      <!-- Status lights on chest -->
+      <circle cx="90" cy="157" r="2.5" fill="#4ADE80"/>
+      <circle cx="110" cy="157" r="2.5" fill="#60A5FA"/>
+      <!-- Mission patch (left shoulder) -->
+      <path d="M42,153 L50,150 L58,153 L50,162 Z" fill="#1E3A5F" stroke="#BBB" stroke-width="0.5"/>
+      <path d="M46,154 L50,152 L54,154" fill="none" stroke="#60A5FA" stroke-width="0.8"/>
+      <!-- Agency logo patch (right shoulder) -->
+      <circle cx="155" cy="159" r="7" fill="#1E3A5F" stroke="#BBB" stroke-width="0.5"/>
+      <circle cx="155" cy="159" r="4" fill="none" stroke="#60A5FA" stroke-width="0.8"/>
+      <!-- Collar ring -->
+      <ellipse cx="100" cy="141" rx="30" ry="9" fill="#607D8B"/>
+      <ellipse cx="100" cy="139" rx="28" ry="7" fill="#78909C"/>
+      <ellipse cx="100" cy="137" rx="24" ry="5" fill="#90A4AE"/></g><g class="layer-head"><g class="layer-ears" clip-path="url(#helmet-clip)"><ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/><ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/></g><g class="layer-hair-back" clip-path="url(#helmet-clip)">
+      <ellipse cx="100" cy="62" rx="54" ry="34" fill="var(--hair-color)"/></g><ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/><g class="layer-eyes"><g>
+      <circle cx="74" cy="88" r="11" fill="#FFF"/>
+      <circle cx="126" cy="88" r="11" fill="#FFF"/></g><g class="pupils"><g>
+      <circle cx="74" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="74" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="77" cy="85" r="2" fill="#FFF"/>
+      <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-eyelids"><rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/><rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/><g class="layer-mustache" clip-path="url(#helmet-clip)"></g><g class="layer-beard" clip-path="url(#helmet-clip)">
+    <!-- Full long beard — anchored on face ellipse, flows below chin -->
+    <path d="M49,96 Q47,108 50,118 Q54,132 62,142
+             Q72,156 84,166 Q92,174 98,178
+             Q100,180 100,180 Q100,180 102,178
+             Q108,174 116,166 Q128,156 138,142
+             Q146,132 150,118 Q153,108 151,96
+             Q149,108 144,120 Q132,134 100,138
+             Q68,134 56,120 Q51,108 49,96 Z"
+          fill="var(--hair-color)"/>
+    <!-- Rounded bottom of long beard -->
+    <ellipse cx="100" cy="178" rx="14" ry="5" fill="var(--hair-color)"/></g><g class="layer-glasses"></g><g class="layer-hair-front" clip-path="url(#helmet-clip)">
+      <path d="M48,75 Q48,32 100,28 Q152,32 152,75 Q140,58 100,54 Q60,58 48,75 Z"
+            fill="var(--hair-color)"/></g><g class="layer-accessory">
+      <!-- Helmet dome -->
+      <ellipse cx="100" cy="78" rx="60" ry="64" fill="#CFD8DC" opacity="0.30"/>
+      <!-- Helmet outer rim -->
+      <ellipse cx="100" cy="78" rx="60" ry="64" fill="none"
+               stroke="#78909C" stroke-width="4"/>
+      <!-- Visor glass reflection -->
+      <path d="M64,52 Q74,36 90,40" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" opacity="0.40"/>
+      <!-- Side bolts -->
+      <circle cx="42" cy="88" r="4" fill="#546E7A" stroke="#455A64" stroke-width="1"/>
+      <circle cx="158" cy="88" r="4" fill="#546E7A" stroke="#455A64" stroke-width="1"/>
+      <!-- Antenna -->
+      <line x1="78" y1="14" x2="78" y2="-6" stroke="#78909C" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="78" cy="-8" r="3" fill="#EF4444" stroke="#DC2626" stroke-width="0.8"/></g></g></svg>
