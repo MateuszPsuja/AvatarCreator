@@ -299,9 +299,15 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
  * A complete, standalone SVG document. This is what gets written to disk
  * and what the demo viewer renders — it must depend on nothing outside
  * itself, so the palette is inlined as a `style` attribute on the root.
+ *
+ * `animated` is forced off regardless of what the caller passed. That flag
+ * emits the `.animate-idle` class, which is driven by the consuming
+ * component's stylesheet; a standalone file has no stylesheet, so the class
+ * would be a promise the document cannot keep. `speech` still applies,
+ * because SMIL travels inside the file.
  */
 export function buildAvatarSvg(config: AvatarConfig, opts: BuildAvatarOptions = {}): string {
-  const inner = buildAvatarSvgInner(config, opts);
+  const inner = buildAvatarSvgInner(config, { ...opts, animated: false });
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${CANVAS.viewBox}"` +
     ` style="${cssVarDecls(config)}">` +

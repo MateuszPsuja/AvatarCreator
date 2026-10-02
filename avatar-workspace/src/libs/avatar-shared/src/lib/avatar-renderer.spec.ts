@@ -15,6 +15,7 @@ import {
 } from './avatar-renderer';
 import { SKIN_TONES } from './skin-tones';
 import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
+import { textToVisemes } from './visemes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
 import { BEARD_SHAPES } from './svg-parts/beard-shapes';
@@ -202,9 +203,11 @@ describe('buildAvatarSvg — baked speech', () => {
   });
 
   it('holds each viseme for 80ms', () => {
-    // "hi" -> wide, silence => 2 * 80ms = 0.160s
+    // "hi" maps to [spread, wide] (2), then a silence viseme is appended so
+    // the loop does not end on an open shape — 3 frames x 80ms = 0.240s.
+    expect(textToVisemes('hi').length).toBe(2);
     const svg = buildAvatarSvg(makeConfig(), { speech: 'hi' });
-    expect(svg).toContain('dur="0.160s"');
+    expect(svg).toContain('dur="0.240s"');
   });
 
   it('ends the loop on the silence viseme so it does not snap between open shapes', () => {
