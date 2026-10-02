@@ -1,4 +1,10 @@
 // svg-avatar.component.scss
+//
+// The markup comes from buildAvatarSvgInner() (see avatar-shared), so this
+// file owns presentation and the animation hooks only. Two hooks are driven
+// from the component without any post-render DOM patching:
+//   - pupil movement via --pupil-x / --pupil-y on the root <svg>
+//   - blink state via .blink-blinking / .blink-half on the root <svg>
 
 .avatar-svg {
   display: block;
@@ -13,7 +19,7 @@
   }
 }
 
-// Eyelid blink states (toggled by AvatarAnimationService)
+// Eyelid blink states — class is set on the root .avatar-svg
 .eyelid-left,
 .eyelid-right {
   transform-origin: center center;
@@ -21,19 +27,17 @@
   transition: transform 0.05s linear;
 }
 
-.layer-eyelids {
-  &.blinking {
-    .eyelid-left,
-    .eyelid-right {
-      transform: scaleY(1); // eyes closed
-    }
+.avatar-svg.blink-blinking {
+  .eyelid-left,
+  .eyelid-right {
+    transform: scaleY(1); // eyes closed
   }
+}
 
-  &.blink-half {
-    .eyelid-left,
-    .eyelid-right {
-      transform: scaleY(0.5); // half-closed
-    }
+.avatar-svg.blink-half {
+  .eyelid-left,
+  .eyelid-right {
+    transform: scaleY(0.5); // half-closed
   }
 }
 
@@ -62,8 +66,10 @@
   }
 }
 
-// Pupil group smooth tracking
+// Pupil group — driven by the component through CSS custom properties so
+// the avatar markup never has to be re-rendered to move the eyes.
 .pupils {
+  transform: translate(var(--pupil-x, 0px), var(--pupil-y, 0px));
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
 }

@@ -20,6 +20,21 @@ export { SKIN_TONES } from './skin-tones';
 export { HAIR_COLORS } from './hair-colors';
 export { EYE_COLORS } from './eye-colors';
 
+// Renderer — single source of truth for avatar geometry
+export {
+  buildAvatarSvg,
+  buildAvatarSvgInner,
+  avatarCssVars,
+  hairClipUrl,
+  helmetClipUrl,
+  isAstronaut,
+  hasHat,
+  HAT_PROFESSIONS,
+  HELMET_PROFESSIONS,
+  CANVAS,
+} from './avatar-renderer';
+export type { BuildAvatarOptions } from './avatar-renderer';
+
 // SVG part constants
 export { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 export { EYE_SHAPES } from './svg-parts/eye-shapes';

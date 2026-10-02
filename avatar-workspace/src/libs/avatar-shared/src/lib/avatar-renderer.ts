@@ -1,0 +1,236 @@
+// libs/avatar-shared/src/lib/avatar-renderer.ts
+//
+// SINGLE SOURCE OF TRUTH for avatar geometry.
+//
+// Both the live preview (SvgAvatarComponent) and the file export
+// (AvatarService.downloadSVG) call this. Previously each had its own copy
+// of the render logic, and they drifted badly: the exporter ignored gender
+// and omitted every clipPath, so head-wearing professions exported with
+// hair punching through their hats.
+//
+// Nothing in here may read DOM state. Everything the renderer needs is
+// derived from the config (plus an optional viseme), which is what makes
+// the output reproducible and testable.
+
+import type { AvatarConfig } from './avatar.model';
+import { SKIN_TONES } from './skin-tones';
+import { HAIR_COLORS } from './hair-colors';
+import { EYE_COLORS } from './eye-colors';
+import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
+import { EYE_SHAPES } from './svg-parts/eye-shapes';
+import { HAIR_SHAPES } from './svg-parts/hair-shapes';
+import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
+import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
+import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
+
+/** Professions whose accessory covers the top of the head, so hair must clip. */
+export const HAT_PROFESSIONS: ReadonlySet<string> = new Set(['engineer', 'police', 'artist']);
+
+/** Professions with a full helmet, which clips hair AND facial hair. */
+export const HELMET_PROFESSIONS: ReadonlySet<string> = new Set(['astronaut']);
+
+/** Canonical canvas. */
+export const CANVAS = { width: 200, height: 200, viewBox: '0 0 200 200' } as const;
+
+/**
+ * Hat brim clip. A flat cut at y=56 — see the plan: deriving this from the
+ * actual hat geometry is Phase 3 work.
+ */
+const HAT_CLIP_RECT = { x: 0, y: 56, width: 200, height: 144 } as const;
+/** Helmet aperture. */
+const HELMET_CLIP_ELLIPSE = { cx: 100, cy: 78, rx: 57, ry: 62 } as const;
+
+export interface BuildAvatarOptions {
+  /** Lip-sync viseme id 0–5. Defaults to 0 (silence). */
+  viseme?: number;
+  /** Emit the `.animate-idle` hook so CSS head-idle motion runs. */
+  animated?: boolean;
+  /**
+   * Namespace for generated element ids. Required when more than one avatar
+   * is inlined into the same document, otherwise `url(#hat-clip)` resolves
+   * against the first match and every avatar clips identically.
+   */
+  idsPrefix?: string;
+}
+
+export function isAstronaut(config: AvatarConfig): boolean {
+  return HELMET_PROFESSIONS.has(config.profession);
+}
+
+export function hasHat(config: AvatarConfig): boolean {
+  return HAT_PROFESSIONS.has(config.profession);
+}
+
+/** Clip reference for the hair-back / hair-front layers, or null. */
+export function hairClipUrl(config: AvatarConfig, idsPrefix = ''): string | null {
+  if (isAstronaut(config)) return `url(#${idsPrefix}helmet-clip)`;
+  if (hasHat(config)) return `url(#${idsPrefix}hat-clip)`;
+  return null;
+}
+
+/** Clip reference for ears / mustache / beard, or null. */
+export function helmetClipUrl(config: AvatarConfig, idsPrefix = ''): string | null {
+  return isAstronaut(config) ? `url(#${idsPrefix}helmet-clip)` : null;
+}
+
+/** CSS custom properties that drive every colour in the artwork. */
+export function avatarCssVars(config: AvatarConfig): Record<string, string> {
+  const skin = SKIN_TONES[config.skinTone];
+  return {
+    '--skin-base': skin.base,
+    '--skin-ear': skin.ear,
+    '--skin-shadow': skin.shadow,
+    '--lip-color': skin.lip,
+    '--hair-color': HAIR_COLORS[config.hairColor],
+    '--eye-color': EYE_COLORS[config.eyeColor],
+  };
+}
+
+function cssVarDecls(config: AvatarConfig): string {
+  return Object.entries(avatarCssVars(config))
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(';');
+}
+
+/** `clip-path="url(#x)"` only when the value exists — avoids empty attrs. */
+function clipAttr(url: string | null): string {
+  return url ? ` clip-path="${url}"` : '';
+}
+
+const LASH_PATHS: readonly string[] = [
+  'M65,78 L62,74', 'M70,76 L68,72', 'M76,76 L78,72', 'M82,78 L85,74',
+  'M117,78 L114,74', 'M122,76 L120,72', 'M128,76 L130,72', 'M134,78 L137,74',
+];
+
+/**
+ * The avatar markup WITHOUT the outer `<svg>` element.
+ * The preview component supplies its own root so it can keep Angular
+ * bindings on it; the exporter wraps this in a standalone document.
+ */
+export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptions = {}): string {
+  const { viseme = 0, animated = false, idsPrefix = '' } = opts;
+
+  const isWoman = config.gender === 'woman';
+  const astronaut = isAstronaut(config);
+  const hair = HAIR_SHAPES[config.haircut] ?? { back: '', front: '' };
+  const eyes = EYE_SHAPES[config.eyeStyle] ?? { sclera: '', iris: '' };
+  const mustache = MUSTACHE_SHAPES[config.mustache] ?? '';
+  const beard = BEARD_SHAPES[config.beard] ?? '';
+  const glasses = GLASSES_SHAPES[config.glasses] ?? '';
+  const profession = PROFESSION_LAYERS[config.profession] ?? { body: '', accessory: '' };
+  const mouthPath = MOUTH_SHAPES[viseme] ?? MOUTH_SHAPES[0];
+
+  const hairClip = hairClipUrl(config, idsPrefix);
+  const helmetClip = helmetClipUrl(config, idsPrefix);
+
+  // ── defs ────────────────────────────────────────────────────────────
+  const defs =
+    `<defs>` +
+    `<clipPath id="${idsPrefix}hat-clip">` +
+    `<rect x="${HAT_CLIP_RECT.x}" y="${HAT_CLIP_RECT.y}" width="${HAT_CLIP_RECT.width}" height="${HAT_CLIP_RECT.height}"/>` +
+    `</clipPath>` +
+    `<clipPath id="${idsPrefix}helmet-clip">` +
+    `<ellipse cx="${HELMET_CLIP_ELLIPSE.cx}" cy="${HELMET_CLIP_ELLIPSE.cy}" rx="${HELMET_CLIP_ELLIPSE.rx}" ry="${HELMET_CLIP_ELLIPSE.ry}"/>` +
+    `</clipPath>` +
+    `</defs>`;
+
+  // ── 1. body ──────────────────────────────────────────────────────────
+  const body = `<g class="layer-body">${profession.body}</g>`;
+
+  // ── 2. neck (hidden for astronaut — the collar covers it) ───────────
+  const neck = astronaut
+    ? ''
+    : isWoman
+      ? `<rect class="layer-neck" x="90" y="135" width="20" height="22" rx="8" fill="var(--skin-base)"/>`
+      : `<rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8" fill="var(--skin-base)"/>`;
+
+  // ── 3. ears ─────────────────────────────────────────────────────────
+  const earRx = isWoman ? 7 : 8;
+  const earRy = isWoman ? 9 : 10;
+  const ears =
+    `<g class="layer-ears"${clipAttr(helmetClip)}>` +
+    `<ellipse cx="48" cy="90" rx="${earRx}" ry="${earRy}" fill="var(--skin-ear)"/>` +
+    `<ellipse cx="152" cy="90" rx="${earRx}" ry="${earRy}" fill="var(--skin-ear)"/>` +
+    `</g>`;
+
+  // ── 4. hair back ────────────────────────────────────────────────────
+  const hairBack = `<g class="layer-hair-back"${clipAttr(hairClip)}>${hair.back}</g>`;
+
+  // ── 5. face ─────────────────────────────────────────────────────────
+  const face = isWoman
+    ? `<ellipse class="layer-face" cx="100" cy="86" rx="49" ry="55" fill="var(--skin-base)"/>`
+    : `<ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/>`;
+
+  // ── 6. eyes ─────────────────────────────────────────────────────────
+  // `.pupils` is driven by --pupil-x/--pupil-y so no post-render DOM
+  // patching is needed; see svg-avatar.component.scss.
+  const eyeGroup =
+    `<g class="layer-eyes">` +
+    `<g>${eyes.sclera}</g>` +
+    `<g class="pupils"><g>${eyes.iris}</g></g>` +
+    `</g>`;
+
+  // ── 6b. lashes (woman only) ─────────────────────────────────────────
+  const lashes = isWoman
+    ? `<g class="layer-lashes">${LASH_PATHS.map(
+        (d) =>
+          `<path d="${d}" stroke="var(--hair-color)" stroke-width="1.5" stroke-linecap="round" fill="none"/>`,
+      ).join('')}</g>`
+    : '';
+
+  // ── 7. eyelids (blink) ──────────────────────────────────────────────
+  const eyelids =
+    `<g class="layer-eyelids">` +
+    `<rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/>` +
+    `<rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/>` +
+    `</g>`;
+
+  // ── 8. brows ────────────────────────────────────────────────────────
+  const brows = isWoman
+    ? `<g class="layer-brows">` +
+      `<path d="M64,74 Q74,69 84,73" stroke="var(--hair-color)" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+      `<path d="M116,73 Q126,69 136,74" stroke="var(--hair-color)" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+      `</g>`
+    : `<g class="layer-brows">` +
+      `<rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/>` +
+      `<rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/>` +
+      `</g>`;
+
+  // ── 9. nose — uses --skin-shadow so it stays visible on deep skin ───
+  const nose = isWoman
+    ? `<path class="layer-nose" d="M98,104 Q100,110 102,104" stroke="var(--skin-shadow)" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+    : `<path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+
+  // ── 10. mouth ───────────────────────────────────────────────────────
+  const mouth = isWoman
+    ? `<path class="layer-mouth" d="${mouthPath}" stroke="var(--lip-color)" stroke-width="2.5" fill="var(--lip-color)" fill-opacity="0.35" stroke-linecap="round"/>`
+    : `<path class="layer-mouth" d="${mouthPath}" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+
+  // ── 11-14 ───────────────────────────────────────────────────────────
+  const facialHair =
+    `<g class="layer-mustache"${clipAttr(helmetClip)}>${mustache}</g>` +
+    `<g class="layer-beard"${clipAttr(helmetClip)}>${beard}</g>`;
+  const glassesGroup = `<g class="layer-glasses">${glasses}</g>`;
+  const hairFront = `<g class="layer-hair-front"${clipAttr(hairClip)}>${hair.front}</g>`;
+  const accessory = `<g class="layer-accessory">${profession.accessory}</g>`;
+
+  const head = `<g class="layer-head"${animated ? ' animate-idle' : ''}>` + [ears, hairBack, face, eyeGroup, lashes, eyelids, brows, nose, mouth, facialHair, glassesGroup, hairFront, accessory].join('') + `</g>`;
+
+  return defs + body + neck + head;
+}
+
+/**
+ * A complete, standalone SVG document. This is what gets written to disk
+ * and what the demo viewer renders — it must depend on nothing outside
+ * itself, so the palette is inlined as a `style` attribute on the root.
+ */
+export function buildAvatarSvg(config: AvatarConfig, opts: BuildAvatarOptions = {}): string {
+  const inner = buildAvatarSvgInner(config, opts);
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${CANVAS.viewBox}"` +
+    ` style="${cssVarDecls(config)}">` +
+    inner +
+    `</svg>`
+  );
+}

@@ -5,31 +5,36 @@ import {
   OnInit,
   OnDestroy,
   signal,
-  NgZone,
+  computed,
+  effect,
   inject,
+  ElementRef,
+  NgZone,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
 import {
-  SKIN_TONES,
-  HAIR_COLORS,
-  EYE_COLORS,
-  HAIR_SHAPES,
-  EYE_SHAPES,
+  avatarCssVars,
+  buildAvatarSvgInner,
+  isAstronaut,
+  hasHat,
+  hairClipUrl,
+  helmetClipUrl,
+  CANVAS,
   MOUTH_SHAPES,
-  MUSTACHE_SHAPES,
-  BEARD_SHAPES,
-  GLASSES_SHAPES,
-  PROFESSION_LAYERS,
 } from '@avatar-workspace/avatar-shared';
 import { AvatarAnimationService } from '../../services/avatar-animation.service';
 
 @Component({
   selector: 'app-svg-avatar',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './svg-avatar.component.html',
+  template: `<svg xmlns="http://www.w3.org/2000/svg"
+     [attr.viewBox]="viewBox"
+     class="avatar-svg"
+     [class.blink-blinking]="eyeBlinkClass() === 'blinking'"
+     [class.blink-half]="eyeBlinkClass() === 'blink-half'"
+     [style]="cssVarsStyle"
+     [innerHTML]="innerHtml()"></svg>`,
   styleUrl: './svg-avatar.component.scss',
 })
 export class SvgAvatarComponent implements OnInit, OnDestroy {
@@ -37,101 +42,99 @@ export class SvgAvatarComponent implements OnInit, OnDestroy {
   @Input() animationsEnabled = true;
   @Input() viseme = 0; // 0–5, controlled externally for lip sync
 
-  private sanitizer = inject(DomSanitizer);
-  private zone = inject(NgZone);
-  private anim = inject(AvatarAnimationService);
+  /**
+   * Namespace for generated element ids. Set this when inlining more than
+   * one avatar into a document, otherwise every avatar's `url(#hat-clip)`
+   * resolves to the first matching element on the page.
+   */
+  @Input() idsPrefix = '';
+
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly zone = inject(NgZone);
+  private readonly anim = inject(AvatarAnimationService);
+
+  readonly viewBox = CANVAS.viewBox;
 
   // Animation state (driven by AvatarAnimationService)
-  eyeBlinkClass = signal<string>('');
-  pupilOffset = signal<{ x: number; y: number }>({ x: 0, y: 0 });
+  readonly eyeBlinkClass = signal<string>('');
+  readonly pupilOffset = signal<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  /** CSS custom properties for dynamic colors — recalculated each CD cycle via getter */
+  /** Palette plus the two pupil-offset custom properties the SCSS reads. */
   get cssVarsStyle(): SafeStyle {
-    const skin = SKIN_TONES[this.config.skinTone];
-    const style = [
-      `--skin-base: ${skin.base}`,
-      `--skin-ear: ${skin.ear}`,
-      `--lip-color: ${skin.lip}`,
-      `--hair-color: ${HAIR_COLORS[this.config.hairColor]}`,
-      `--eye-color: ${EYE_COLORS[this.config.eyeColor]}`,
-    ].join('; ');
-    return this.sanitizer.bypassSecurityTrustStyle(style);
+    const vars = avatarCssVars(this.config);
+    const p = this.pupilOffset();
+    const decls =
+      `--pupil-x: ${p.x}px; --pupil-y: ${p.y}px; ` +
+      Object.entries(vars)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join('; ');
+    return this.sanitizer.bypassSecurityTrustStyle(decls);
   }
 
-  // SVG part accessors
-  get isWoman(): boolean {
-    return this.config.gender === 'woman';
+  /**
+   * The markup is regenerated only when the *config* changes — deliberately
+   * NOT when the viseme does. Re-assigning innerHTML mid-utterance would
+   * recreate `.layer-head` and restart the head-idle animation every 80ms.
+   * Viseme changes are applied to the existing mouth path below instead.
+   */
+  readonly innerHtml = computed<SafeHtml>(() =>
+    this.sanitizer.bypassSecurityTrustHtml(
+      buildAvatarSvgInner(this.config, {
+        animated: this.animationsEnabled,
+        idsPrefix: this.idsPrefix,
+      }),
+    ),
+  );
+
+  // Public shape helpers — the geometry itself now lives in avatar-shared.
+  get isAstronaut(): boolean {
+    return isAstronaut(this.config);
   }
-  get hairBack(): string {
-    return HAIR_SHAPES[this.config.haircut]?.back ?? '';
+  get hasHat(): boolean {
+    return hasHat(this.config);
   }
-  get hairFront(): string {
-    return HAIR_SHAPES[this.config.haircut]?.front ?? '';
+  get hairClipUrl(): string | null {
+    return hairClipUrl(this.config, this.idsPrefix);
   }
-  get eyeSclera(): string {
-    return EYE_SHAPES[this.config.eyeStyle]?.sclera ?? '';
-  }
-  get eyeIris(): string {
-    return EYE_SHAPES[this.config.eyeStyle]?.iris ?? '';
+  get helmetClipUrl(): string | null {
+    return helmetClipUrl(this.config, this.idsPrefix);
   }
   get mouthPath(): string {
     return MOUTH_SHAPES[this.viseme] ?? MOUTH_SHAPES[0];
   }
-  get mustacheSvg(): string {
-    return MUSTACHE_SHAPES[this.config.mustache] ?? '';
-  }
-  get beardSvg(): string {
-    return BEARD_SHAPES[this.config.beard] ?? '';
-  }
-  get glassesSvg(): string {
-    return GLASSES_SHAPES[this.config.glasses] ?? '';
-  }
-  get professionBody(): string {
-    return PROFESSION_LAYERS[this.config.profession]?.body ?? '';
-  }
-  get professionAcc(): string {
-    return PROFESSION_LAYERS[this.config.profession]?.accessory ?? '';
+
+  constructor() {
+    // Keep the mouth in sync without re-rendering the whole avatar.
+    effect(() => {
+      const path = this.mouthPath;
+      // Reading innerHtml() makes this re-run after each markup swap, when
+      // the fresh .layer-mouth element is guaranteed to be in the DOM.
+      this.innerHtml();
+      this.applyMouthPath(path);
+    });
   }
 
-  /** Professions that wear a hat / head covering (clips hair) */
-  private static readonly HAT_PROFESSIONS: ReadonlySet<string> =
-    new Set(['engineer', 'police', 'artist']);
-
-  get hasHat(): boolean {
-    return SvgAvatarComponent.HAT_PROFESSIONS.has(this.config.profession);
-  }
-
-  get isAstronaut(): boolean {
-    return this.config.profession === 'astronaut';
-  }
-
-  /** Returns the clip-path url for hair layers based on profession */
-  get hairClipUrl(): string | null {
-    if (this.config.profession === 'astronaut') return 'url(#helmet-clip)';
-    if (this.hasHat) return 'url(#hat-clip)';
-    return null;
-  }
-
-  /** Clip beard/mustache/ears inside the helmet for astronaut only */
-  get helmetClipUrl(): string | null {
-    return this.config.profession === 'astronaut' ? 'url(#helmet-clip)' : null;
-  }
-
-  /** Bypass security for controlled internal SVG strings only — never user input */
-  safe(s: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(s);
+  private applyMouthPath(path: string): void {
+    const mouth = this.host.nativeElement.querySelector<SVGPathElement>('.layer-mouth');
+    if (mouth) {
+      mouth.setAttribute('d', path);
+      return;
+    }
+    // Markup was swapped this tick and the element is not queryable yet.
+    requestAnimationFrame(() => {
+      this.host.nativeElement
+        .querySelector<SVGPathElement>('.layer-mouth')
+        ?.setAttribute('d', path);
+    });
   }
 
   ngOnInit(): void {
     if (this.animationsEnabled) {
       this.zone.runOutsideAngular(() => {
-        this.anim.startBlink((v) =>
-          this.zone.run(() => this.eyeBlinkClass.set(v))
-        );
-        this.anim.startEyeMovement((v) =>
-          this.zone.run(() => this.pupilOffset.set(v))
-        );
-        // Head idle is now a pure CSS animation — no JS needed
+        this.anim.startBlink((v) => this.zone.run(() => this.eyeBlinkClass.set(v)));
+        this.anim.startEyeMovement((v) => this.zone.run(() => this.pupilOffset.set(v)));
+        // Head idle is a pure CSS animation — no JS needed
       });
     }
   }

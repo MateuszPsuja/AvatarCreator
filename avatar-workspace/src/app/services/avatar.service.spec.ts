@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AvatarService } from './avatar.service';
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import { buildAvatarSvg } from '@avatar-workspace/avatar-shared';
 
 describe('AvatarService', () => {
   let service: AvatarService;
@@ -39,23 +40,19 @@ describe('AvatarService', () => {
     });
   });
 
-  describe('toCssVars', () => {
-    it('should return CSS custom property map for a config', () => {
+  describe('buildSvg', () => {
+    // The palette moved to the shared renderer, which is what guarantees the
+    // exported file matches the preview. See avatar-renderer.spec.ts.
+    it('should delegate to the shared renderer', () => {
       const config = service.defaultConfig();
-      const vars = service.toCssVars(config);
-      expect(vars['--skin-base']).toBeTruthy();
-      expect(vars['--skin-ear']).toBeTruthy();
-      expect(vars['--lip-color']).toBeTruthy();
-      expect(vars['--hair-color']).toBeTruthy();
-      expect(vars['--eye-color']).toBeTruthy();
+      expect(service.buildSvg(config)).toBe(buildAvatarSvg(config));
     });
 
-    it('should return hex color strings', () => {
-      const config = service.defaultConfig();
-      const vars = service.toCssVars(config);
-      Object.values(vars).forEach((v) => {
-        expect(v).toMatch(/^#[0-9a-fA-F]{6}$/);
-      });
+    it('should produce a standalone document carrying its own palette', () => {
+      const svg = service.buildSvg(service.defaultConfig());
+      expect(svg.startsWith('<svg')).toBeTrue();
+      expect(svg).toContain('--skin-base');
+      expect(svg).toContain('--hair-color');
     });
   });
 
