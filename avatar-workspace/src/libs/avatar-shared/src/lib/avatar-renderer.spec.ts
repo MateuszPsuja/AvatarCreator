@@ -14,6 +14,7 @@ import {
   helmetClipUrl,
 } from './avatar-renderer';
 import { SKIN_TONES } from './skin-tones';
+import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 import type { AvatarConfig, Gender, ProfessionType } from './avatar.model';
 
 const PROFESSIONS: ProfessionType[] = [
@@ -148,6 +149,79 @@ describe('clip path helpers', () => {
     const inner = buildAvatarSvgInner(config, { idsPrefix: 'a1' });
     expect(inner).toContain('clipPath id="a1hat-clip"');
     expect(inner).toContain('url(#a1hat-clip)');
+  });
+});
+
+describe('buildAvatarSvg — eyelids', () => {
+  // The eyelids are opaque skin-coloured rects painted over the eyes, and
+  // the only thing that hides them is CSS. A standalone SVG has no CSS, so
+  // emitting them in a static export ships an avatar with no eyes at all —
+  // which is exactly what the first demo gallery rendered.
+  it('omits the eyelid layer from static output', () => {
+    const staticSvg = buildAvatarSvg(makeConfig());
+    expect(staticSvg).not.toContain('eyelid-left');
+    expect(staticSvg).not.toContain('eyelid-right');
+  });
+
+  it('emits eyelids for animated output, with an inline hide', () => {
+    const animated = buildAvatarSvgInner(makeConfig(), { animated: true });
+    expect(animated).toContain('class="eyelid-left"');
+    // Presentation attribute, so the eye is hidden even if the stylesheet
+    // is missing. CSS overrides it when it arrives.
+    expect(animated).toContain('transform="scale(1,0)"');
+  });
+
+  it('keeps the eyes painted after the sclera in animated output', () => {
+    const animated = buildAvatarSvgInner(makeConfig(), { animated: true });
+    const eyesAt = animated.indexOf('class="layer-eyes"');
+    const lidsAt = animated.indexOf('class="layer-eyelids"');
+    expect(eyesAt).toBeGreaterThan(-1);
+    expect(lidsAt).toBeGreaterThan(eyesAt);
+  });
+});
+
+describe('buildAvatarSvg — baked speech', () => {
+  it('embeds a self-running mouth animation when speech is given', () => {
+    const svg = buildAvatarSvg(makeConfig(), { speech: 'hello' });
+    expect(svg).toContain('<animate attributeName="d"');
+    expect(svg).toContain('repeatCount="indefinite"');
+    expect(svg).toContain('calcMode="discrete"');
+  });
+
+  it('omits the animation when no speech is given', () => {
+    expect(buildAvatarSvg(makeConfig())).not.toContain('<animate');
+  });
+
+  it('omits the animation for empty text', () => {
+    expect(buildAvatarSvg(makeConfig(), { speech: '' })).not.toContain('<animate');
+  });
+
+  it('holds each viseme for 80ms', () => {
+    // "hi" -> wide, silence => 2 * 80ms = 0.160s
+    const svg = buildAvatarSvg(makeConfig(), { speech: 'hi' });
+    expect(svg).toContain('dur="0.160s"');
+  });
+
+  it('ends the loop on the silence viseme so it does not snap between open shapes', () => {
+    const svg = buildAvatarSvg(makeConfig(), { speech: 'boom' });
+    const values = svg.match(/values="([^"]+)"/)![1].split(';');
+    expect(values[values.length - 1]).toBe(MOUTH_SHAPES[0]);
+  });
+
+  it('collapses consecutive duplicates', () => {
+    // "oooo" is four identical round visemes; collapsed, it should not spend
+    // the whole loop holding the same shape.
+    const svg = buildAvatarSvg(makeConfig(), { speech: 'oooo' });
+    const values = svg.match(/values="([^"]+)"/)![1].split(';');
+    expect(values.length).toBeLessThanOrEqual(3);
+  });
+
+  it('uses only known mouth paths', () => {
+    const svg = buildAvatarSvg(makeConfig(), { speech: 'the quick brown fox' });
+    const values = svg.match(/values="([^"]+)"/)![1].split(';');
+    for (const v of values) {
+      expect(Object.values(MOUTH_SHAPES)).toContain(v);
+    }
   });
 });
 

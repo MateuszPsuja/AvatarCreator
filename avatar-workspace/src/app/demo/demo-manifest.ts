@@ -12,6 +12,8 @@ export interface DemoAvatar {
   label: string;
   /** What this avatar is meant to demonstrate. */
   notes: string;
+  /** Text the file mouths. Defaults to `label`. */
+  speech?: string;
   config: AvatarConfig;
 }
 

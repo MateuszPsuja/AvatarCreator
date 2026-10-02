@@ -20,6 +20,17 @@ export { SKIN_TONES } from './skin-tones';
 export { HAIR_COLORS } from './hair-colors';
 export { EYE_COLORS } from './eye-colors';
 
+// Visemes — shared by the runtime lip-sync service and the SVG generator
+export { textToVisemes, MS_PER_VISEME } from './visemes';
+export {
+  VISEME_SILENCE,
+  VISEME_WIDE,
+  VISEME_ROUND,
+  VISEME_SPREAD,
+  VISEME_PRESSED,
+  VISEME_TEETH,
+} from './visemes';
+
 // Renderer — single source of truth for avatar geometry
 export {
   buildAvatarSvg,

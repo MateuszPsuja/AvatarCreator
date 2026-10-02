@@ -17,6 +17,7 @@ import { SKIN_TONES } from './skin-tones';
 import { HAIR_COLORS } from './hair-colors';
 import { EYE_COLORS } from './eye-colors';
 import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
+import { textToVisemes, MS_PER_VISEME } from './visemes';
 import { EYE_SHAPES } from './svg-parts/eye-shapes';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
 import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
@@ -47,11 +48,50 @@ export interface BuildAvatarOptions {
   /** Emit the `.animate-idle` hook so CSS head-idle motion runs. */
   animated?: boolean;
   /**
+   * Bake a self-running SMIL mouth animation for this text into the output.
+   *
+   * Uses SMIL rather than CSS because the exported file is loaded through
+   * `<img>`, where the consuming page's stylesheet is not available. SMIL is
+   * declarative and travels inside the file, so the animation survives being
+   * referenced from another document. (Scripts do not run in `<img>`; SMIL
+   * does.)
+   */
+  speech?: string;
+  /**
    * Namespace for generated element ids. Required when more than one avatar
    * is inlined into the same document, otherwise `url(#hat-clip)` resolves
    * against the first match and every avatar clips identically.
    */
   idsPrefix?: string;
+}
+
+/**
+ * Build the `<animate>` child for the mouth, or '' when there is nothing to
+ * animate. Consecutive duplicates are collapsed so the animation spends its
+ * time on distinct mouth shapes rather than repeating the same one.
+ */
+function mouthAnimation(text: string): string {
+  const visemes = textToVisemes(text);
+  if (visemes.length === 0) return '';
+
+  // Collapse runs of the same viseme, then always return to silence so the
+  // loop does not snap between two open shapes.
+  const seq: number[] = [];
+  for (const v of visemes) {
+    if (seq.length === 0 || seq[seq.length - 1] !== v) seq.push(v);
+  }
+  if (seq[seq.length - 1] !== 0) seq.push(0);
+
+  const values = seq.map((v) => MOUTH_SHAPES[v] ?? MOUTH_SHAPES[0]);
+  const totalMs = seq.length * MS_PER_VISEME;
+
+  // calcMode="discrete" steps between the shapes with no interpolation —
+  // which is what lip sync wants, and also avoids interpolating between
+  // paths whose command counts differ (viseme 5 is a three-segment path).
+  return (
+    `<animate attributeName="d" calcMode="discrete" dur="${(totalMs / 1000).toFixed(3)}s"` +
+    ` repeatCount="indefinite" values="${values.join(';')}"/>`
+  );
 }
 
 export function isAstronaut(config: AvatarConfig): boolean {
@@ -180,11 +220,21 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
     : '';
 
   // ── 7. eyelids (blink) ──────────────────────────────────────────────
-  const eyelids =
-    `<g class="layer-eyelids">` +
-    `<rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/>` +
-    `<rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)"/>` +
-    `</g>`;
+  // The eyelids are OPAQUE skin-coloured rects painted over the eyes. The
+  // only thing that hides them is `transform: scaleY(0)` from the consuming
+  // stylesheet — so a standalone SVG with no stylesheet ships with its eyes
+  // completely covered. Two defences:
+  //   1. static output omits the layer outright, because a still image has
+  //      nothing to blink
+  //   2. animated output carries transform="scale(1,0)" as an inline
+  //      presentation attribute, so the eyes are hidden even if the CSS
+  //      never arrives. CSS still wins over the attribute, so blinking works.
+  const eyelids = animated
+    ? `<g class="layer-eyelids">` +
+      `<rect class="eyelid-left" x="63" y="77" width="22" height="22" rx="11" fill="var(--skin-base)" transform="scale(1,0)"/>` +
+      `<rect class="eyelid-right" x="115" y="77" width="22" height="22" rx="11" fill="var(--skin-base)" transform="scale(1,0)"/>` +
+      `</g>`
+    : '';
 
   // ── 8. brows ────────────────────────────────────────────────────────
   const brows = isWoman
@@ -203,9 +253,17 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
     : `<path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 
   // ── 10. mouth ───────────────────────────────────────────────────────
-  const mouth = isWoman
-    ? `<path class="layer-mouth" d="${mouthPath}" stroke="var(--lip-color)" stroke-width="2.5" fill="var(--lip-color)" fill-opacity="0.35" stroke-linecap="round"/>`
-    : `<path class="layer-mouth" d="${mouthPath}" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  // When `speech` is set the mouth carries a self-running SMIL animation,
+  // so the file speaks on its own with no host page involved.
+  const speech = opts.speech;
+  const mouthAnim = speech ? mouthAnimation(speech) : '';
+  const mouthInner = isWoman
+    ? `stroke="var(--lip-color)" stroke-width="2.5" fill="var(--lip-color)" fill-opacity="0.35" stroke-linecap="round"`
+    : `stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"`;
+  const mouth =
+    `<path class="layer-mouth" d="${mouthPath}" ${mouthInner}>` +
+    mouthAnim +
+    `</path>`;
 
   // ── 11-14 ───────────────────────────────────────────────────────────
   const facialHair =

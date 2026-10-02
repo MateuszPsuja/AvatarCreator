@@ -7,8 +7,9 @@
       <h1 class="demo-title">Export gallery</h1>
       <p class="demo-sub">
         Every image below is a <code>.svg</code> file this app exported, loaded
-        with <code>&lt;img&gt;</code> and nothing else. If one of these breaks,
-        the export was not self-contained.
+        with <code>&lt;img&gt;</code> and nothing else. Each one carries its own
+        <code>&lt;animate&gt;</code> mouth loop, so the avatars speak on their own.
+        If one breaks, the export was not self-contained.
       </p>
     </div>
 
@@ -69,6 +70,9 @@
           }
         </div>
         <p class="demo-lightbox-file">{{ src(avatar) }}</p>
+        <p class="demo-lightbox-speech">
+          Speaking: “{{ avatar.speech ?? avatar.label }}”
+        </p>
         <button type="button" class="demo-close" (click)="close()">Close</button>
       </div>
     </div>

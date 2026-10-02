@@ -3,7 +3,9 @@ import {
   Component,
   Input,
   OnInit,
+  OnChanges,
   OnDestroy,
+  SimpleChanges,
   signal,
   computed,
   effect,
@@ -43,7 +45,7 @@ import { AvatarAnimationService } from '../../services/avatar-animation.service'
      [innerHTML]="innerHtml()"></svg>`,
   styleUrl: './svg-avatar.component.scss',
 })
-export class SvgAvatarComponent implements OnInit, OnDestroy {
+export class SvgAvatarComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) config!: AvatarConfig;
   @Input() animationsEnabled = true;
   @Input() viseme = 0; // 0–5, controlled externally for lip sync
@@ -54,6 +56,25 @@ export class SvgAvatarComponent implements OnInit, OnDestroy {
    * resolves to the first matching element on the page.
    */
   @Input() idsPrefix = '';
+
+  /**
+   * Signal mirrors of the inputs.
+   *
+   * A `computed` only tracks *signals*. Reading a plain `@Input` property
+   * inside one registers no dependency, so the computed evaluates once and
+   * never invalidates — the avatar would silently freeze on its first render
+   * and every picker in the creator page would do nothing. ngOnChanges copies
+   * each input into a signal so the computed actually reacts.
+   */
+  private readonly configSig = signal<AvatarConfig | null>(null);
+  private readonly animatedSig = signal(true);
+  private readonly idsPrefixSig = signal('');
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config']) this.configSig.set(this.config ?? null);
+    if (changes['animationsEnabled']) this.animatedSig.set(this.animationsEnabled);
+    if (changes['idsPrefix']) this.idsPrefixSig.set(this.idsPrefix);
+  }
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -84,27 +105,34 @@ export class SvgAvatarComponent implements OnInit, OnDestroy {
    * recreate `.layer-head` and restart the head-idle animation every 80ms.
    * Viseme changes are applied to the existing mouth path below instead.
    */
-  readonly innerHtml = computed<SafeHtml>(() =>
-    this.sanitizer.bypassSecurityTrustHtml(
-      buildAvatarSvgInner(this.config, {
-        animated: this.animationsEnabled,
-        idsPrefix: this.idsPrefix,
+  readonly innerHtml = computed<SafeHtml>(() => {
+    // Guarding keeps a missing input from throwing a TypeError that would
+    // take the surrounding template down with it — a blank preview is a far
+    // better failure than a broken page.
+    const config = this.configSig();
+    if (!config) {
+      return this.sanitizer.bypassSecurityTrustHtml('');
+    }
+    return this.sanitizer.bypassSecurityTrustHtml(
+      buildAvatarSvgInner(config, {
+        animated: this.animatedSig(),
+        idsPrefix: this.idsPrefixSig(),
       }),
-    ),
-  );
+    );
+  });
 
   // Public shape helpers — the geometry itself now lives in avatar-shared.
   get isAstronaut(): boolean {
-    return isAstronaut(this.config);
+    return this.config ? isAstronaut(this.config) : false;
   }
   get hasHat(): boolean {
-    return hasHat(this.config);
+    return this.config ? hasHat(this.config) : false;
   }
   get hairClipUrl(): string | null {
-    return hairClipUrl(this.config, this.idsPrefix);
+    return this.config ? hairClipUrl(this.config, this.idsPrefix) : null;
   }
   get helmetClipUrl(): string | null {
-    return helmetClipUrl(this.config, this.idsPrefix);
+    return this.config ? helmetClipUrl(this.config, this.idsPrefix) : null;
   }
   get mouthPath(): string {
     return MOUTH_SHAPES[this.viseme] ?? MOUTH_SHAPES[0];

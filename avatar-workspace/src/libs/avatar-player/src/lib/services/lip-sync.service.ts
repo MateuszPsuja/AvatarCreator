@@ -1,27 +1,23 @@
 // libs/avatar-player/src/lib/services/lip-sync.service.ts
 import { Injectable } from '@angular/core';
+import { textToVisemes, MS_PER_VISEME } from '@avatar-workspace/avatar-shared';
 
+/**
+ * Drives visemes in real time for the live preview.
+ *
+ * The text -> viseme mapping itself lives in avatar-shared because the
+ * offline SVG generator needs the exact same mapping to bake an animated
+ * mouth into an exported file. Keeping one copy is the whole point — if this
+ * drifted from the generator, exported avatars would mouth different words
+ * than the preview does.
+ */
 @Injectable()
 export class LipSyncService {
-  private readonly MS_PER_VISEME = 80;
+  private readonly MS_PER_VISEME = MS_PER_VISEME;
 
-  /**
-   * Map text characters to viseme IDs 0–5.
-   * 0=silence, 1=A/I wide, 2=O/U round, 3=E spread, 4=M/B/P pressed, 5=F/V teeth
-   */
+  /** @see textToVisemes */
   textToVisemes(text: string): number[] {
-    return text
-      .toLowerCase()
-      .split('')
-      .map((char) => {
-        if ('ai'.includes(char)) return 1; // wide
-        if ('ou'.includes(char)) return 2; // rounded
-        if ('e'.includes(char)) return 3; // spread
-        if ('mbp'.includes(char)) return 4; // pressed
-        if ('fv'.includes(char)) return 5; // teeth-lip
-        if (char === ' ') return 0; // silence
-        return 3; // default consonant
-      });
+    return textToVisemes(text);
   }
 
   /**

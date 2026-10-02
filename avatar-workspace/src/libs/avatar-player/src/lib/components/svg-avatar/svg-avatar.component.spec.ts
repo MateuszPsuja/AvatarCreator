@@ -99,6 +99,29 @@ describe('SvgAvatarComponent', () => {
     expect(mouth.getAttribute('stroke-width')).toBe('2.5');
   });
 
+  it('re-renders when the config changes', () => {
+    // A computed() that reads a plain @Input has no tracked dependency, so it
+    // evaluates once and never invalidates. That froze the avatar on its first
+    // render and made every picker in the creator page do nothing.
+    const before = fixture.nativeElement.querySelector('.avatar-svg').innerHTML;
+    expect(before).not.toContain('helmet-clip');
+
+    component.config = { ...mockConfig, profession: 'astronaut' };
+    component.ngOnChanges({ config: { currentValue: component.config } as never });
+    fixture.detectChanges();
+
+    const after = fixture.nativeElement.querySelector('.avatar-svg').innerHTML;
+    expect(after).toContain('helmet-clip');
+  });
+
+  it('re-renders when only the profession changes', () => {
+    component.config = { ...mockConfig, profession: 'engineer' };
+    component.ngOnChanges({ config: { currentValue: component.config } as never });
+    fixture.detectChanges();
+    const el = fixture.nativeElement.querySelector('.avatar-svg');
+    expect(el.innerHTML).toContain('url(#hat-clip)');
+  });
+
   it('must not use emulated encapsulation', () => {
     // The avatar markup arrives via [innerHTML], so emulated encapsulation
     // would scope every selector to a content attribute those nodes do not

@@ -20,7 +20,9 @@ mkdirSync(outDir, { recursive: true });
 const expected = new Set(DEMO_AVATARS.map((a) => `${a.slug}.svg`));
 
 for (const avatar of DEMO_AVATARS) {
-  const svg = buildAvatarSvg(avatar.config);
+  // Every demo file bakes in its own mouth animation, so the gallery shows
+  // each avatar speaking its own name with no host page involved.
+  const svg = buildAvatarSvg(avatar.config, { speech: avatar.speech ?? avatar.label });
   writeFileSync(join(outDir, `${avatar.slug}.svg`), svg + '\n', 'utf8');
 }
 
