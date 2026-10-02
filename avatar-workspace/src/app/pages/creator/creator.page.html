@@ -142,10 +142,22 @@
 
     <div class="rail-foot">
       <div class="flex gap-2">
-        <button hlmBtn variant="outline" size="sm" (click)="undo()"
-                [disabled]="!canUndo()" aria-label="Undo">↶</button>
-        <button hlmBtn variant="outline" size="sm" (click)="redo()"
-                [disabled]="!canRedo()" aria-label="Redo">↷</button>
+        <button hlmBtn variant="outline" size="sm" class="icon-btn" (click)="undo()"
+                [disabled]="!canUndo()" aria-label="Undo">
+          <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 8h7a4.5 4.5 0 0 1 0 9H7.5" />
+            <path d="M7.5 4.5 4 8l3.5 3.5" />
+          </svg>
+        </button>
+        <button hlmBtn variant="outline" size="sm" class="icon-btn" (click)="redo()"
+                [disabled]="!canRedo()" aria-label="Redo">
+          <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 8H9a4.5 4.5 0 0 0 0 9h3.5" />
+            <path d="M12.5 4.5 16 8l-3.5 3.5" />
+          </svg>
+        </button>
         <button hlmBtn variant="ghost" size="sm" (click)="reset()">Reset</button>
       </div>
       <div class="flex gap-2">

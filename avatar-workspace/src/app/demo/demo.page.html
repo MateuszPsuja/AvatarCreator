@@ -51,7 +51,13 @@
           (click)="toggle(avatar)"
           [attr.aria-pressed]="isPlaying(avatar)"
           [attr.aria-label]="isPlaying(avatar) ? 'Stop ' + avatar.label : 'Play ' + avatar.label + ' speech'">
-          <span class="demo-play-icon" aria-hidden="true">{{ isPlaying(avatar) ? '■' : '▶' }}</span>
+          <span class="demo-play-icon" aria-hidden="true">
+            @if (isPlaying(avatar)) {
+              <svg viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="2" width="8" height="8" rx="1"/></svg>
+            } @else {
+              <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5 L10.5 6 L3 10.5 Z"/></svg>
+            }
+          </span>
           <span class="demo-play-label">{{ isPlaying(avatar) ? 'Stop' : 'Speak' }}</span>
         </button>
 

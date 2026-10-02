@@ -178,3 +178,19 @@
     }
   }
 }
+
+// Undo / redo use drawn icons, not glyphs. The hlm-btn font stack is Martian
+// Mono, which has no arrow glyphs — a "↶" character silently fell back to an
+// unrelated font mid-stamp and came out unreadable. An inline SVG inherits
+// currentColor and cannot fall back.
+.icon-btn {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.ico {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}

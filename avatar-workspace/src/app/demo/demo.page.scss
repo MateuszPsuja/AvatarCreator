@@ -186,9 +186,20 @@
   }
 }
 
+// Drawn, not a glyph — the mono label font has no triangle/square glyphs.
 .demo-play-icon {
-  font-size: 0.5rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: none;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 // The fetched file is injected as a full <svg>, so target the child, not <img>.
