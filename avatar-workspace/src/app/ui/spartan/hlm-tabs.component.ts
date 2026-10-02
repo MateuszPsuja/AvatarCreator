@@ -1,8 +1,14 @@
-// Re-export brain tab directives for easy imports + styling directives
-import { Directive, computed, signal, Input } from '@angular/core';
+// Re-export brain directives for easy imports + styling directives
+import { Directive, computed, Input } from '@angular/core';
 import { BrnTabs, BrnTabsList, BrnTabsTrigger, BrnTabsContent } from '@spartan-ng/brain/tabs';
 
-// ─── Helm Tabs container ──────────────────────────────
+/**
+ * All Spartan styling in this app lives in these wrappers, never in
+ * `@spartan-ng/brain` directly — the library's internals change between
+ * versions, ours do not. When Spartan is upgraded, only this folder moves.
+ */
+
+// ─── Helm Tabs container ─────────────────────────────────────
 @Directive({
   selector: '[hlmTabs]',
   standalone: true,
@@ -15,19 +21,20 @@ import { BrnTabs, BrnTabsList, BrnTabsTrigger, BrnTabsContent } from '@spartan-n
 })
 export class HlmTabsDirective {}
 
-// ─── Helm Tabs List ───────────────────────────────────
+// ─── Helm Tabs List ──────────────────────────────────────────
 @Directive({
   selector: '[hlmTabsList]',
   standalone: true,
   hostDirectives: [BrnTabsList],
   host: {
+    // A row of inked type on paper, separated by hard rules — not a pill track.
     class:
-      'inline-flex items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground gap-0.5',
+      'inline-flex items-stretch justify-start border-b border-border text-muted-foreground gap-0',
   },
 })
 export class HlmTabsListDirective {}
 
-// ─── Helm Tabs Trigger ────────────────────────────────
+// ─── Helm Tabs Trigger ───────────────────────────────────────
 @Directive({
   selector: '[hlmTabsTrigger]',
   standalone: true,
@@ -39,18 +46,19 @@ export class HlmTabsListDirective {}
   },
 })
 export class HlmTabsTriggerDirective {
-  private readonly _brn = /* injected via hostDirective */ null;
-
   computedClass = computed(() =>
-    'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 ' +
-    'text-sm font-medium ring-offset-background transition-all cursor-pointer ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' +
+    'relative inline-flex items-center justify-center whitespace-nowrap px-3 py-2 ' +
+    'font-label text-muted-foreground cursor-pointer bg-transparent ' +
+    'border-b-2 border-transparent -mb-px ' +
+    'transition-colors duration-150 ' +
+    'hover:text-foreground hover:border-foreground/30 ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ' +
     'disabled:pointer-events-none disabled:opacity-50 ' +
-    'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm'
+    'data-[state=active]:text-foreground data-[state=active]:border-primary'
   );
 }
 
-// ─── Helm Tabs Content ────────────────────────────────
+// ─── Helm Tabs Content ───────────────────────────────────────
 @Directive({
   selector: '[hlmTabsContent]',
   standalone: true,
@@ -58,12 +66,10 @@ export class HlmTabsTriggerDirective {
     { directive: BrnTabsContent, inputs: ['brnTabsContent: hlmTabsContent'] },
   ],
   host: {
-    class: 'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    class: 'mt-4 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
   },
 })
 export class HlmTabsContentDirective {}
 
-// ─── Legacy component kept as re-export for compat ────
-// The old HlmTabsComponent is no longer used.
-// Import the directives above instead.
+// ─── Legacy alias kept for compatibility ─────────────────────
 export { HlmTabsDirective as HlmTabsComponent };

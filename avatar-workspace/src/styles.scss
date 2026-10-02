@@ -2,52 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * RISOGRAPH PRINT STUDIO
+ *
+ * The product is a flat spot-colour vector avatar editor, and riso printing
+ * is exactly that: limited spot inks, hard-edged shapes, visible paper, and
+ * misregistration. Committing to that beats the default dark-purple SaaS
+ * dashboard this started as.
+ *
+ * Values are Spartan-conventional HSL triples so every `bg-primary`,
+ * `text-muted-foreground` and friends follows automatically. The paper/ink
+ * swap lives in `.light` rather than `:root` because the app root is dark by
+ * default and Tailwind's `darkMode: 'class'` keys off that.
+ */
 @layer base {
   :root {
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
-    --radius: 0.625rem;
+    /* ── Paper (light) ── */
+    --paper: 42 30% 94%;        /* #F4F1EA-ish warm stock */
+    --ink: 30 12% 8%;           /* #141210 near-black */
+    --ink-soft: 30 8% 30%;
+
+    /* ── Spot inks ── */
+    --riso-blue: 203 100% 37%;    /* #0078BF */
+    --riso-orange: 16 100% 59%;   /* #FF6C2F */
+    --riso-pink: 322 100% 63%;    /* #FF48B0 */
+    --riso-green: 149 100% 33%;   /* #00A95C */
+    --riso-black: 30 12% 8%;
+
+    /* ── Spartan token mapping: paper mode ── */
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: 42 32% 97%;
+    --card-foreground: var(--ink);
+    --popover: 42 32% 97%;
+    --popover-foreground: var(--ink);
+    --primary: var(--riso-blue);
+    --primary-foreground: 42 30% 98%;
+    --secondary: 40 20% 89%;
+    --secondary-foreground: var(--ink);
+    --muted: 40 18% 88%;
+    --muted-foreground: 30 8% 38%;
+    --accent: var(--riso-orange);
+    --accent-foreground: 42 30% 98%;
+    --destructive: 6 78% 50%;
+    --destructive-foreground: 42 30% 98%;
+    --border: 36 14% 78%;
+    --input: 36 14% 78%;
+    --ring: var(--riso-blue);
+    --radius: 0.25rem;
     color-scheme: light;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 263 70% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 95%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
-    --ring: 263 70% 58%;
+    --background: 30 12% 8%;
+    --foreground: 42 30% 94%;
+    --card: 30 10% 12%;
+    --card-foreground: 42 30% 94%;
+    --popover: 30 10% 12%;
+    --popover-foreground: 42 30% 94%;
+    --primary: 203 100% 50%;
+    --primary-foreground: 30 12% 8%;
+    --secondary: 30 8% 20%;
+    --secondary-foreground: 42 30% 94%;
+    --muted: 30 8% 20%;
+    --muted-foreground: 36 10% 62%;
+    --accent: 16 100% 62%;
+    --accent-foreground: 30 12% 8%;
+    --destructive: 6 70% 45%;
+    --destructive-foreground: 42 30% 94%;
+    --border: 30 8% 26%;
+    --input: 30 8% 26%;
+    --ring: 203 100% 50%;
     color-scheme: dark;
   }
 
@@ -56,27 +81,108 @@
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
     @apply bg-background text-foreground;
+    font-feature-settings: 'ss01', 'cv01';
   }
 
-  /* Ensure [hidden] beats Tailwind display utilities */
+  /* Display face — wonky optical sizes, used for headings and numerals */
+  .font-display {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'SOFT' 20, 'WONK' 1, 'opsz' 60;
+    letter-spacing: -0.015em;
+  }
+
+  /* Specimen-label face — small, wide, technical */
+  .font-label {
+    font-family: 'Martian Mono', ui-monospace, monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
   [hidden] {
     display: none !important;
   }
 }
 
-// Scrollbar
-::-webkit-scrollbar {
-  width: 6px;
+/**
+ * Print-shop atmosphere. Grain and a faint plate-misregistration shadow —
+ * the two things that make flat colour read as *printed* rather than as a
+ * flat web UI.
+ *
+ * Scope note: the style guide in AVATAR_CREATOR_AGENT-2.md bans filters and
+ * textures, but that governs the AVATAR artwork only. These live in the app
+ * chrome and never reach an exported SVG.
+ */
+@layer components {
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+
+  /* Hard registration offset, like a second plate printed slightly off */
+  .plate {
+    position: relative;
+  }
+
+  .plate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid hsl(var(--riso-pink) / 0.35);
+    transform: translate(3px, -3px);
+    z-index: 1;
+  }
+
+  /* Corner registration marks — pure print-shop vocabulary */
+  .reg-marks::before,
+  .reg-marks::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 1px solid hsl(var(--foreground) / 0.45);
+    pointer-events: none;
+  }
+
+  .reg-marks::before {
+    top: 10px;
+    left: 10px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .reg-marks::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: 0;
+    border-top: 0;
+  }
 }
+
+// Scrollbar — thin, ink-toned
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.25);
-  border-radius: 3px;
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 0;
+
   &:hover {
-    background: hsl(var(--muted-foreground) / 0.45);
+    background: hsl(var(--muted-foreground) / 0.55);
   }
 }

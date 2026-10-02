@@ -6,10 +6,11 @@ import { Component, Input } from '@angular/core';
   template: ``,
   host: {
     role: 'separator',
+    // A solid ink rule — a real printed divider rather than a faint hairline.
     '[class]':
       "orientation === 'vertical'" +
-      "? 'block h-full w-px bg-border'" +
-      ": 'block h-px w-full bg-border'",
+      "? 'block h-full w-px bg-foreground/25'" +
+      ": 'block h-px w-full bg-foreground/20'",
   },
 })
 export class HlmSeparatorComponent {

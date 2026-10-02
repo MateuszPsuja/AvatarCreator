@@ -20,6 +20,10 @@ export { SKIN_TONES } from './skin-tones';
 export { HAIR_COLORS } from './hair-colors';
 export { EYE_COLORS } from './eye-colors';
 
+// Trait previews — small standalone thumbnails for the creator pickers
+export { buildTraitPreview } from './trait-previews';
+export type { PreviewKind } from './trait-previews';
+
 // Visemes — shared by the runtime lip-sync service and the SVG generator
 export { textToVisemes, MS_PER_VISEME } from './visemes';
 export {

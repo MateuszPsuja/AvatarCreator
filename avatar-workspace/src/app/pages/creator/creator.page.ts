@@ -15,7 +15,7 @@ import type {
   GlassesStyle,
   ProfessionType,
 } from '@avatar-workspace/avatar-shared';
-import { SKIN_TONES, HAIR_COLORS, EYE_COLORS } from '@avatar-workspace/avatar-shared';
+import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, buildTraitPreview, PreviewKind } from '@avatar-workspace/avatar-shared';
 
 import { AvatarService } from '../../services/avatar.service';
 import { SvgAvatarComponent, LipSyncService } from '@avatar-workspace/avatar-player';
@@ -34,6 +34,9 @@ import {
 // Pickers
 import { TraitPickerComponent, TraitOption } from '../../ui/trait-picker/trait-picker.component';
 import { SwatchPickerComponent, Swatch } from '../../ui/swatch-picker/swatch-picker.component';
+
+/** How many undo steps to keep. */
+const HISTORY_LIMIT = 60;
 
 @Component({
   selector: 'app-creator-page',
@@ -61,70 +64,60 @@ export class CreatorPageComponent implements OnInit {
 
   config = signal<AvatarConfig>(this.avatarService.defaultConfig());
 
+  // ── Undo / redo ──────────────────────────────────────────────
+  private past: AvatarConfig[] = [];
+  private future: AvatarConfig[] = [];
+  private nameSnapshot: string | null = null;
+
+  /** Transient confirmation after save / export / randomize. */
+  readonly status = signal<string | null>(null);
+
   // Lip sync preview
   currentViseme = signal(0);
   isSpeaking = signal(false);
   private lipSyncCancel: (() => void) | null = null;
 
-  // ─── Trait options ─────────────────────────────────
+  // ─── Trait options ───────────────────────────────────────────
+  // Previews are built from the same part data the renderer uses, so a
+  // thumbnail can never drift from the avatar it produces. The emoji these
+  // replaced told you nothing about what "handlebar" actually looks like.
+
+  private preview(kind: PreviewKind, value: string): string {
+    return buildTraitPreview(kind, value);
+  }
 
   genderOptions: TraitOption<Gender>[] = [
-    { value: 'man', label: 'Man', icon: '👨' },
-    { value: 'woman', label: 'Woman', icon: '👩' },
+    { value: 'man', label: 'Man', svgPreview: this.preview('gender', 'man') },
+    { value: 'woman', label: 'Woman', svgPreview: this.preview('gender', 'woman') },
   ];
 
-  haircutOptions: TraitOption<HaircutStyle>[] = [
-    { value: 'short', label: 'Short', icon: '💇' },
-    { value: 'long', label: 'Long', icon: '💇‍♀️' },
-    { value: 'curly', label: 'Curly', icon: '🌀' },
-    { value: 'bald', label: 'Bald', icon: '🧑‍🦲' },
-    { value: 'bun', label: 'Bun', icon: '🔝' },
-    { value: 'ponytail', label: 'Ponytail', icon: '🎀' },
-    { value: 'mohawk', label: 'Mohawk', icon: '⬆️' },
-  ];
+  haircutOptions: TraitOption<HaircutStyle>[] = (
+    ['short', 'long', 'curly', 'bald', 'bun', 'ponytail', 'mohawk'] as HaircutStyle[]
+  ).map((v) => ({
+    value: v,
+    label: v,
+    svgPreview: this.preview('haircut', v),
+  }));
 
-  eyeOptions: TraitOption<EyeStyle>[] = [
-    { value: 'round', label: 'Round', icon: '⭕' },
-    { value: 'almond', label: 'Almond', icon: '🌰' },
-    { value: 'wide', label: 'Wide', icon: '👀' },
-    { value: 'narrow', label: 'Narrow', icon: '😑' },
-  ];
+  eyeOptions: TraitOption<EyeStyle>[] = (
+    ['round', 'almond', 'wide', 'narrow'] as EyeStyle[]
+  ).map((v) => ({ value: v, label: v, svgPreview: this.preview('eyeStyle', v) }));
 
-  mustacheOptions: TraitOption<MustacheStyle>[] = [
-    { value: 'none', label: 'None', icon: '✖️' },
-    { value: 'thin', label: 'Thin', icon: '〰️' },
-    { value: 'thick', label: 'Thick', icon: '➖' },
-    { value: 'handlebar', label: 'Handlebar', icon: '〽️' },
-    { value: 'chevron', label: 'Chevron', icon: '🔽' },
-  ];
+  mustacheOptions: TraitOption<MustacheStyle>[] = (
+    ['none', 'thin', 'thick', 'handlebar', 'chevron'] as MustacheStyle[]
+  ).map((v) => ({ value: v, label: v, svgPreview: this.preview('mustache', v) }));
 
-  beardOptions: TraitOption<BeardStyle>[] = [
-    { value: 'none', label: 'None', icon: '✖️' },
-    { value: 'stubble', label: 'Stubble', icon: '🫥' },
-    { value: 'short', label: 'Short', icon: '🧔‍♂️' },
-    { value: 'long', label: 'Long', icon: '🧔' },
-    { value: 'goatee', label: 'Goatee', icon: '🐐' },
-  ];
+  beardOptions: TraitOption<BeardStyle>[] = (
+    ['none', 'stubble', 'short', 'long', 'goatee'] as BeardStyle[]
+  ).map((v) => ({ value: v, label: v, svgPreview: this.preview('beard', v) }));
 
-  glassesOptions: TraitOption<GlassesStyle>[] = [
-    { value: 'none', label: 'None', icon: '✖️' },
-    { value: 'round', label: 'Round', icon: '🟠' },
-    { value: 'rectangular', label: 'Rectangular', icon: '⬜' },
-    { value: 'sunglasses', label: 'Sunglasses', icon: '🕶️' },
-    { value: 'monocle', label: 'Monocle', icon: '🧐' },
-  ];
+  glassesOptions: TraitOption<GlassesStyle>[] = (
+    ['none', 'round', 'rectangular', 'sunglasses', 'monocle'] as GlassesStyle[]
+  ).map((v) => ({ value: v, label: v, svgPreview: this.preview('glasses', v) }));
 
-  professionOptions: TraitOption<ProfessionType>[] = [
-    { value: 'none', label: 'None', icon: '✖️' },
-    { value: 'doctor', label: 'Doctor', icon: '🩺' },
-    { value: 'engineer', label: 'Engineer', icon: '⚙️' },
-    { value: 'teacher', label: 'Teacher', icon: '📚' },
-    { value: 'chef', label: 'Chef', icon: '👨‍🍳' },
-    { value: 'police', label: 'Police', icon: '👮' },
-    { value: 'astronaut', label: 'Astronaut', icon: '🚀' },
-    { value: 'artist', label: 'Artist', icon: '🎨' },
-    { value: 'business', label: 'Business', icon: '💼' },
-  ];
+  professionOptions: TraitOption<ProfessionType>[] = (
+    ['none', 'doctor', 'engineer', 'teacher', 'chef', 'police', 'astronaut', 'artist', 'business'] as ProfessionType[]
+  ).map((v) => ({ value: v, label: v, svgPreview: this.preview('profession', v) }));
 
   // ─── Swatch data ──────────────────────────────────
 
@@ -140,33 +133,101 @@ export class CreatorPageComponent implements OnInit {
     ([key, val]) => ({ value: key as EyeColor, color: val, label: key })
   );
 
-  // ─── Actions ──────────────────────────────────────
+  // ─── Actions ────────────────────────────────────────────────
 
   ngOnInit(): void {
     const saved = this.avatarService.loadAvatar();
     if (saved) {
       this.config.set(saved);
     }
+    // Seed the history with whatever we started from, so the first undo has
+    // somewhere to go back to.
+    this.past = [this.config()];
   }
 
   update<K extends keyof AvatarConfig>(key: K, value: AvatarConfig[K]): void {
+    this.push();
     this.config.update((c) => ({ ...c, [key]: value }));
   }
 
+  updateName(name: string): void {
+    // Typing fires this per keystroke; recording every character would make
+    // undo useless, so name edits collapse into one history entry.
+    if (this.nameSnapshot === null) this.nameSnapshot = this.config().name;
+    this.config.update((c) => ({ ...c, name }));
+  }
+
+  commitName(): void {
+    if (this.nameSnapshot === null) return;
+    if (this.nameSnapshot !== this.config().name) {
+      this.past.push({ ...this.config(), name: this.nameSnapshot });
+      this.future = [];
+    }
+    this.nameSnapshot = null;
+  }
+
+  private push(): void {
+    this.past.push(this.config());
+    if (this.past.length > HISTORY_LIMIT) this.past.shift();
+    this.future = [];
+    this.status.set(null);
+  }
+
+  readonly canUndo = computed(() => this.past.length > 1);
+  readonly canRedo = computed(() => this.future.length > 0);
+
+  undo(): void {
+    const prev = this.past.pop();
+    if (!prev) return;
+    this.future.push(this.config());
+    this.config.set(prev);
+  }
+
+  redo(): void {
+    const next = this.future.pop();
+    if (!next) return;
+    this.past.push(this.config());
+    this.config.set(next);
+  }
+
+  /** Weighted pick — `none` options are far more common in the real data. */
+  private pick<T>(values: readonly T[]): T {
+    return values[Math.floor(Math.random() * values.length)];
+  }
+
+  randomize(): void {
+    this.push();
+    const gender = this.pick<Gender>(['man', 'woman']);
+    this.config.set({
+      ...this.config(),
+      gender,
+      skinTone: this.pick<SkinTone>(Object.keys(SKIN_TONES) as SkinTone[]),
+      haircut: this.pick<HaircutStyle>(this.haircutOptions.map((o) => o.value)),
+      hairColor: this.pick<HairColor>(Object.keys(HAIR_COLORS) as HairColor[]),
+      eyeColor: this.pick<EyeColor>(Object.keys(EYE_COLORS) as EyeColor[]),
+      eyeStyle: this.pick<EyeStyle>(this.eyeOptions.map((o) => o.value)),
+      mustache: this.pick<MustacheStyle>(this.mustacheOptions.map((o) => o.value)),
+      beard: this.pick<BeardStyle>(this.beardOptions.map((o) => o.value)),
+      glasses: this.pick<GlassesStyle>(this.glassesOptions.map((o) => o.value)),
+      profession: this.pick<ProfessionType>(this.professionOptions.map((o) => o.value)),
+    });
+    this.status.set('Rolled a new character');
+  }
+
   reset(): void {
+    this.push();
     this.config.set(this.avatarService.defaultConfig());
+    this.status.set('Reset to defaults');
   }
 
   save(): void {
     this.avatarService.saveAvatar(this.config());
+    this.status.set('Saved to this browser');
   }
 
   export(): void {
     this.avatarService.downloadSVG(this.config());
-  }
-
-  updateName(name: string): void {
-    this.config.update((c) => ({ ...c, name }));
+    this.status.set('Exported SVG');
   }
 
   testSpeech(): void {

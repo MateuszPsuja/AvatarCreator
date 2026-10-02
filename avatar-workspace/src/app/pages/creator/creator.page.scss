@@ -1,28 +1,186 @@
-// creator.page.scss — minimal layout; everything else is Tailwind in template
+// pages/creator/creator.scss — risograph press room
+//
+// Asymmetric on purpose: the press bed is the subject and gets the space, the
+// control sheet is a narrow rail. The old layout was a 400px panel beside a
+// centred preview, which is the shape of every avatar builder and reads as
+// generic.
 
-.creator-layout {
+.studio {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 1fr 26rem;
   grid-template-rows: 100vh;
   overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      hsl(var(--foreground) / 0.022) 0 1px,
+      transparent 1px 4px
+    ),
+    hsl(var(--background));
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     height: auto;
-    overflow: auto;
+    overflow: visible;
   }
 }
 
-// Preview ambient background
-.creator-preview {
-  background:
-    radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.06) 0%, transparent 70%),
-    hsl(var(--background));
+// ── Stage ─────────────────────────────────────────────────────
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-width: 0;
 }
 
-// Speaking ring pulse
-.avatar-speaking .preview-avatar {
-  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.35),
-              0 0 24px hsl(var(--primary) / 0.15);
+.stage-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  animation: ink-in 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.stage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  max-width: 30rem;
+}
+
+// The press bed: paper under the platen, hard plate shadow.
+.press {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(30rem, 78vw);
+  aspect-ratio: 1;
+  padding: 0.75rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--foreground) / 0.85);
+  box-shadow: 10px 10px 0 0 hsl(var(--riso-blue) / 0.9);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &--speaking {
+    transform: translate(-2px, -2px);
+    box-shadow: 12px 12px 0 0 hsl(var(--riso-orange));
+  }
+}
+
+.press-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// A printed name plate under the bed.
+.name-plate {
+  width: min(30rem, 78vw);
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid hsl(var(--border));
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: hsl(var(--muted-foreground) / 0.7);
+    font-style: italic;
+  }
+
+  &:focus {
+    border-bottom-color: hsl(var(--primary));
+  }
+}
+
+.stage-tools {
+  display: flex;
+  gap: 0.5rem;
+}
+
+// Confirmation chip, slides in rather than appearing from nowhere.
+.status-strip {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  padding: 0.3rem 0.75rem;
+  font-family: 'Martian Mono', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+
+  &--on {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// ── Rail ──────────────────────────────────────────────────────
+.rail {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  min-width: 0;
+  overflow: hidden;
+  background: hsl(var(--card));
+  border-left: 1px solid hsl(var(--foreground) / 0.85);
+
+  @media (max-width: 1024px) {
+    border-left: 0;
+    border-top: 1px solid hsl(var(--foreground) / 0.85);
+    overflow: visible;
+  }
+}
+
+.rail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.rail-title {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rail-title-em {
+  color: hsl(var(--riso-orange));
+  font-style: italic;
+  font-variation-settings: 'SOFT' 60, 'WONK' 1, 'opsz' 100;
+}
+
+.rail-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  > div {
+    display: flex;
+    gap: 0.5rem;
+
+    > * {
+      flex: 1;
+    }
+  }
 }
