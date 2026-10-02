@@ -12,8 +12,14 @@ export interface DemoAvatar {
   label: string;
   /** What this avatar is meant to demonstrate. */
   notes: string;
-  /** Text the file mouths. Defaults to `label`. */
-  speech?: string;
+  /**
+   * Phrase the demo avatar mouths when its play button is pressed.
+   *
+   * Roughly 50 characters, because the demo plays for 4 seconds at
+   * MS_PER_VISEME (80ms) — about 50 visemes. Shorter phrases finish early and
+   * longer ones get cut off mid-word.
+   */
+  speech: string;
   config: AvatarConfig;
 }
 
@@ -44,6 +50,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'doctor-woman',
     label: 'Doctor',
     notes: 'Head-wearing professions are the reason this demo exists — check the hat clip.',
+    speech: 'Good morning, I am the doctor on call this afternoon.',
     config: cfg('d1', 'Doctor', {
       gender: 'woman', skinTone: 'light', haircut: 'bun', hairColor: 'black',
       profession: 'doctor', glasses: 'none',
@@ -53,6 +60,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'engineer-man-long',
     label: 'Engineer',
     notes: 'Long hair under a hard hat — this used to export with hair through the helmet.',
+    speech: 'The bridge is holding steady, do not worry about it.',
     config: cfg('d2', 'Engineer', {
       gender: 'man', skinTone: 'tan', haircut: 'long', hairColor: 'black',
       beard: 'short', profession: 'engineer',
@@ -62,6 +70,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'teacher-woman',
     label: 'Teacher',
     notes: 'Female profession styling, no headwear.',
+    speech: 'Please open your books to chapter four and read along.',
     config: cfg('d3', 'Teacher', {
       gender: 'woman', skinTone: 'medium', haircut: 'ponytail', hairColor: 'brown',
       eyeStyle: 'almond', profession: 'teacher',
@@ -71,6 +80,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'chef-man',
     label: 'Chef',
     notes: 'Facial hair with no hat, so the beard is unclipped.',
+    speech: 'Taste the sauce and tell me if it needs more salt.',
     config: cfg('d4', 'Chef', {
       gender: 'man', skinTone: 'medium', haircut: 'curly', hairColor: 'black',
       mustache: 'thick', beard: 'goatee', profession: 'chef',
@@ -80,6 +90,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'police-woman-bun',
     label: 'Police',
     notes: 'A bun clipped by the cap brim — the orphan-hair case.',
+    speech: 'Everything is fine here, stay calm and keep moving.',
     config: cfg('d5', 'Police', {
       gender: 'woman', skinTone: 'deep', haircut: 'bun', hairColor: 'black',
       glasses: 'none', profession: 'police',
@@ -89,6 +100,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'astronaut-woman-long-beard',
     label: 'Astronaut',
     notes: 'Helmet clips hair, ears AND facial hair. Long beard used to be sliced flat at y=140.',
+    speech: 'Systems are nominal, we are good to go for launch.',
     config: cfg('d6', 'Astronaut', {
       gender: 'man', skinTone: 'light', haircut: 'short', hairColor: 'blonde',
       beard: 'long', profession: 'astronaut',
@@ -98,6 +110,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'artist-man',
     label: 'Artist',
     notes: 'Third hat profession — beret clips hair the same way.',
+    speech: 'I paint first and then I remove most of what I painted.',
     config: cfg('d7', 'Artist', {
       gender: 'man', skinTone: 'medium', haircut: 'mohawk', hairColor: 'red',
       glasses: 'round', profession: 'artist',
@@ -107,6 +120,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'business-woman',
     label: 'Business',
     notes: 'No accessory at all — the profession ships an empty accessory string.',
+    speech: 'Let us review the quarterly numbers before the meeting.',
     config: cfg('d8', 'Business', {
       gender: 'woman', skinTone: 'dark', haircut: 'curly', hairColor: 'black',
       glasses: 'rectangular', profession: 'business',
@@ -116,6 +130,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'plain-man',
     label: 'No profession',
     notes: 'Baseline. Nothing is clipped here.',
+    speech: 'Hello there, it is nice to finally meet you in person.',
     config: cfg('d9', 'Plain', { gender: 'man', skinTone: 'medium' }),
   },
 
@@ -124,6 +139,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'tone-deep',
     label: 'Deep skin',
     notes: 'The nose used to vanish here — it was drawn in --skin-ear, too close to the face.',
+    speech: 'Deep skin tones deserve to be seen and used everywhere.',
     config: cfg('d10', 'Deep', {
       skinTone: 'deep', eyeColor: 'brown', hairColor: 'black', haircut: 'curly',
     }),
@@ -132,6 +148,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'tone-dark',
     label: 'Dark skin',
     notes: 'Second tone where the old nose stroke was nearly invisible.',
+    speech: 'This avatar is rendered on a dark skin tone right here.',
     config: cfg('d11', 'Dark', {
       skinTone: 'dark', eyeColor: 'brown', hairColor: 'black', gender: 'woman',
       haircut: 'long',
@@ -141,6 +158,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'tone-light',
     label: 'Light skin',
     notes: 'White hair shows why stubble-by-opacity is a problem — it vanishes.',
+    speech: 'Light skin, white hair, and the nose is still clearly visible.',
     config: cfg('d12', 'Light', {
       skinTone: 'light', hairColor: 'white', beard: 'stubble', haircut: 'short',
     }),
@@ -149,6 +167,7 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'tone-tan',
     label: 'Tan skin',
     notes: 'Mid palette reference.',
+    speech: 'A tan tone with grey hair and a monocle, what a character.',
     config: cfg('d13', 'Tan', {
       skinTone: 'tan', hairColor: 'gray', glasses: 'monocle',
     }),
@@ -159,18 +178,21 @@ export const DEMO_AVATARS: DemoAvatar[] = [
     slug: 'eyes-almond-blue',
     label: 'Almond eyes',
     notes: 'Blink is clipped on narrow eyes — the eyelid rect is sized for a round eye.',
+    speech: 'Almond shaped eyes with a bright blue colour, nice.',
     config: cfg('d14', 'Almond', { eyeStyle: 'almond', eyeColor: 'blue' }),
   },
   {
     slug: 'eyes-wide-green',
     label: 'Wide eyes',
     notes: 'Green iris, no hair colour conflict.',
+    speech: 'Wide eyes in green, looking a little surprised here.',
     config: cfg('d15', 'Wide', { eyeStyle: 'wide', eyeColor: 'green', gender: 'woman' }),
   },
   {
     slug: 'glasses-sunglasses',
     label: 'Sunglasses',
     notes: 'The one glasses style that does not need a visible eye beneath it.',
+    speech: 'Sunglasses on, so the eyes stay hidden behind the lens.',
     config: cfg('d16', 'Cool', { glasses: 'sunglasses', skinTone: 'medium' }),
   },
 ];

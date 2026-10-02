@@ -1,4 +1,4 @@
-<!-- demo.page.html — read-only gallery of exported avatars -->
+<!-- demo.page.html — read-only gallery of exported avatars, with per-card lip sync -->
 <div class="demo-shell">
 
   <header class="demo-head">
@@ -6,10 +6,9 @@
       <a routerLink="/" class="demo-back">← Back to creator</a>
       <h1 class="demo-title">Export gallery</h1>
       <p class="demo-sub">
-        Every image below is a <code>.svg</code> file this app exported, loaded
-        with <code>&lt;img&gt;</code> and nothing else. Each one carries its own
-        <code>&lt;animate&gt;</code> mouth loop, so the avatars speak on their own.
-        If one breaks, the export was not self-contained.
+        Every card below is a <code>.svg</code> file this app exported, fetched
+        and inlined as-is. Press the play button to have that avatar mouth a
+        {{ speechMs / 1000 }} second phrase.
       </p>
     </div>
 
@@ -33,17 +32,36 @@
 
   <div class="demo-grid">
     @for (avatar of filtered(); track avatar.slug) {
-      <button type="button" class="demo-card" (click)="open(avatar)">
-        <span class="demo-thumb">
-          <img [src]="src(avatar)" [alt]="avatar.label + ' avatar'" loading="lazy" />
-        </span>
+      <div class="demo-card" [attr.data-slug]="avatar.slug">
+
+        <button type="button" class="demo-thumb-btn" (click)="open(avatar)"
+                [attr.aria-label]="'Inspect ' + avatar.label + ' avatar'">
+          @if (markupFor(avatar); as svg) {
+            <span class="demo-thumb" [innerHTML]="svg"></span>
+          } @else {
+            <span class="demo-thumb demo-thumb--loading">…</span>
+          }
+        </button>
+
+        <button
+          type="button"
+          class="demo-play"
+          [class.is-playing]="isPlaying(avatar)"
+          [disabled]="!isReady(avatar)"
+          (click)="toggle(avatar)"
+          [attr.aria-pressed]="isPlaying(avatar)"
+          [attr.aria-label]="isPlaying(avatar) ? 'Stop ' + avatar.label : 'Play ' + avatar.label + ' speech'">
+          <span class="demo-play-icon" aria-hidden="true">{{ isPlaying(avatar) ? '■' : '▶' }}</span>
+          <span class="demo-play-label">{{ isPlaying(avatar) ? 'Stop' : 'Speak' }}</span>
+        </button>
+
         <span class="demo-card-label">{{ avatar.label }}</span>
         <span class="demo-chips">
           @for (chip of chips(avatar); track chip) {
             <span class="demo-chip">{{ chip }}</span>
           }
         </span>
-      </button>
+      </div>
     }
   </div>
 
@@ -58,8 +76,10 @@
 @if (active(); as avatar) {
   <div class="demo-lightbox" (click)="close()" role="dialog" aria-modal="true">
     <div class="demo-lightbox-inner" (click)="$event.stopPropagation()">
-      <div class="demo-lightbox-art">
-        <img [src]="src(avatar)" [alt]="avatar.label + ' avatar'" />
+      <div class="demo-lightbox-art" [attr.data-slug]="avatar.slug">
+        @if (markupFor(avatar); as svg) {
+          <div class="demo-lightbox-svg" [innerHTML]="svg"></div>
+        }
       </div>
       <div class="demo-lightbox-meta">
         <h2>{{ avatar.label }}</h2>
@@ -70,10 +90,13 @@
           }
         </div>
         <p class="demo-lightbox-file">{{ src(avatar) }}</p>
-        <p class="demo-lightbox-speech">
-          Speaking: “{{ avatar.speech ?? avatar.label }}”
-        </p>
-        <button type="button" class="demo-close" (click)="close()">Close</button>
+        <p class="demo-lightbox-speech">“{{ avatar.speech }}”</p>
+        <div class="flex gap-2">
+          <button type="button" class="demo-close" (click)="toggle(avatar)">
+            {{ isPlaying(avatar) ? 'Stop' : 'Play' }} speech
+          </button>
+          <button type="button" class="demo-close" (click)="close()">Close</button>
+        </div>
       </div>
     </div>
   </div>

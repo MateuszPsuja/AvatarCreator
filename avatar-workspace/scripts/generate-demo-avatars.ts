@@ -20,9 +20,12 @@ mkdirSync(outDir, { recursive: true });
 const expected = new Set(DEMO_AVATARS.map((a) => `${a.slug}.svg`));
 
 for (const avatar of DEMO_AVATARS) {
-  // Every demo file bakes in its own mouth animation, so the gallery shows
-  // each avatar speaking its own name with no host page involved.
-  const svg = buildAvatarSvg(avatar.config, { speech: avatar.speech ?? avatar.label });
+  // Files are written static and self-contained. The demo page fetches each
+  // file and drives the mouth itself, because an <img>-loaded SVG cannot be
+  // controlled by the host page — that is what the per-avatar play button
+  // needs. Baking a SMIL loop in here would fight that, and would also mean
+  // every avatar was permanently talking.
+  const svg = buildAvatarSvg(avatar.config);
   writeFileSync(join(outDir, `${avatar.slug}.svg`), svg + '\n', 'utf8');
 }
 
