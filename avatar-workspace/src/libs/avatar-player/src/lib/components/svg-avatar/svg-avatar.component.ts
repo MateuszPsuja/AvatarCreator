@@ -41,7 +41,7 @@ import { AvatarAnimationService } from '../../services/avatar-animation.service'
      class="avatar-svg"
      [class.blink-blinking]="eyeBlinkClass() === 'blinking'"
      [class.blink-half]="eyeBlinkClass() === 'blink-half'"
-     [style]="cssVarsStyle"
+     [style]="cssVarsStyle()"
      [innerHTML]="innerHtml()"></svg>`,
   styleUrl: './svg-avatar.component.scss',
 })

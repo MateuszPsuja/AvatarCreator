@@ -144,6 +144,22 @@ describe('SvgAvatarComponent', () => {
     expect(component.mouthPath).toBe(MOUTH_SHAPES[4]);
   });
 
+  it('applies the palette to the root svg, not a function object', () => {
+    // Regression: cssVarsStyle was changed from a getter to a computed but
+    // the template still bound `[style]="cssVarsStyle"`, which passes the
+    // function itself. No style attribute was written, every
+    // var(--skin-base) was invalid, and the whole avatar rendered black.
+    const svg = fixture.nativeElement.querySelector('svg');
+    const style = svg.getAttribute('style') || '';
+    expect(style).toContain('--skin-base');
+    expect(style).toContain('--hair-color');
+    expect(style).toContain('--eye-color');
+    expect(style).toContain('--skin-shadow');
+    // A serialised function would show up as source text here.
+    expect(style).not.toContain('=>');
+    expect(style).not.toContain('function');
+  });
+
   it('must pin facial hair to view-box coordinates', () => {
     // The stylesheet sets `transform-box: fill-box` on every child so the
     // head rotation has a sensible origin. That rule also caught the facial
