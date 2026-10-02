@@ -22,8 +22,8 @@ export const BEARD_SHAPES: Record<BeardStyle, string> = {
              Q76,144 90,150 Q96,152 100,152
              Q104,152 110,150 Q124,144 136,134
              Q145,126 150,114 Q152,106 151,96
-             Q149,108 144,120 Q132,134 100,138
-             Q68,134 56,120 Q51,108 49,96 Z"
+             Q152,108 147,121 Q133,136 100,140
+             Q67,136 53,121 Q48,108 49,96 Z"
           fill="var(--hair-color)"/>`,
 
   long: `
@@ -33,8 +33,8 @@ export const BEARD_SHAPES: Record<BeardStyle, string> = {
              Q100,180 100,180 Q100,180 102,178
              Q108,174 116,166 Q128,156 138,142
              Q146,132 150,118 Q153,108 151,96
-             Q149,108 144,120 Q132,134 100,138
-             Q68,134 56,120 Q51,108 49,96 Z"
+             Q152,108 147,121 Q133,136 100,140
+             Q67,136 53,121 Q48,108 49,96 Z"
           fill="var(--hair-color)"/>
     <!-- Rounded bottom of long beard -->
     <ellipse cx="100" cy="178" rx="14" ry="5" fill="var(--hair-color)"/>`,
