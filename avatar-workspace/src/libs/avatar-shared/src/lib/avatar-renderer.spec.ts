@@ -230,6 +230,28 @@ describe('buildAvatarSvg — baked speech', () => {
   });
 });
 
+describe('facial hair fits the face', () => {
+  // Beards are drawn to the man's face (rx=52, cy=88). The woman face is
+  // narrower and sits 2px higher, so unscaled facial hair juts past her jaw.
+  it('scales and lifts facial hair on a woman', () => {
+    const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'long' }));
+    expect(woman).toMatch(/class="layer-beard"[^>]*transform="translate\(0,-2\)/);
+    expect(woman).toMatch(/class="layer-mustache"[^>]*transform="translate\(0,-2\)/);
+  });
+
+  it('leaves facial hair untouched on a man', () => {
+    const man = buildAvatarSvgInner(makeConfig({ gender: 'man', beard: 'long' }));
+    expect(man).toContain('class="layer-beard"');
+    expect(man).not.toMatch(/class="layer-beard"[^>]*transform=/);
+  });
+
+  it('narrows by the face ratio, not an arbitrary factor', () => {
+    // 49/52 — the ratio of the two face radii.
+    const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'long' }));
+    expect(woman).toContain(`scale(${(49 / 52).toFixed(4)},1)`);
+  });
+});
+
 describe('buildAvatarSvg — viseme', () => {
   it('defaults to silence and honours an explicit viseme', () => {
     const quiet = buildAvatarSvgInner(makeConfig());

@@ -276,9 +276,16 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
     `</path>`;
 
   // ── 11-14 ───────────────────────────────────────────────────────────
+  // Facial hair is drawn to the man's face (rx=52, cy=88). The woman face is
+  // narrower and sits 2px higher (rx=49, cy=86), so unscaled beards jut past
+  // her jaw. Scale and lift it to match whichever face is in use.
+  const FACIAL_HAIR_SCALE = 49 / 52;
+  const facialHairTransform = isWoman
+    ? ` transform="translate(0,-2) translate(100,88) scale(${FACIAL_HAIR_SCALE.toFixed(4)},1) translate(-100,-88)"`
+    : '';
   const facialHair =
-    `<g class="layer-mustache"${clipAttr(helmetClip)}>${mustache}</g>` +
-    `<g class="layer-beard"${clipAttr(helmetClip)}>${beard}</g>`;
+    `<g class="layer-mustache"${clipAttr(helmetClip)}${facialHairTransform}>${mustache}</g>` +
+    `<g class="layer-beard"${clipAttr(helmetClip)}${facialHairTransform}>${beard}</g>`;
   const glassesGroup = `<g class="layer-glasses">${glasses}</g>`;
   const hairFront = `<g class="layer-hair-front"${clipAttr(hairClip)}>${hair.front}</g>`;
   const accessory = `<g class="layer-accessory">${profession.accessory}</g>`;
