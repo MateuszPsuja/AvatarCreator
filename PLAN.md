@@ -10,6 +10,8 @@ Date: 2026-10-02
 | Demo content | Renders **SVG files the app itself exports** |
 | Demo isolation | Own folder in `src/` with its own route and assets |
 | UI scope | **Full visual redesign**, not Spartan token tweaks |
+| Demo viewer | **Read-only** — no editing, no sidecar JSON loader |
+| Component library | **Keep Spartan NG** |
 
 ---
 
@@ -94,10 +96,15 @@ be hand-edited into inconsistency. `npm run demo:build`.
 free text and not filesystem-safe. Give the generator deterministic slugs
 (`astronaut-deep-01.svg`) and keep the display name in the manifest.
 
-**Viewer.** Grid of committed SVGs rendered via `<img>` (correct choice —
-proves each file is genuinely standalone). Features: lightbox on click, name
-and trait summary, and a "regenerate" note pointing at the script. Static SVG
-files have no animation, so the viewer should not imply otherwise.
+**Viewer — read-only.** Grid of committed SVGs rendered via `<img>` (correct
+choice — proves each file is genuinely standalone). Features: lightbox on
+click, name and trait summary from the manifest, and a note pointing at the
+regenerate script. Static SVG files have no animation, so the viewer must not
+imply otherwise.
+
+Scope is deliberately narrow: no config editing, no re-export, therefore no
+sidecar JSON to load. The manifest carries display metadata only, so the
+committed folder stays pure `.svg` and is diffable.
 
 **Why `<img>` and not inline:** it is the honest test. If the exported file
 depends on ambient CSS or a parent variable, it will visibly break in the
@@ -132,6 +139,26 @@ dark-purple SaaS default.
 > **avatar art**, not the app chrome. Keep exported avatars filter-free; the
 > UI can use whatever it likes.
 
+**Keeping Spartan NG.** This is cheap, and the existing structure already
+sets it up. `src/app/ui/spartan/hlm-*.ts` are thin local wrappers over
+`@spartan-ng/brain` directives that apply all styling through host `class`
+strings (`hlm-tabs.component.ts:24`, `:32`, `:40`). So the redesign touches
+three places and nothing else:
+
+1. **Tokens** — rewrite the `--*` custom properties in `styles.scss`. Both
+   `:root` and `.dark` are Spartan-conventional HSL triples, so the new
+   palette slots straight in and every `bg-primary` / `text-muted-foreground`
+   in the app follows automatically.
+2. **Wrapper host classes** — restyle the `hlm-*` directives in place. One
+   file per component, no call sites change.
+3. **Tailwind config** — extend `theme` in `tailwind.config.js` for the new
+   fonts, radii and the grain/registration utilities.
+
+Spartan stays as the component substrate (tabs, buttons, separator, label);
+the *look* is entirely ours. Do not reach into `@spartan-ng/brain` directly —
+all customization goes through the `hlm-*` wrappers, or the next upgrade will
+undo it.
+
 **Functional UI work, independent of the visual direction:**
 
 1. **Real shape previews in the pickers.** `TraitOption` already has an
@@ -152,8 +179,9 @@ dark-purple SaaS default.
    indication anything happened.
 6. **Accessibility.** Add `aria-pressed` to picker buttons, roving tabindex
    across a trait group, and a live region for save/randomize results.
-7. **Import/export config JSON** — the natural companion to the demo, and
-   the mechanism by which demo assets stay reproducible.
+7. **Import/export config JSON** (creator app only — the demo viewer stays
+   read-only). This is what makes the demo assets reproducible outside the
+   app, and lets a user round-trip a design.
 
 ---
 
@@ -274,10 +302,21 @@ guarding them.
 
 ---
 
-## Open questions for implementation
+## Resolved decisions
 
-- Should the demo viewer be read-only, or allow editing an imported config and
-  re-exporting? The latter is more useful but needs a loader for the sidecar
-  JSON.
-- Do we keep Spartan NG at all after the redesign, or drop it? The pickers are
-  hand-rolled already; the tabs and buttons are the only real Spartan usage.
+- **Demo viewer is read-only.** No config editing, no sidecar JSON, no
+  re-export from the demo. The manifest holds display metadata only.
+- **Spartan NG is kept.** The redesign is a restyle, not a swap. See Phase 2
+  for the three touch points (tokens, `hlm-*` host classes, Tailwind theme).
+
+## Remaining unknowns for implementation
+
+- Whether the `deep` skin entry's new `--skin-shadow` tone should be
+  introduced for all five tones or only where `--skin-ear` is too dark to
+  read (currently `deep`, and `dark` is borderline).
+- Whether stubble should become a real second tone or a separate
+  `facialHairColor` treatment — this is a design call, not a refactor.
+- Whether the parity test should assert on exact SVG strings (brittle but
+  strict) or on the presence of required clip paths and geometry (robust but
+  weaker). Recommend the latter, plus a snapshot of one full render per
+  profession.
