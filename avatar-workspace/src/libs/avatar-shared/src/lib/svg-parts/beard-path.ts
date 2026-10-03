@@ -174,10 +174,10 @@ interface MoustacheOptions {
 }
 
 const MOUSTACHE_SHAPES: Record<Exclude<MustacheStyle, 'none'>, MoustacheOptions> = {
-  thin: { spread: 0.42, height: 3.4, upturn: 0.15 },
-  thick: { spread: 0.46, height: 7, upturn: 0.1 },
-  handlebar: { spread: 0.5, height: 5.5, upturn: 0.85 },
-  chevron: { spread: 0.48, height: 6, upturn: 0.05, squared: true },
+  thin: { spread: 0.42, height: 2.4, upturn: 0.15 },
+  thick: { spread: 0.46, height: 5, upturn: 0.1 },
+  handlebar: { spread: 0.5, height: 4, upturn: 0.85 },
+  chevron: { spread: 0.48, height: 4.4, upturn: 0.05, squared: true },
 };
 
 export function buildMustacheSvg(
@@ -187,7 +187,12 @@ export function buildMustacheSvg(
 ): string {
   if (style === 'none') return '';
   const o = MOUSTACHE_SHAPES[style];
-  const y = face.cy + face.ry * 0.42;
+  // Vertical placement is tight: the nose bottom is y=112 and the mouth top
+  // is y=120, so there are only 8px of clear skin between them. Sitting at
+  // 0.42 put a thick moustache's lower edge at y=120.3 — exactly on the
+  // mouth — so it read as a moustache merged with the lips. 0.375 with a
+  // shorter body keeps it inside that gap on both head shapes.
+  const y = face.cy + face.ry * 0.375;
   const hw = faceHalfWidthAt(face, y) * o.spread;
   const h = o.height;
   const up = o.upturn * hw * 0.22;
