@@ -23,16 +23,6 @@
     transform-box: fill-box;
   }
 
-  // ...except facial hair, which carries a transform that positions it
-  // against the face. Under `fill-box` the transform resolves against the
-  // element's own bounding box, so `translate(100,88)` means 100 bbox-widths
-  // rather than 100 user units — which threw the beard up over the eyes.
-  // `view-box` restores the SVG default coordinate system.
-  .layer-mustache,
-  .layer-beard {
-    transform-box: view-box;
-  }
-
   // ── Eyelid blink states — class is set on the root .avatar-svg ──
   .eyelid-left,
   .eyelid-right {

@@ -31,19 +31,7 @@
       <circle cx="77" cy="85" r="2" fill="#FFF"/>
       <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
       <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
-      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache" clip-path="url(#helmet-clip)"></g><g class="layer-beard" clip-path="url(#helmet-clip)">
-    <!-- Same jaw-hugging top, then flowing below the chin to a rounded point. -->
-    <path d="M52,96
-             C52,110 58,126 70,138
-             C80,148 90,160 95,172
-             C96,176 104,176 105,172
-             C110,160 120,148 130,138
-             C142,126 148,110 148,96
-             C146,104 140,114 130,121
-             C120,128 110,131 100,131
-             C90,131 80,128 70,121
-             C60,114 54,104 52,96 Z"
-          fill="var(--hair-color)"/></g><g class="layer-glasses"></g><g class="layer-hair-front" clip-path="url(#helmet-clip)">
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache" clip-path="url(#helmet-clip)"></g><g class="layer-beard" clip-path="url(#helmet-clip)"><path d="M56.17,96.96 Q57.48,100.28 58.23,101.94 Q58.99,103.6 59.84,105.26 Q60.7,106.92 61.67,108.58 Q62.63,110.24 63.72,111.9 Q64.8,113.56 66.02,115.22 Q67.23,116.88 68.6,118.54 Q69.96,120.2 71.48,121.86 Q73.01,123.52 74.74,125.18 Q76.47,126.84 78.44,128.5 Q80.42,130.16 82.72,131.82 Q85.02,133.48 87.79,135.14 Q90.56,136.8 94.17,138.46 Q97.77,140.12 98.88,141.78 Q100,143.44 100,143.44 Q100,143.44 101.12,141.78 Q102.23,140.12 105.83,138.46 Q109.44,136.8 112.21,135.14 Q114.98,133.48 117.28,131.82 Q119.58,130.16 121.56,128.5 Q123.53,126.84 125.26,125.18 Q126.99,123.52 128.52,121.86 Q130.04,120.2 131.4,118.54 Q132.77,116.88 133.98,115.22 Q135.2,113.56 136.28,111.9 Q137.37,110.24 138.33,108.58 Q139.3,106.92 140.16,105.26 Q141.01,103.6 141.77,101.94 Q142.52,100.28 143.18,98.62 Q143.83,96.96 146.33,96.96 Q148.83,96.96 148.39,99.28 Q147.94,101.6 147.3,103.92 Q146.66,106.24 145.81,108.56 Q144.96,110.88 143.87,113.2 Q142.79,115.52 141.43,117.84 Q140.07,120.16 138.38,122.48 Q136.7,124.8 134.59,127.12 Q132.48,129.44 129.76,131.76 Q127.05,134.08 123.3,136.4 Q119.54,138.72 112.44,141.04 Q105.34,143.36 113.31,145.68 Q121.29,148 120.21,150.32 Q119.13,152.64 116.9,154.96 Q114.66,157.28 107.33,159.6 Q100,161.92 100,161.92 Q100,161.92 92.67,159.6 Q85.34,157.28 83.1,154.96 Q80.87,152.64 79.79,150.32 Q78.71,148 86.69,145.68 Q94.66,143.36 87.56,141.04 Q80.46,138.72 76.7,136.4 Q72.95,134.08 70.24,131.76 Q67.52,129.44 65.41,127.12 Q63.3,124.8 61.62,122.48 Q59.93,120.16 58.57,117.84 Q57.21,115.52 56.13,113.2 Q55.04,110.88 54.19,108.56 Q53.34,106.24 52.7,103.92 Q52.06,101.6 51.61,99.28 Q51.17,96.96 53.67,96.96 Q56.17,96.96 56.82,98.62 Z" fill="#E8C96E"/></g><g class="layer-glasses"></g><g class="layer-hair-front" clip-path="url(#helmet-clip)">
       <path d="M48,75 Q48,32 100,28 Q152,32 152,75 Q140,58 100,54 Q60,58 48,75 Z"
             fill="var(--hair-color)"/></g><g class="layer-accessory">
       <!-- Helmet dome -->

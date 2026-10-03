@@ -14,8 +14,7 @@ import { HAIR_COLORS } from './hair-colors';
 import { EYE_COLORS } from './eye-colors';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
 import { EYE_SHAPES } from './svg-parts/eye-shapes';
-import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
-import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import { buildBeardSvg, buildMustacheSvg, faceFor } from './svg-parts/beard-path';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 import type {
@@ -121,13 +120,13 @@ export function buildTraitPreview(kind: PreviewKind, value: string): string {
     }
 
     case 'mustache': {
-      const m = MUSTACHE_SHAPES[value as MustacheStyle];
-      return wrap(ears() + head() + eyes() + brows() + noseMouth() + (m ? `<g>${inlineVars(m)}</g>` : ''));
+      const m = buildMustacheSvg(value as MustacheStyle, faceFor('man'), HAIR);
+      return wrap(ears() + head() + eyes() + brows() + noseMouth() + m);
     }
 
     case 'beard': {
-      const b = BEARD_SHAPES[value as BeardStyle];
-      return wrap(ears() + head() + eyes() + brows() + noseMouth() + (b ? `<g>${inlineVars(b)}</g>` : ''));
+      const b = buildBeardSvg(value as BeardStyle, faceFor('man'), HAIR);
+      return wrap(ears() + head() + eyes() + brows() + noseMouth() + b);
     }
 
     case 'glasses': {

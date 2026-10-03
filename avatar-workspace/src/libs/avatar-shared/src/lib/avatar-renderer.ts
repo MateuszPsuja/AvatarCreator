@@ -20,8 +20,11 @@ import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 import { textToVisemes, MS_PER_VISEME } from './visemes';
 import { EYE_SHAPES } from './svg-parts/eye-shapes';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
-import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
-import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import {
+  buildBeardSvg,
+  buildMustacheSvg,
+  faceFor,
+} from './svg-parts/beard-path';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 
@@ -165,8 +168,13 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
   const astronaut = isAstronaut(config);
   const hair = HAIR_SHAPES[config.haircut] ?? { back: '', front: '' };
   const eyes = EYE_SHAPES[config.eyeStyle] ?? { sclera: '', iris: '' };
-  const mustache = MUSTACHE_SHAPES[config.mustache] ?? '';
-  const beard = BEARD_SHAPES[config.beard] ?? '';
+  // Facial hair is generated against whichever head is in use, so it hugs
+  // the jaw of a man and a woman alike. It used to come from static path
+  // strings authored for the man's face, which cannot fit both.
+  const facialHead = faceFor(config.gender);
+  const hairColor = HAIR_COLORS[config.hairColor];
+  const mustache = buildMustacheSvg(config.mustache, facialHead, hairColor);
+  const beard = buildBeardSvg(config.beard, facialHead, hairColor);
   const glasses = GLASSES_SHAPES[config.glasses] ?? '';
   const profession = PROFESSION_LAYERS[config.profession] ?? { body: '', accessory: '' };
   const mouthPath = MOUTH_SHAPES[viseme] ?? MOUTH_SHAPES[0];
@@ -276,16 +284,11 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
     `</path>`;
 
   // ── 11-14 ───────────────────────────────────────────────────────────
-  // Facial hair is drawn to the man's face (rx=52, cy=88). The woman face is
-  // narrower and sits 2px higher (rx=49, cy=86), so unscaled beards jut past
-  // her jaw. Scale and lift it to match whichever face is in use.
-  const FACIAL_HAIR_SCALE = 49 / 52;
-  const facialHairTransform = isWoman
-    ? ` transform="translate(0,-2) translate(100,88) scale(${FACIAL_HAIR_SCALE.toFixed(4)},1) translate(-100,-88)"`
-    : '';
+  // No transform: the geometry already matches the face it was built from,
+  // so there is nothing left to scale at render time.
   const facialHair =
-    `<g class="layer-mustache"${clipAttr(helmetClip)}${facialHairTransform}>${mustache}</g>` +
-    `<g class="layer-beard"${clipAttr(helmetClip)}${facialHairTransform}>${beard}</g>`;
+    `<g class="layer-mustache"${clipAttr(helmetClip)}>${mustache}</g>` +
+    `<g class="layer-beard"${clipAttr(helmetClip)}>${beard}</g>`;
   const glassesGroup = `<g class="layer-glasses">${glasses}</g>`;
   const hairFront = `<g class="layer-hair-front"${clipAttr(hairClip)}>${hair.front}</g>`;
   const accessory = `<g class="layer-accessory">${profession.accessory}</g>`;

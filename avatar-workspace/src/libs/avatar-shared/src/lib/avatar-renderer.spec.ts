@@ -16,10 +16,9 @@ import {
 import { SKIN_TONES } from './skin-tones';
 import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 import { textToVisemes } from './visemes';
+import { buildBeardSvg, buildMustacheSvg, faceFor, MAN_FACE } from './svg-parts/beard-path';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
-import { BEARD_SHAPES } from './svg-parts/beard-shapes';
-import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import type { AvatarConfig, Gender, ProfessionType } from './avatar.model';
 
@@ -233,25 +232,47 @@ describe('buildAvatarSvg — baked speech', () => {
   });
 });
 
-describe('facial hair fits the face', () => {
-  // Beards are drawn to the man's face (rx=52, cy=88). The woman face is
-  // narrower and sits 2px higher, so unscaled facial hair juts past her jaw.
-  it('scales and lifts facial hair on a woman', () => {
-    const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'long' }));
-    expect(woman).toMatch(/class="layer-beard"[^>]*transform="translate\(0,-2\)/);
-    expect(woman).toMatch(/class="layer-mustache"[^>]*transform="translate\(0,-2\)/);
-  });
-
-  it('leaves facial hair untouched on a man', () => {
-    const man = buildAvatarSvgInner(makeConfig({ gender: 'man', beard: 'long' }));
-    expect(man).toContain('class="layer-beard"');
+describe('facial hair is generated from the face', () => {
+  // Facial hair used to be hand-authored paths for the man's face, so it
+  // could not fit a woman's jaw. It is now sampled from whichever ellipse
+  // is in use, which makes the fit structural.
+  it('differs between man and woman rather than being scaled at render', () => {
+    const man = buildAvatarSvgInner(makeConfig({ gender: 'man', beard: 'short' }));
+    const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'short' }));
+    expect(man).not.toBe(woman);
     expect(man).not.toMatch(/class="layer-beard"[^>]*transform=/);
+    expect(woman).not.toMatch(/class="layer-beard"[^>]*transform=/);
   });
 
-  it('narrows by the face ratio, not an arbitrary factor', () => {
-    // 49/52 — the ratio of the two face radii.
-    const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'long' }));
-    expect(woman).toContain(`scale(${(49 / 52).toFixed(4)},1)`);
+  it('stays inside the face outline for both heads', () => {
+    for (const gender of ['man', 'woman'] as const) {
+      const f = faceFor(gender);
+      const svg = buildAvatarSvgInner(makeConfig({ gender, beard: 'long' }));
+      const nums = svg
+        .slice(svg.indexOf('class="layer-beard"'))
+        .match(/-?\d+(\.\d+)?/g)!
+        .map(Number);
+      // Every drawn x must sit within the head's horizontal extent.
+      for (let i = 0; i + 1 < nums.length; i += 2) {
+        const x = nums[i];
+        expect(Math.abs(x - f.cx)).toBeLessThanOrEqual(f.rx + 1);
+      }
+    }
+  });
+
+  it('renders a beard for every style and both heads', () => {
+    for (const style of ['stubble', 'short', 'long', 'goatee'] as const) {
+      for (const gender of ['man', 'woman'] as const) {
+        const inner = buildAvatarSvgInner(makeConfig({ gender, beard: style }));
+        expect(inner).toContain('class="layer-beard"');
+        expect(inner.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('renders nothing for style none', () => {
+    expect(buildBeardSvg('none', MAN_FACE, '#000')).toBe('');
+    expect(buildMustacheSvg('none', MAN_FACE, '#000')).toBe('');
   });
 });
 
@@ -294,8 +315,6 @@ describe('part geometry stays on the canvas', () => {
   const SOURCES: [string, Record<string, string>][] = [
     ['profession', PROFESSION_LAYERS as never],
     ['hair', HAIR_SHAPES as never],
-    ['beard', BEARD_SHAPES as never],
-    ['mustache', MUSTACHE_SHAPES as never],
     ['glasses', GLASSES_SHAPES as never],
   ];
 
