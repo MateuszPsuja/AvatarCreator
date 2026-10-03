@@ -21,8 +21,7 @@ import { textToVisemes, MS_PER_VISEME } from './visemes';
 import { EYE_SHAPES } from './svg-parts/eye-shapes';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
 import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
-import { BEARD_SHAPES } from './svg-parts/beard-shapes';
-import { faceFor, fitToFace } from './svg-parts/beard-path';
+import { faceFor, fitToFace, buildBeardSvg } from './svg-parts/beard-path';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 
@@ -172,7 +171,7 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
   // head, which is what the hand-drawn shapes were missing.
   const facialHead = faceFor(config.gender);
   const mustache = fitToFace(MUSTACHE_SHAPES[config.mustache] ?? '', facialHead);
-  const beard = fitToFace(BEARD_SHAPES[config.beard] ?? '', facialHead);
+  const beard = buildBeardSvg(config.beard, facialHead, HAIR_COLORS[config.hairColor]);
   const glasses = GLASSES_SHAPES[config.glasses] ?? '';
   const profession = PROFESSION_LAYERS[config.profession] ?? { body: '', accessory: '' };
   const mouthPath = MOUTH_SHAPES[viseme] ?? MOUTH_SHAPES[0];

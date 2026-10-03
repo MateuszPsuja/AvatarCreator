@@ -19,7 +19,7 @@
 // element's bounding box under `transform-box: fill-box` and fling the
 // beard across the face.
 
-import type { Gender } from '../avatar.model';
+import type { BeardStyle, Gender } from '../avatar.model';
 
 export interface FaceGeometry {
   cx: number;
@@ -44,6 +44,24 @@ export function faceHalfWidthAt(face: FaceGeometry, y: number): number {
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+type Pt = [number, number];
+
+/** How far the beard's outer edge deliberately overshoots the face. */
+const OVERHANG = 1;
+
+/** Closed path through points, smoothed with quadratic midpoints. */
+function smoothClosedPath(pts: Pt[]): string {
+  if (pts.length < 3) return '';
+  const mid = (a: Pt, b: Pt): Pt => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  let d = `M${r2(pts[0][0])},${r2(pts[0][1])}`;
+  for (let i = 1; i <= pts.length; i++) {
+    const cur = pts[i % pts.length];
+    const m = mid(cur, pts[(i + 1) % pts.length]);
+    d += ` Q${r2(cur[0])},${r2(cur[1])} ${r2(m[0])},${r2(m[1])}`;
+  }
+  return d + ' Z';
+}
 
 /**
  * Rewrite every coordinate in a `d` attribute from the man's face into the
@@ -87,4 +105,112 @@ export function fitToFace(markup: string, face: FaceGeometry): string {
         .replace(/ry="(-?\d+(?:\.\d+)?)"/, (_, v) => `ry="${r2(parseFloat(v) * sy)}"`);
       return `<ellipse${out}/>`;
     });
+}
+
+
+// ── Beard generation ─────────────────────────────────────────────────
+//
+// A beard is a BAND along the jaw, so it must be built as one: an outer
+// edge tracking the face and an inner edge just inside it. The hand-drawn
+// shapes in beard-shapes.ts cannot be used here — their inner edge cuts
+// deep across the lower face (x=70 where the jaw is at x=55), which is
+// exactly the skin gap this is meant to eliminate. The gap is not an
+// authoring slip, it is what that silhouette is.
+//
+// These parameters are tuned to read like the original artwork: thin at
+// the cheekbones, thickening toward the chin, tapering to nothing at the
+// sides by the ears.
+
+interface BandOptions {
+  /** Where the beard starts, as a fraction of ry below the face centre. */
+  startFrac: number;
+  endFrac: number;
+  /** Gap between the face outline and the band's outer edge. */
+  inset: number;
+  thicknessTop: number;
+  thicknessBottom: number;
+  /** Drop below the chin: length and half-width, as fractions of ry / rx. */
+  drop?: number;
+  dropWidth?: number;
+}
+
+const BEARD_BANDS: Record<Exclude<BeardStyle, 'none'>, BandOptions> = {
+  // 5 o'clock shadow: low and faint, hugging the jaw only.
+  stubble: { startFrac: 0.36, endFrac: 0.97, inset: 3, thicknessTop: 4, thicknessBottom: 7 },
+  // Jaw-hugging crescent, tapering to nothing by the ears.
+  short: { startFrac: 0.17, endFrac: 0.99, inset: 2.5, thicknessTop: 4, thicknessBottom: 14 },
+  // Same crescent, then a narrow drop. Kept narrow on purpose: a wide drop
+  // reads as a bib rather than a beard.
+  long: {
+    startFrac: 0.17, endFrac: 0.99, inset: 2.5, thicknessTop: 4, thicknessBottom: 15,
+    drop: 0.30, dropWidth: 0.26,
+  },
+  // Chin patch only.
+  goatee: { startFrac: 0.60, endFrac: 0.99, inset: 13, thicknessTop: 5, thicknessBottom: 12 },
+};
+
+export function buildBeardSvg(
+  style: BeardStyle,
+  face: FaceGeometry,
+  fill: string,
+): string {
+  if (style === 'none') return '';
+  const o = BEARD_BANDS[style];
+  const steps = 26;
+
+  const yTop = face.cy + face.ry * o.startFrac;
+  const yJaw = face.cy + face.ry * o.endFrac;
+  const chinY = face.cy + face.ry;
+  const dropLen = o.drop ? face.ry * o.drop : 0;
+  const dropW = o.dropWidth ? face.rx * o.dropWidth : 0;
+
+  /**
+   * Outer half-width; past the chin it becomes the drop's taper.
+   *
+   * The band's outer edge is drawn slightly OUTSIDE the face outline, not
+   * inset inside it. Two reasons: the smoothing below passes through the
+   * MIDPOINTS between samples rather than through the samples themselves, so
+   * an edge placed exactly on the face ends up a sliver inside it and shows
+   * as a skin gap. Overhanging by a pixel and letting the face clip trim it
+   * back gives contact by construction instead of by tuning.
+   */
+  const outerHalf = (y: number): number => {
+    if (y <= chinY) return Math.max(0, faceHalfWidthAt(face, y) + OVERHANG);
+    if (!dropLen) return 0;
+    const t = (y - chinY) / dropLen;
+    return t >= 1 ? 0 : dropW * Math.sqrt(1 - t * t);
+  };
+
+  const innerR: Pt[] = [];
+  const innerL: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const y = lerp(yTop, yJaw, t);
+    // The inner edge follows the same curve, a band-thickness inside it.
+    // Deriving it from the face is what closes the gap.
+    const hw = Math.max(0, faceHalfWidthAt(face, y) - o.inset - lerp(o.thicknessTop, o.thicknessBottom, t));
+    innerR.push([face.cx + hw, y]);
+    innerL.push([face.cx - hw, y]);
+  }
+
+  const outerR: Pt[] = [];
+  const outerL: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const y = lerp(yTop, chinY + dropLen, i / steps);
+    const hw = outerHalf(y);
+    outerR.push([face.cx + hw, y]);
+    outerL.push([face.cx - hw, y]);
+  }
+
+  const ring: Pt[] = [
+    ...innerL,
+    ...[...innerR].reverse(),
+    ...outerR,
+    ...[...outerL].reverse(),
+  ];
+  const d = smoothClosedPath(ring);
+  if (!d) return '';
+  // Stubble still relies on opacity rather than a second tone; logged for Phase 5.
+  const opacity = style === 'stubble' ? ' opacity="0.22"' : '';
+  return `<path d="${d}" fill="${fill}"${opacity}/>`;
 }

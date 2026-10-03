@@ -59,6 +59,8 @@ export { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
 export { BEARD_SHAPES } from './svg-parts/beard-shapes';
 
 // Face geometry + fitting
-export { faceFor, faceHalfWidthAt, fitToFace, MAN_FACE, WOMAN_FACE } from './svg-parts/beard-path';
+export {
+  faceFor, faceHalfWidthAt, fitToFace, buildBeardSvg, MAN_FACE, WOMAN_FACE,
+} from './svg-parts/beard-path';
 export type { FaceGeometry } from './svg-parts/beard-path';
 export { PROFESSION_LAYERS } from './svg-parts/profession-layers';
