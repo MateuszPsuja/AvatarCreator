@@ -16,7 +16,9 @@ import {
 import { SKIN_TONES } from './skin-tones';
 import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 import { textToVisemes } from './visemes';
-import { buildBeardSvg, buildMustacheSvg, faceFor, MAN_FACE } from './svg-parts/beard-path';
+import { faceFor, fitToFace, MAN_FACE } from './svg-parts/beard-path';
+import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
@@ -232,47 +234,49 @@ describe('buildAvatarSvg — baked speech', () => {
   });
 });
 
-describe('facial hair is generated from the face', () => {
-  // Facial hair used to be hand-authored paths for the man's face, so it
-  // could not fit a woman's jaw. It is now sampled from whichever ellipse
-  // is in use, which makes the fit structural.
-  it('differs between man and woman rather than being scaled at render', () => {
+describe('facial hair is authored, then fitted to the head', () => {
+  it('leaves a man byte-for-byte unchanged', () => {
+    for (const style of ['stubble', 'short', 'long', 'goatee'] as const) {
+      expect(fitToFace(BEARD_SHAPES[style], MAN_FACE)).toBe(BEARD_SHAPES[style]);
+    }
+    for (const style of ['thin', 'thick', 'handlebar', 'chevron'] as const) {
+      expect(fitToFace(MUSTACHE_SHAPES[style], MAN_FACE)).toBe(MUSTACHE_SHAPES[style]);
+    }
+  });
+
+  it('rescales a woman by the face ratio', () => {
     const man = buildAvatarSvgInner(makeConfig({ gender: 'man', beard: 'short' }));
     const woman = buildAvatarSvgInner(makeConfig({ gender: 'woman', beard: 'short' }));
     expect(man).not.toBe(woman);
-    expect(man).not.toMatch(/class="layer-beard"[^>]*transform=/);
+    // no CSS transform — the shape is rescaled in the path data itself
     expect(woman).not.toMatch(/class="layer-beard"[^>]*transform=/);
   });
 
-  it('stays inside the face outline for both heads', () => {
+  it('clips facial hair to the head for both faces', () => {
     for (const gender of ['man', 'woman'] as const) {
-      const f = faceFor(gender);
-      const svg = buildAvatarSvgInner(makeConfig({ gender, beard: 'long' }));
-      const nums = svg
-        .slice(svg.indexOf('class="layer-beard"'))
-        .match(/-?\d+(\.\d+)?/g)!
-        .map(Number);
-      // Every drawn x must sit within the head's horizontal extent.
-      for (let i = 0; i + 1 < nums.length; i += 2) {
-        const x = nums[i];
-        expect(Math.abs(x - f.cx)).toBeLessThanOrEqual(f.rx + 1);
+      for (const beard of ['stubble', 'short', 'long', 'goatee'] as const) {
+        const inner = buildAvatarSvgInner(makeConfig({ gender, beard }));
+        const f = faceFor(gender);
+        const clip = inner.slice(inner.indexOf('face-clip'), inner.indexOf('</clipPath>'));
+        expect(clip).toContain(`A${f.rx},${f.ry}`);
+        // An element takes one clip-path, so the face clip is on an inner
+        // group nested inside the helmet clip.
+        expect(inner).toMatch(/class="layer-beard"[^>]*>[\s\S]*?clip-path="url\(#face-clip\)"/);
       }
     }
   });
 
-  it('renders a beard for every style and both heads', () => {
-    for (const style of ['stubble', 'short', 'long', 'goatee'] as const) {
-      for (const gender of ['man', 'woman'] as const) {
-        const inner = buildAvatarSvgInner(makeConfig({ gender, beard: style }));
-        expect(inner).toContain('class="layer-beard"');
-        expect(inner.length).toBeGreaterThan(0);
+  it('renders every style on both heads and nothing for none', () => {
+    for (const gender of ['man', 'woman'] as const) {
+      for (const beard of ['stubble', 'short', 'long', 'goatee'] as const) {
+        expect(buildAvatarSvgInner(makeConfig({ gender, beard }))).toContain('class="layer-beard"');
       }
     }
+    expect(fitToFace('', MAN_FACE)).toBe('');
   });
 
-  it('renders nothing for style none', () => {
-    expect(buildBeardSvg('none', MAN_FACE, '#000')).toBe('');
-    expect(buildMustacheSvg('none', MAN_FACE, '#000')).toBe('');
+  it('keeps static output free of eyelids', () => {
+    expect(buildAvatarSvgInner(makeConfig({ beard: 'short' }))).not.toContain('eyelid-left');
   });
 });
 

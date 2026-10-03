@@ -50,20 +50,15 @@ export {
 } from './avatar-renderer';
 export type { BuildAvatarOptions } from './avatar-renderer';
 
-// Facial hair — generated from the face geometry so it fits both heads
-export {
-  buildBeardSvg,
-  buildMustacheSvg,
-  faceFor,
-  faceHalfWidthAt,
-  MAN_FACE,
-  WOMAN_FACE,
-} from './svg-parts/beard-path';
-export type { FaceGeometry } from './svg-parts/beard-path';
-
 // SVG part constants
 export { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 export { EYE_SHAPES } from './svg-parts/eye-shapes';
 export { HAIR_SHAPES } from './svg-parts/hair-shapes';
 export { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
+export { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
+export { BEARD_SHAPES } from './svg-parts/beard-shapes';
+
+// Face geometry + fitting
+export { faceFor, faceHalfWidthAt, fitToFace, MAN_FACE, WOMAN_FACE } from './svg-parts/beard-path';
+export type { FaceGeometry } from './svg-parts/beard-path';
 export { PROFESSION_LAYERS } from './svg-parts/profession-layers';

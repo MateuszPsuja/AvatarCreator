@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #F0AC78;--skin-ear: #E09A62;--skin-shadow: #C67C45;--lip-color: #C97050;--hair-color: #C0392B;--eye-color: #6B3A2A"><defs><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #F0AC78;--skin-ear: #E09A62;--skin-shadow: #C67C45;--lip-color: #C97050;--hair-color: #C0392B;--eye-color: #6B3A2A"><defs><clipPath id="face-clip"><path d="M48,88 A52,56 0 0 1 152,88 L152,192 L48,192 Z"/></clipPath><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
       <!-- Dark striped undershirt -->
       <path d="M30,200 Q30,158 55,150 Q75,143 88,140
               L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
@@ -29,7 +29,7 @@
       <circle cx="77" cy="85" r="2" fill="#FFF"/>
       <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
       <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
-      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache"></g><g class="layer-beard"></g><g class="layer-glasses">
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache"><g clip-path="url(#face-clip)"></g></g><g class="layer-beard"><g clip-path="url(#face-clip)"></g></g><g class="layer-glasses">
     <circle cx="74" cy="88" r="16" fill="none" stroke="#1A1A2E" stroke-width="2"/>
     <circle cx="126" cy="88" r="16" fill="none" stroke="#1A1A2E" stroke-width="2"/>
     <line x1="90" y1="88" x2="110" y2="88" stroke="#1A1A2E" stroke-width="2"/>

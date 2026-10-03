@@ -20,11 +20,9 @@ import { MOUTH_SHAPES } from './svg-parts/mouth-shapes';
 import { textToVisemes, MS_PER_VISEME } from './visemes';
 import { EYE_SHAPES } from './svg-parts/eye-shapes';
 import { HAIR_SHAPES } from './svg-parts/hair-shapes';
-import {
-  buildBeardSvg,
-  buildMustacheSvg,
-  faceFor,
-} from './svg-parts/beard-path';
+import { MUSTACHE_SHAPES } from './svg-parts/mustache-shapes';
+import { BEARD_SHAPES } from './svg-parts/beard-shapes';
+import { faceFor, fitToFace } from './svg-parts/beard-path';
 import { GLASSES_SHAPES } from './svg-parts/glasses-shapes';
 import { PROFESSION_LAYERS } from './svg-parts/profession-layers';
 
@@ -168,13 +166,13 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
   const astronaut = isAstronaut(config);
   const hair = HAIR_SHAPES[config.haircut] ?? { back: '', front: '' };
   const eyes = EYE_SHAPES[config.eyeStyle] ?? { sclera: '', iris: '' };
-  // Facial hair is generated against whichever head is in use, so it hugs
-  // the jaw of a man and a woman alike. It used to come from static path
-  // strings authored for the man's face, which cannot fit both.
+  // Facial hair is authored once and rescaled to whichever head is in use.
+  // A man is untouched (the ratios are exactly 1); a woman gets the same
+  // silhouette at the same relative position on a proportionally smaller
+  // head, which is what the hand-drawn shapes were missing.
   const facialHead = faceFor(config.gender);
-  const hairColor = HAIR_COLORS[config.hairColor];
-  const mustache = buildMustacheSvg(config.mustache, facialHead, hairColor);
-  const beard = buildBeardSvg(config.beard, facialHead, hairColor);
+  const mustache = fitToFace(MUSTACHE_SHAPES[config.mustache] ?? '', facialHead);
+  const beard = fitToFace(BEARD_SHAPES[config.beard] ?? '', facialHead);
   const glasses = GLASSES_SHAPES[config.glasses] ?? '';
   const profession = PROFESSION_LAYERS[config.profession] ?? { body: '', accessory: '' };
   const mouthPath = MOUTH_SHAPES[viseme] ?? MOUTH_SHAPES[0];
@@ -183,8 +181,20 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
   const helmetClip = helmetClipUrl(config, idsPrefix);
 
   // ── defs ────────────────────────────────────────────────────────────
+  // Face containment for facial hair. The hand-drawn beard and moustache
+  // artwork is not perfectly authored to the jawline — `stubble` overhangs
+  // even on a man — so rescaling alone cannot guarantee they stay on the
+  // head. This clip is derived from the face in use and is the backstop.
+  // The ellipse arcs over the top, then runs straight down past the chin so
+  // a long beard may still fall onto the chest.
+  const faceClipPath =
+    `M${facialHead.cx - facialHead.rx},${facialHead.cy} ` +
+    `A${facialHead.rx},${facialHead.ry} 0 0 1 ${facialHead.cx + facialHead.rx},${facialHead.cy} ` +
+    `L${facialHead.cx + facialHead.rx},192 L${facialHead.cx - facialHead.rx},192 Z`;
+
   const defs =
     `<defs>` +
+    `<clipPath id="${idsPrefix}face-clip"><path d="${faceClipPath}"/></clipPath>` +
     `<clipPath id="${idsPrefix}hat-clip">` +
     `<rect x="${HAT_CLIP_RECT.x}" y="${HAT_CLIP_RECT.y}" width="${HAT_CLIP_RECT.width}" height="${HAT_CLIP_RECT.height}"/>` +
     `</clipPath>` +
@@ -284,11 +294,14 @@ export function buildAvatarSvgInner(config: AvatarConfig, opts: BuildAvatarOptio
     `</path>`;
 
   // ── 11-14 ───────────────────────────────────────────────────────────
-  // No transform: the geometry already matches the face it was built from,
-  // so there is nothing left to scale at render time.
+  // No CSS transform: the shape is rescaled in the path data itself. The
+  // inner groups carry the face clip and the outer the helmet clip, because
+  // an element can only take one clip-path.
   const facialHair =
-    `<g class="layer-mustache"${clipAttr(helmetClip)}>${mustache}</g>` +
-    `<g class="layer-beard"${clipAttr(helmetClip)}>${beard}</g>`;
+    `<g class="layer-mustache"${clipAttr(helmetClip)}>` +
+    `<g clip-path="url(#${idsPrefix}face-clip)">${mustache}</g></g>` +
+    `<g class="layer-beard"${clipAttr(helmetClip)}>` +
+    `<g clip-path="url(#${idsPrefix}face-clip)">${beard}</g></g>`;
   const glassesGroup = `<g class="layer-glasses">${glasses}</g>`;
   const hairFront = `<g class="layer-hair-front"${clipAttr(hairClip)}>${hair.front}</g>`;
   const accessory = `<g class="layer-accessory">${profession.accessory}</g>`;
