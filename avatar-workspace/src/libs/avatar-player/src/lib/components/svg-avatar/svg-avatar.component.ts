@@ -34,6 +34,11 @@ import { AvatarAnimationService } from '../../services/avatar-animation.service'
   // nothing — the eyelids would render at full size and hide the eyes.
   // Every selector in the SCSS is namespaced under `.avatar-svg` instead.
   encapsulation: ViewEncapsulation.None,
+  // Per-component, not app-wide. ngOnDestroy calls anim.stopAll(), so a shared
+  // instance would mean one avatar leaving the DOM stops blinking and head
+  // motion for every other avatar on the page. That is invisible with a single
+  // avatar and breaks a gallery of them.
+  providers: [AvatarAnimationService],
   template: `<svg xmlns="http://www.w3.org/2000/svg"
      [attr.viewBox]="viewBox"
      class="avatar-svg"

@@ -1,19 +1,15 @@
 // avatar-player.component.scss
+//
+// Size is driven by the `size` input through inline styles on the host
+// element, not by this file — a consumer can then drop a player at any scale
+// without overriding encapsulated styles from the outside.
 
 .avatar-player {
   display: inline-flex;
   position: relative;
 
   .player-avatar {
-    width: 48px;
-    height: 48px;
     border-radius: 50%;
     transition: width 0.2s ease, height 0.2s ease;
-  }
-
-  // Speaking: grow avatar
-  &--speaking .player-avatar {
-    width: 72px;
-    height: 72px;
   }
 }

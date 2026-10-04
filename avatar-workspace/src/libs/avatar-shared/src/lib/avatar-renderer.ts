@@ -2,8 +2,8 @@
 //
 // SINGLE SOURCE OF TRUTH for avatar geometry.
 //
-// Both the live preview (SvgAvatarComponent) and the file export
-// (AvatarService.downloadSVG) call this. Previously each had its own copy
+// Both the live preview (SvgAvatarComponent) and the export bundle
+// (AvatarService.buildSvg) call this. Previously each had its own copy
 // of the render logic, and they drifted badly: the exporter ignored gender
 // and omitted every clipPath, so head-wearing professions exported with
 // hair punching through their hats.
