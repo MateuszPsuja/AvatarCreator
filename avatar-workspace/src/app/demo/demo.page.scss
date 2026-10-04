@@ -181,18 +181,16 @@
 }
 
 // The fetched file is injected as a full <svg>, so target the child, not <img>.
+// Holds the player, which sizes itself in px via the `size` input and grows
+// while speaking — so this centres it rather than stretching it to fill.
 .demo-thumb {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   aspect-ratio: 1;
   border-radius: 8px;
   background: hsl(var(--muted));
   overflow: hidden;
-
-  > svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
 }
 
 .demo-thumb--loading {
@@ -251,18 +249,15 @@
 }
 
 .demo-lightbox-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: none;
   width: 260px;
   aspect-ratio: 1;
   border-radius: 12px;
   background: hsl(var(--muted));
   overflow: hidden;
-}
-
-.demo-lightbox-svg > svg {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 .demo-lightbox-meta {

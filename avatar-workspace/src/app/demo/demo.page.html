@@ -1,4 +1,4 @@
-<!-- demo.page.html — read-only gallery of exported avatars, with per-card lip sync -->
+<!-- demo.page.html — gallery of exported avatars, each played by the real player -->
 <div class="demo-shell">
 
   <header class="demo-head">
@@ -6,9 +6,9 @@
       <a routerLink="/" class="demo-back">← Back to creator</a>
       <h1 class="demo-title">Export gallery</h1>
       <p class="demo-sub">
-        Every card below is a <code>.svg</code> file this app exported, fetched
-        and inlined as-is. Press the play button to have that avatar mouth a
-        {{ speechMs / 1000 }} second phrase.
+        Every card loads the <code>.json</code> this app exported and hands it to
+        <code>&lt;app-avatar-player&gt;</code> — the same component a consuming app
+        imports. Press Speak to hear that avatar mouth its phrase.
       </p>
     </div>
 
@@ -24,8 +24,15 @@
 
         <button type="button" class="demo-thumb-btn" (click)="open(avatar)"
                 [attr.aria-label]="'Inspect ' + avatar.label + ' avatar'">
-          @if (markupFor(avatar); as svg) {
-            <span class="demo-thumb" [innerHTML]="svg"></span>
+          @if (configFor(avatar); as cfg) {
+            <span class="demo-thumb">
+              <app-avatar-player
+                [config]="cfg"
+                [idsPrefix]="idsPrefix(avatar)"
+                [size]="cardSize"
+                [speaking]="isPlaying(avatar)"
+                [message]="avatar.speech" />
+            </span>
           } @else {
             <span class="demo-thumb demo-thumb--loading">…</span>
           }
@@ -60,9 +67,10 @@
   </div>
 
   <footer class="demo-foot">
-    Regenerate with <code>npm run demo:build</code>. Files are generated from
-    <code>demo-manifest.ts</code> via the same renderer the app exports from, so
-    a hand edit here would show up as a diff.
+    Regenerate with <code>npm run demo:build</code>. Each <code>.svg</code> and
+    <code>.json</code> is generated from <code>demo-manifest.ts</code> through the
+    same <code>AvatarService</code> the Export Bundle button uses, so a hand edit
+    here would show up as a diff.
   </footer>
 </div>
 
@@ -71,8 +79,13 @@
   <div class="demo-lightbox" (click)="close()" role="dialog" aria-modal="true">
     <div class="demo-lightbox-inner" (click)="$event.stopPropagation()">
       <div class="demo-lightbox-art" [attr.data-slug]="avatar.slug">
-        @if (markupFor(avatar); as svg) {
-          <div class="demo-lightbox-svg" [innerHTML]="svg"></div>
+        @if (configFor(avatar); as cfg) {
+          <app-avatar-player
+            [config]="cfg"
+            [idsPrefix]="idsPrefix(avatar)"
+            [size]="lightboxSize"
+            [speaking]="isPlaying(avatar)"
+            [message]="avatar.speech" />
         }
       </div>
       <div class="demo-lightbox-meta">

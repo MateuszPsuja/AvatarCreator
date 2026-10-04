@@ -1,66 +1,66 @@
 // src/app/demo/demo.page.ts
 //
-// READ-ONLY gallery of the app's own SVG exports, with a play button per
-// avatar that mouths a ~4 second phrase.
+// Gallery of the app's own exports, each one played by the real player.
 //
-// The files are still the artifact: each card fetches the committed .svg and
-// injects that exact text. We inline it rather than using <img> because a
-// play button has to control the mouth, and an <img>-loaded SVG is inert to
-// the host page — no clicks, no scripting, no attribute changes. Inlining
-// keeps the "is the file self-contained?" check honest, because a file that
-// depended on external CSS would still render wrong once injected.
+// Every card loads the committed `<slug>.json` that `npm run demo:build`
+// wrote through AvatarService — the same bytes the Export Bundle button puts in
+// a .zip — and hands it to <app-avatar-player>. Nothing here re-renders an
+// avatar or touches a mouth path: blinking, pupil movement, head motion and
+// lip sync all come from the published player component, so this page is a
+// working example of the integration a consuming app would write.
+//
+// The .svg files are still committed next to the JSON as the standalone-artwork
+// check, but the gallery deliberately does not inline them — a player needs the
+// config, and an <img>-loaded SVG is inert to the host page anyway.
 import {
   Component,
   signal,
   inject,
   OnInit,
   ChangeDetectionStrategy,
-  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { MOUTH_SHAPES, textToVisemes, MS_PER_VISEME } from '@avatar-workspace/avatar-shared';
+import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import { AvatarPlayerComponent } from '@avatar-workspace/avatar-player';
 import { DEMO_AVATARS, DEMO_ASSET_DIR, DemoAvatar } from './demo-manifest';
 
-/** How long a single play lasts. */
-const SPEECH_MS = 4000;
+/** Base edge length in px for a card avatar. It grows while speaking. */
+const CARD_SIZE = 100;
+/** Same, in the lightbox. */
+const LIGHTBOX_SIZE = 170;
 
 @Component({
   selector: 'app-demo-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, AvatarPlayerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './demo.page.html',
   styleUrl: './demo.page.scss',
 })
 export class DemoPageComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly avatars = DEMO_AVATARS;
   readonly assetDir = DEMO_ASSET_DIR;
-  readonly speechMs = SPEECH_MS;
+  readonly cardSize = CARD_SIZE;
+  readonly lightboxSize = LIGHTBOX_SIZE;
 
-  /** slug -> the file's own markup, fetched once. */
-  private readonly markup = new Map<string, SafeHtml>();
+  /** slug -> the exported config, fetched once. */
+  private readonly configs = new Map<string, AvatarConfig>();
   readonly loaded = signal<Set<string>>(new Set());
-  readonly playing = signal<string | null>(null);
 
-  private timers = new Map<string, ReturnType<typeof setTimeout>>();
+  /** slug of the one avatar currently speaking, if any. */
+  readonly playing = signal<string | null>(null);
 
   readonly active = signal<DemoAvatar | null>(null);
 
   ngOnInit(): void {
     for (const avatar of this.avatars) {
-      this.http.get(this.src(avatar), { responseType: 'text' }).subscribe({
-        next: (text) => {
-          this.markup.set(
-            avatar.slug,
-            this.sanitizer.bypassSecurityTrustHtml(text),
-          );
+      this.http.get<AvatarConfig>(this.src(avatar)).subscribe({
+        next: (config) => {
+          this.configs.set(avatar.slug, config);
           this.loaded.update((set) => new Set(set).add(avatar.slug));
         },
         error: () => console.warn(`Failed to load ${this.src(avatar)}`),
@@ -69,15 +69,27 @@ export class DemoPageComponent implements OnInit {
   }
 
   src(avatar: DemoAvatar): string {
-    return `${this.assetDir}/${avatar.slug}.svg`;
+    return `${this.assetDir}/${avatar.slug}.json`;
   }
 
-  markupFor(avatar: DemoAvatar): SafeHtml | null {
-    return this.markup.get(avatar.slug) ?? null;
+  configFor(avatar: DemoAvatar): AvatarConfig | null {
+    return this.configs.get(avatar.slug) ?? null;
   }
 
   isReady(avatar: DemoAvatar): boolean {
     return this.loaded().has(avatar.slug);
+  }
+
+  /**
+   * Unique per avatar, and REQUIRED here.
+   *
+   * The renderer emits `url(#hat-clip)` for every avatar. Browsers resolve that
+   * against the first matching element in the document, so without a distinct
+   * prefix all 16 cards would clip against whichever one rendered first and
+   * the hats and helmets would stop hiding hair.
+   */
+  idsPrefix(avatar: DemoAvatar): string {
+    return `${avatar.slug}-`;
   }
 
   isPlaying(avatar: DemoAvatar): boolean {
@@ -85,65 +97,7 @@ export class DemoPageComponent implements OnInit {
   }
 
   toggle(avatar: DemoAvatar): void {
-    if (this.isPlaying(avatar)) {
-      this.stop(avatar.slug);
-    } else {
-      this.play(avatar);
-    }
-  }
-
-  /**
-   * Mouth the phrase for SPEECH_MS, then return to silence.
-   *
-   * The viseme sequence is trimmed to what actually fits in the window, so a
-   * long phrase is cut at a word-ish boundary rather than mid-syllable.
-   */
-  play(avatar: DemoAvatar): void {
-    this.stop(avatar.slug);
-    this.playing.set(avatar.slug);
-
-    const budget = Math.floor(SPEECH_MS / MS_PER_VISEME);
-    let visemes = textToVisemes(avatar.speech);
-    if (visemes.length > budget) {
-      visemes = visemes.slice(0, budget);
-    }
-    // Always land on silence so the loop does not end on an open shape.
-    if (visemes[visemes.length - 1] !== 0) visemes.push(0);
-
-    let i = 0;
-    const step = () => {
-      if (this.playing() !== avatar.slug) return;
-      if (i >= visemes.length) {
-        this.stop(avatar.slug);
-        return;
-      }
-      this.setMouth(avatar.slug, MOUTH_SHAPES[visemes[i]] ?? MOUTH_SHAPES[0]);
-      i++;
-      const t = setTimeout(step, MS_PER_VISEME);
-      this.timers.set(avatar.slug, t);
-    };
-    step();
-  }
-
-  stop(slug: string): void {
-    const t = this.timers.get(slug);
-    if (t) clearTimeout(t);
-    this.timers.delete(slug);
-    if (this.playing() === slug) this.playing.set(null);
-    this.setMouth(slug, MOUTH_SHAPES[0]);
-  }
-
-  stopAll(): void {
-    for (const slug of [...this.timers.keys()]) this.stop(slug);
-  }
-
-  /** Every card renders the same ids, so scope the lookup to one card. */
-  private setMouth(slug: string, path: string): void {
-    const card = this.host.nativeElement.querySelector<HTMLElement>(
-      `[data-slug="${slug}"]`,
-    );
-    const mouth = card?.querySelector<SVGPathElement>('.layer-mouth');
-    mouth?.setAttribute('d', path);
+    this.playing.set(this.isPlaying(avatar) ? null : avatar.slug);
   }
 
   open(avatar: DemoAvatar): void {
@@ -154,9 +108,16 @@ export class DemoPageComponent implements OnInit {
     this.active.set(null);
   }
 
-  /** Trait chips shown under each avatar in the grid. */
+  /**
+   * Trait chips, read from the *exported* config rather than the manifest.
+   *
+   * That is the point of loading the JSON: if the export ever stopped carrying
+   * a field, the chips would fall back to the manifest's copy and quietly lie.
+   * Reading the loaded config keeps the card honest about what was exported.
+   */
   chips(avatar: DemoAvatar): string[] {
-    const c = avatar.config;
+    const c = this.configFor(avatar);
+    if (!c) return [];
     const out = [c.gender, c.profession === 'none' ? 'no profession' : c.profession];
     if (c.haircut !== 'bald') out.push(c.haircut + ' hair');
     if (c.beard !== 'none') out.push(c.beard + ' beard');

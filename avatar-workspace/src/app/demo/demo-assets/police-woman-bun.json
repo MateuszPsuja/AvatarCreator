@@ -1,0 +1,14 @@
+{
+  "id": "d5",
+  "name": "Police",
+  "gender": "woman",
+  "skinTone": "deep",
+  "haircut": "bun",
+  "hairColor": "black",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "none",
+  "eyeStyle": "round",
+  "glasses": "none",
+  "profession": "police"
+}

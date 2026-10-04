@@ -1,9 +1,9 @@
 // src/app/demo/demo-manifest.ts
 //
 // Single source of truth for the demo gallery. The generator script imports
-// this and writes the SVGs; the viewer page imports the same list and renders
-// them. One manifest, so the committed files and the page can never disagree
-// about what exists.
+// this and writes the .svg + .json pairs; the viewer page imports the same list
+// and loads those .json files into the player. One manifest, so the committed
+// files and the page can never disagree about what exists.
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
 
 export interface DemoAvatar {
@@ -15,9 +15,10 @@ export interface DemoAvatar {
   /**
    * Phrase the demo avatar mouths when its play button is pressed.
    *
-   * Roughly 50 characters, because the demo plays for 4 seconds at
-   * MS_PER_VISEME (80ms) — about 50 visemes. Shorter phrases finish early and
-   * longer ones get cut off mid-word.
+   * The player maps this to visemes at MS_PER_VISEME (80ms) and plays the whole
+   * phrase, so length is a pacing choice rather than a hard limit — a long one
+   * keeps talking until you press Stop. Roughly 50 characters finishes in about
+   * four seconds, which reads as a single spoken line.
    */
   speech: string;
   config: AvatarConfig;

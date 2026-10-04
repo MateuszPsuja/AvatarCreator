@@ -1,0 +1,14 @@
+{
+  "id": "d6",
+  "name": "Astronaut",
+  "gender": "man",
+  "skinTone": "light",
+  "haircut": "short",
+  "hairColor": "blonde",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "long",
+  "eyeStyle": "round",
+  "glasses": "none",
+  "profession": "astronaut"
+}

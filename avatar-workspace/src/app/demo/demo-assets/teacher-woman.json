@@ -1,0 +1,14 @@
+{
+  "id": "d3",
+  "name": "Teacher",
+  "gender": "woman",
+  "skinTone": "medium",
+  "haircut": "ponytail",
+  "hairColor": "brown",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "none",
+  "eyeStyle": "almond",
+  "glasses": "none",
+  "profession": "teacher"
+}

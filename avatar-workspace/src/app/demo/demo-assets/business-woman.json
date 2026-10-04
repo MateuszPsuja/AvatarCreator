@@ -1,0 +1,14 @@
+{
+  "id": "d8",
+  "name": "Business",
+  "gender": "woman",
+  "skinTone": "dark",
+  "haircut": "curly",
+  "hairColor": "black",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "none",
+  "eyeStyle": "round",
+  "glasses": "rectangular",
+  "profession": "business"
+}
