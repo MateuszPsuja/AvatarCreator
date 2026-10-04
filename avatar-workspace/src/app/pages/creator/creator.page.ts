@@ -235,9 +235,10 @@ export class CreatorPageComponent implements OnInit {
     this.status.set('Saved to this browser');
   }
 
-  export(): void {
-    this.avatarService.downloadSVG(this.config());
-    this.status.set('Exported SVG');
+  /** The full hand-off bundle: config JSON + static SVG + a schema README. */
+  exportBundle(): void {
+    this.avatarService.downloadBundle(this.config());
+    this.status.set('Exported bundle (.zip)');
   }
 
   testSpeech(): void {

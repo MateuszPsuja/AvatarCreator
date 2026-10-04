@@ -161,9 +161,14 @@
         <button hlmBtn variant="ghost" size="sm" (click)="reset()">Reset</button>
       </div>
       <div class="flex gap-2">
-        <button hlmBtn variant="outline" size="sm" (click)="export()">Export SVG</button>
-        <button hlmBtn size="sm" (click)="save()">Save</button>
+        <button hlmBtn variant="outline" size="sm" (click)="save()">Save</button>
       </div>
+      <!-- Own full-width row: exporting is the app's whole point, and the rail
+           is only 26rem wide — sharing a row with Save would shrink the label. -->
+      <button hlmBtn size="sm" (click)="exportBundle()"
+              title="Download the avatar data — config JSON, static SVG and a schema README — as a .zip">
+        Export Bundle
+      </button>
     </div>
   </aside>
 </div>
