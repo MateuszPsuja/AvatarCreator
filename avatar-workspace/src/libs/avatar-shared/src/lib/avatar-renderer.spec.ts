@@ -102,6 +102,39 @@ describe('buildAvatarSvg — gender', () => {
   });
 });
 
+describe('buildAvatarSvg — canvas bounds', () => {
+  // The astronaut antenna used to be drawn past the top of the 200×200 canvas,
+  // so it escaped the press-bed border in the preview and was silently cut in
+  // half in the exported file (a standalone <svg> hides overflow by default).
+  // A negative coordinate in untranslated geometry is the general form of that
+  // bug, so assert on all of them at once rather than on the antenna alone.
+  //
+  // Two things must be discounted first, or the check lies:
+  //  - XML comments, which are prose and can contain any number;
+  //  - groups translated into place, whose children are local coordinates —
+  //    the police cap badge is a 5-point star at 0,-6 … 6,-2 inside
+  //    translate(100,44), which is well inside the canvas.
+  const COMMENT = /<!--[\s\S]*?-->/g;
+  const TRANSLATED = /<g\b[^>]*transform="translate\([^"]*\)"[^>]*>[\s\S]*?<\/g>/g;
+  const NUMBER = /-?\d+(?:\.\d+)?/g;
+
+  it('emits no negative coordinate for any profession or gender', () => {
+    for (const profession of PROFESSIONS) {
+      for (const gender of GENDERS) {
+        const inner = buildAvatarSvgInner(makeConfig({ profession, gender }))
+          .replace(COMMENT, '')
+          .replace(TRANSLATED, '');
+        const negatives = (inner.match(NUMBER) ?? [])
+          .map(Number)
+          .filter((n) => n < 0);
+        expect(negatives)
+          .withContext(`${profession}/${gender} produced ${negatives.join(', ')}`)
+          .toEqual([]);
+      }
+    }
+  });
+});
+
 describe('buildAvatarSvg — clip paths (the export-drift regression)', () => {
   it('always emits both clipPath definitions', () => {
     for (const profession of PROFESSIONS) {
