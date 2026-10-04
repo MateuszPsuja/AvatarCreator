@@ -271,11 +271,11 @@ export const PROFESSION_LAYERS: Record<ProfessionType, ProfessionParts> = {
       <!-- Dark striped undershirt -->
       <path d="M30,200 Q30,158 55,150 Q75,143 88,140
               L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
-              Q125,143 145,150 Q170,158 170,200 Z" fill="#1C1C1C"/>
+              Q125,143 145,150 Q170,158 170,200 Z" fill="#333A45"/>
       <!-- Horizontal stripes on shirt -->
-      <line x1="42" y1="168" x2="158" y2="168" stroke="#333" stroke-width="2"/>
-      <line x1="36" y1="180" x2="164" y2="180" stroke="#333" stroke-width="2"/>
-      <line x1="34" y1="192" x2="166" y2="192" stroke="#333" stroke-width="2"/>
+      <line x1="42" y1="168" x2="158" y2="168" stroke="#4E5563" stroke-width="2"/>
+      <line x1="36" y1="180" x2="164" y2="180" stroke="#4E5563" stroke-width="2"/>
+      <line x1="34" y1="192" x2="166" y2="192" stroke="#4E5563" stroke-width="2"/>
       <!-- Canvas-colored apron over shirt -->
       <path d="M72,152 L72,200 L128,200 L128,152
               Q128,148 120,148 L100,148 L80,148 Q72,148 72,152 Z" fill="#E8DCCA"/>
@@ -318,12 +318,12 @@ export const PROFESSION_LAYERS: Record<ProfessionType, ProfessionParts> = {
       <path d="M114,140 L120,150 L106,150 Z" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="0.5"/>
       <!-- Suit jacket -->
       <path d="M30,200 Q30,158 55,150 Q66,146 76,143
-              L82,152 L88,200 Z" fill="#1C1C1C"/>
+              L82,152 L88,200 Z" fill="#333A45"/>
       <path d="M170,200 Q170,158 145,150 Q134,146 124,143
-              L118,152 L112,200 Z" fill="#1C1C1C"/>
+              L118,152 L112,200 Z" fill="#333A45"/>
       <!-- Lapels (V-shape) -->
-      <path d="M76,143 L86,158 L82,152" fill="#27272A" stroke="#333" stroke-width="0.5"/>
-      <path d="M124,143 L114,158 L118,152" fill="#27272A" stroke="#333" stroke-width="0.5"/>
+      <path d="M76,143 L86,158 L82,152" fill="#3E4652" stroke="#4E5563" stroke-width="0.5"/>
+      <path d="M124,143 L114,158 L118,152" fill="#3E4652" stroke="#4E5563" stroke-width="0.5"/>
       <!-- Suit button -->
       <circle cx="88" cy="175" r="2" fill="#3F3F46"/>
       <circle cx="112" cy="175" r="2" fill="#3F3F46"/>
