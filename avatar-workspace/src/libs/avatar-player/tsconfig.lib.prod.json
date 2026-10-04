@@ -1,0 +1,14 @@
+/* tsconfig.lib.prod.json — production build of the published package.
+   Drops declaration source maps (they would ship absolute local paths) and
+   uses Angular's "partial" compilation mode, so the published code is linked
+   by the consuming app's own compiler rather than baked against this
+   workspace's Angular version. */
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "declarationMap": false
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
+}

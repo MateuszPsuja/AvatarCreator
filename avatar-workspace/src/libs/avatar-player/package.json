@@ -1,0 +1,16 @@
+{
+  "name": "@avatar-workspace/avatar-player",
+  "version": "0.1.0",
+  "description": "Drop-in animated avatar player: blinking, eye movement, head idle motion and lip sync, driven by an AvatarConfig exported from the Avatar Creator.",
+  "license": "MIT",
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/platform-browser": "^19.2.0"
+  },
+  "dependencies": {
+    "@avatar-workspace/avatar-shared": "0.1.0",
+    "tslib": "^2.3.0"
+  }
+}

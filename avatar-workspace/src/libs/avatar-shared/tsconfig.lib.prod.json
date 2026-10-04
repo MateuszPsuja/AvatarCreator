@@ -1,0 +1,13 @@
+/* tsconfig.lib.prod.json — production build of the published package.
+   Ships declarations without source maps into the .d.ts, and uses Angular's
+   "partial" compilation mode so the output stays Ivy-compatible with the
+   consuming app's compiler version instead of being linked ahead of time. */
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "declarationMap": false
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
+}

@@ -11,6 +11,9 @@
 npm-debug.log
 yarn-error.log
 
+# Local npm cache used when the global one is not writable
+/.npm-cache
+
 # IDEs and editors
 .idea/
 .project

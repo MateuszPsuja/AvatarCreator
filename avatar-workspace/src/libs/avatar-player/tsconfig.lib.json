@@ -1,0 +1,25 @@
+/* tsconfig.lib.json — build config for the publishable avatar-player package.
+ *
+ * The one non-default part is `paths`. The workspace tsconfig maps
+ * @avatar-workspace/avatar-shared to its TypeScript source, which is what the
+ * app wants for a fast dev loop — but ng-packagr must compile against the
+ * *built* package instead, otherwise it would inline a sibling library's
+ * source into this one and publish it under the wrong package. So the path is
+ * overridden here, which is why the build order matters: avatar-shared first,
+ * then avatar-player. `npm run build:libs` does both in order. */
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../out-tsc/avatar-player",
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": [],
+    "baseUrl": "../../..",
+    "paths": {
+      "@avatar-workspace/avatar-shared": ["dist/avatar-shared"]
+    }
+  },
+  "files": ["src/index.ts"],
+  "include": ["src/**/*.d.ts"]
+}

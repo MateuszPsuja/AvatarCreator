@@ -124,6 +124,52 @@
           }
         }
       }
+    },
+    "avatar-shared": {
+      "projectType": "library",
+      "root": "src/libs/avatar-shared",
+      "sourceRoot": "src/libs/avatar-shared/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "src/libs/avatar-shared/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "src/libs/avatar-shared/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "src/libs/avatar-shared/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "avatar-player": {
+      "projectType": "library",
+      "root": "src/libs/avatar-player",
+      "sourceRoot": "src/libs/avatar-player/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "src/libs/avatar-player/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "src/libs/avatar-player/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "src/libs/avatar-player/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   },
   "cli": {
