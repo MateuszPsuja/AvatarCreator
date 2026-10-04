@@ -3,18 +3,12 @@
 
   <header class="demo-head">
     <div class="flex flex-col gap-1">
-      <a routerLink="/" class="demo-back">← Back to creator</a>
       <h1 class="demo-title">Export gallery</h1>
       <p class="demo-sub">
         Every card loads the <code>.json</code> this app exported and hands it to
         <code>&lt;app-avatar-player&gt;</code> — the same component a consuming app
         imports. Press Speak to hear that avatar mouth its phrase.
       </p>
-    </div>
-
-    <div class="demo-count">
-      <span class="demo-count-num">{{ avatars.length }}</span>
-      <span class="demo-count-label">of {{ avatars.length }}</span>
     </div>
   </header>
 

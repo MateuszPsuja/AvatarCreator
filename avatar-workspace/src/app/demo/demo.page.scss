@@ -17,17 +17,6 @@
   margin-bottom: 1.5rem;
 }
 
-.demo-back {
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-  letter-spacing: 0.02em;
-
-  &:hover {
-    color: hsl(var(--foreground));
-  }
-}
-
 .demo-title {
   font-size: 1.75rem;
   font-weight: 700;
@@ -49,24 +38,6 @@
     border-radius: 4px;
     background: hsl(var(--muted));
   }
-}
-
-.demo-count {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.demo-count-num {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.demo-count-label {
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
 }
 
 .demo-foot {

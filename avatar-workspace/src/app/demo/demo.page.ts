@@ -20,7 +20,6 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
 import { AvatarPlayerComponent } from '@avatar-workspace/avatar-player';
@@ -34,7 +33,7 @@ const LIGHTBOX_SIZE = 170;
 @Component({
   selector: 'app-demo-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, AvatarPlayerComponent],
+  imports: [CommonModule, AvatarPlayerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './demo.page.html',
   styleUrl: './demo.page.scss',
