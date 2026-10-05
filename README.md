@@ -31,17 +31,17 @@ npm start
 
 Open <http://localhost:4200>.
 
-| Route | What it is |
-|---|---|
-| `/` | The creator |
-| `/demo` | Gallery of exported avatars, each played by the real player |
+| Route | What it is | Live on GitHub Pages |
+|---|---|---|
+| `/` | The creator | <https://matesuszpsuja.github.io/AvatarCreator/> |
+| `/demo` | Gallery of exported avatars, each played by the real player | <https://matesuszpsuja.github.io/AvatarCreator/demo> |
 
 Requires Node 18+ (developed on Node 20/25).
 
 ### Run it from GitHub Pages
 
-<https://matesuszpsuja.github.io/AvatarCreator/> — the app itself, served from
-the `gh-pages` branch.
+The app is served from the `gh-pages` branch at
+<https://matesuszpsuja.github.io/AvatarCreator/>.
 
 ```bash
 npm run deploy:pages          # build with baseHref=/AvatarCreator/ and publish

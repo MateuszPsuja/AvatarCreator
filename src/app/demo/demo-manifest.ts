@@ -164,15 +164,6 @@ export const DEMO_AVATARS: DemoAvatar[] = [
       skinTone: 'light', hairColor: 'white', beard: 'stubble', haircut: 'short',
     }),
   },
-  {
-    slug: 'tone-tan',
-    label: 'Tan skin',
-    notes: 'Mid palette reference.',
-    speech: 'A tan tone with grey hair and a monocle, what a character.',
-    config: cfg('d13', 'Tan', {
-      skinTone: 'tan', hairColor: 'gray', glasses: 'monocle',
-    }),
-  },
 
   // ── Shape coverage ───────────────────────────────────────────────────
   {
