@@ -1,0 +1,122 @@
+/* avatar.css — shared by the React player.
+ *
+ * IMPORTANT: this file is global, not scoped.
+ *
+ * The avatar markup is injected with dangerouslySetInnerHTML, so no framework
+ * scoping attribute is ever attached to those nodes — CSS Modules, View
+ * Encapsulation and the like all compile to selectors like
+ * `.foo[_ngcontent-xyz]` / `.foo_hash`, and injected nodes carry no such
+ * attribute. With scoping the styles silently do nothing: the eyelids render at
+ * full size instead of `scaleY(0)` and cover the eyes entirely.
+ *
+ * So every selector below is explicitly namespaced under `.avatar-svg`, and a
+ * consumer imports this file exactly once. Keeping the namespace is what stops
+ * a global stylesheet from leaking into the host app.
+ *
+ * This is the same CSS the Angular package ships, byte for byte apart from the
+ * header, so both renderers stay visually identical. */
+
+.avatar-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+
+  // All SVG children respect transform-box for correct rotation origins
+  * {
+    transform-box: fill-box;
+  }
+
+  // ── Eyelid blink states — class is set on the root .avatar-svg ──
+  .eyelid-left,
+  .eyelid-right {
+    transform-origin: center center;
+    transform: scaleY(0); // default: eyes open (eyelid hidden)
+    transition: transform 0.05s linear;
+  }
+
+  &.blink-blinking {
+    .eyelid-left,
+    .eyelid-right {
+      transform: scaleY(1); // eyes closed
+    }
+  }
+
+  &.blink-half {
+    .eyelid-left,
+    .eyelid-right {
+      transform: scaleY(0.5); // half-closed
+    }
+  }
+
+  // ── Head idle motion — pure CSS animation (no JS CD overhead) ──
+  .layer-head {
+    transform-origin: 100px 150px; // neck pivot point
+
+    &.animate-idle {
+      animation: avatar-head-idle 8s ease-in-out infinite;
+      will-change: transform;
+    }
+  }
+
+  // ── Pupil group — driven by the component through CSS custom
+  //    properties, so the markup never re-renders to move the eyes ──
+  .pupils {
+    transform: translate(var(--pupil-x, 0px), var(--pupil-y, 0px));
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  // Mouth shape smooth transition
+  .layer-mouth {
+    transition: d 0.06s linear;
+  }
+}
+
+@keyframes avatar-head-idle {
+  0%, 100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  20% {
+    transform: rotate(1.2deg) translate(0, -1.2px);
+  }
+  50% {
+    transform: rotate(-0.8deg) translate(0, 0.8px);
+  }
+  70% {
+    transform: rotate(1.5deg) translate(0, -1.5px);
+  }
+}
+
+// Respect reduced-motion preference
+@media (prefers-reduced-motion: reduce) {
+  .avatar-svg {
+    .layer-head {
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .pupils,
+    .layer-mouth,
+    .eyelid-left,
+    .eyelid-right {
+      transition: none;
+    }
+  }
+}
+
+/* ── Player wrapper ───────────────────────────────────────────
+ *
+ * Size is driven by the `size` prop through inline styles on the <svg>, not by
+ * this file — a consumer can drop a player at any scale without overriding
+ * styles from the outside. */
+.avatar-player {
+  display: inline-flex;
+  position: relative;
+}
+
+.avatar-player .player-avatar {
+  border-radius: 50%;
+  transition: width 0.2s ease, height 0.2s ease;
+}

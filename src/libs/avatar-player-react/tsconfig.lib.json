@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/avatar-player-react",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx",
+    "types": [],
+    "lib": ["ES2022", "DOM"],
+    // Resolved to the BUILT core package, not its sources — see the matching
+    // comment in ../avatar-player/tsconfig.lib.json for why.
+    "baseUrl": "../../..",
+    "paths": {
+      "avatar-player-core": ["dist/avatar-core/index.d.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/**/*.spec.ts", "src/**/*.spec.tsx"]
+}

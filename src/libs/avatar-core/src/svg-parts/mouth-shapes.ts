@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/svg-parts/mouth-shapes.ts
+// libs/avatar-core/src/svg-parts/mouth-shapes.ts
 // 6 viseme paths for lip-sync animation
 // All paths fit within the face area (x: 82–118, y: 118–136)
 // stroke="var(--lip-color)" stroke-width="3" fill="none" stroke-linecap="round"

@@ -19,7 +19,8 @@
     "module": "ES2022",
     "baseUrl": ".",
     "paths": {
-      "@avatar-workspace/avatar-player": ["src/libs/avatar-player/src/index.ts"]
+      "angular-avatar-player": ["src/libs/avatar-player/src/index.ts"],
+      "avatar-player-core": ["src/libs/avatar-core/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

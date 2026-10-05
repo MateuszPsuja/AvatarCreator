@@ -380,28 +380,46 @@ Carried over from the old plan's Phase 2 functional list, not yet started:
 
 ### 5.6 F — Distribution
 
-The libraries are **not published**. `@avatar-workspace/avatar-player` 404s on
-the npm registry, and `dist/` is gitignored, so a consumer cannot pull a
-prebuilt copy from GitHub either. Today the only supported install is
-`npm run build:libs` followed by a `file:` install.
+**Status: done.** Three packages, published in dependency order.
 
-To make `npm install` real:
+| Package | Contents | Registry |
+|---|---|---|
+| `avatar-player-core` | Model, SVG geometry, palettes, visemes, animation drivers. Plain TS, runs in Node. | unscoped |
+| `angular-avatar-player` | `AvatarPlayerComponent`, `SvgAvatarComponent`, NgModule, Angular services. `ng-packagr`, partial Ivy, peers on Angular 19. | unscoped |
+| `react-avatar-player` | `AvatarPlayer`, `SvgAvatar`, `useAvatarAnimation`, `useLipSync`, `styles.css`. Peers on React 18/19. | unscoped |
 
-1. **Rename the scope.** `@avatar-workspace` is not the owner's, and npm only
-   lets you publish to scopes your account owns. This is a mechanical change
-   across the lib `package.json`, `tsconfig.json` paths, `tsconfig.lib.json` and
-   the app's own imports. Consumer-facing *syntax* does not change, only the
-   package name.
-2. **Add publish metadata** to the lib: `repository`, `homepage`, `bugs`,
-   `keywords`, keep `license` and `sideEffects: false`.
-3. **Add a `LICENSE` file** at the repo root. The lib declares MIT; the
-   repository does not yet have the file.
-4. **Add a publish workflow** (GitHub Actions, on release). Build, then
-   `npm publish dist/avatar-player`. There is a single package, so there is no
-   second tarball to order and no cross-package version to keep in lockstep. Use
-   `--provenance` so the tarball is verifiably tied to the commit.
-5. **Tag releases.** A published version is immutable after 72 hours, so the
-   git tag is the version.
+Both UI packages re-export core's entire surface, so each stays a single import
+path and an Angular consumer never has to install a second package to reach the
+renderer.
+
+What the layout rests on:
+
+1. **Core is genuinely framework-free.** `lib/shared` had no Angular imports,
+   and the two services were pure `setTimeout` / `requestAnimationFrame` behind
+   an `@Injectable()` decorator. So the geometry and the drivers moved to core
+   unchanged, and the Angular services became one-line subclasses. Export
+   fidelity is now structural: there is only one renderer, so the exported SVG,
+   the Angular player and the React player cannot disagree.
+2. **The wrappers compile against core's built `.d.ts`,** not its sources
+   (`tsconfig.lib.json` overrides `paths`). ng-packagr failed on
+   `export * from 'avatar-player-core'` when it resolved to raw `.ts`
+   ("Cannot destructure property 'pos' of file.referencedFiles[index]"), and
+   building against `dist` also proves the published boundary is
+   self-sufficient. `build:libs` therefore builds core first.
+3. **Core's runtime is bundled by esbuild, its types by tsc.** Plain `tsc` emits
+   extensionless relative imports, which Node's ESM loader rejects — the package
+   would work in a bundler and break in Node, and it advertises Node support for
+   offline export. Per-file `.d.ts` is kept so editors can navigate into the
+   model.
+4. **React and core are external to the React bundle.** Bundling either would
+   give a consumer two Reacts (breaking hooks) or a second copy of the renderer
+   (two `AvatarConfig` types that do not compare equal).
+5. **Publish metadata** is on each manifest: `repository`, `homepage`, `bugs`,
+   `keywords`, `license`, `sideEffects`. `LICENSE` and a per-package `README.md`
+   ship in the tarballs.
+6. **`.github/workflows/publish-lib.yml`** builds and publishes on a GitHub
+   release, with `--provenance`, failing if the tag does not match
+   `avatar-player-core`'s version.
 
 ### 5.7 G — Housekeeping
 

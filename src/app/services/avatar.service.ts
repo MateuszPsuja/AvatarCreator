@@ -1,7 +1,7 @@
 // services/avatar.service.ts — Config state + persistence + export
 import { Injectable } from '@angular/core';
-import type { AvatarConfig } from '@avatar-workspace/avatar-player';
-import { buildAvatarSvg } from '@avatar-workspace/avatar-player';
+import type { AvatarConfig } from 'angular-avatar-player';
+import { buildAvatarSvg } from 'angular-avatar-player';
 import { createZip, type ZipEntry } from './zip.util';
 
 const STORAGE_KEY = 'avatar-workspace:saved-avatar';

@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/hair-colors.ts
+// libs/avatar-core/src/hair-colors.ts
 import { HairColor } from './avatar.model';
 
 export const HAIR_COLORS: Record<HairColor, string> = {

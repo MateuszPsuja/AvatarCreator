@@ -1,0 +1,66 @@
+# Publishes the avatar packages to npm when a GitHub release is published.
+#
+# Three packages, published in dependency order because npm resolves them:
+#
+#   avatar-player-core      no dependencies
+#   angular-avatar-player   → core
+#   react-avatar-player     → core
+#
+# The wrappers declare core with a caret range, so core is published first and
+# resolves. The published version comes from each package's own package.json,
+# and the release tag must match the core version (npm tags are immutable after
+# 72 hours, so the tag is the version of record).
+name: Publish avatar packages to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check the tag matches the core version
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          CORE_VERSION=$(node -p "require('./src/libs/avatar-core/package.json').version")
+          if [ "$TAG" != "$CORE_VERSION" ]; then
+            echo "Tag $TAG does not match avatar-player-core version $CORE_VERSION" >&2
+            exit 1
+          fi
+
+      # Build order matters: the two UI packages compile against core's built
+      # .d.ts, not its sources (see their tsconfig.lib.json).
+      - name: Build all packages
+        run: npm run build:libs
+
+      - name: Publish avatar-player-core
+        run: npm publish dist/avatar-core --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish angular-avatar-player
+        run: npm publish dist/avatar-player --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish react-avatar-player
+        run: npm publish dist/avatar-player-react --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

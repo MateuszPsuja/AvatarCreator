@@ -14,11 +14,11 @@ import type {
   EyeStyle,
   GlassesStyle,
   ProfessionType,
-} from '@avatar-workspace/avatar-player';
-import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, buildTraitPreview, PreviewKind } from '@avatar-workspace/avatar-player';
+} from 'angular-avatar-player';
+import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, buildTraitPreview, PreviewKind } from 'angular-avatar-player';
 
 import { AvatarService } from '../../services/avatar.service';
-import { SvgAvatarComponent, LipSyncService } from '@avatar-workspace/avatar-player';
+import { SvgAvatarComponent, LipSyncService } from 'angular-avatar-player';
 
 // UI — Spartan helm
 import { HlmButtonDirective } from '../../ui/spartan/hlm-button.directive';

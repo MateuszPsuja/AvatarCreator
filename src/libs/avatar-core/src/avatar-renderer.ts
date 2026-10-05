@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/avatar-renderer.ts
+// libs/avatar-core/src/avatar-renderer.ts
 //
 // SINGLE SOURCE OF TRUTH for avatar geometry.
 //

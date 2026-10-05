@@ -12,7 +12,18 @@
     "declarationMap": true,
     "inlineSources": true,
     "types": [],
-    "baseUrl": "../../.."
+    "baseUrl": "../../..",
+    "paths": {
+      // Resolved to the BUILT core package, not its sources.
+      //
+      // The root tsconfig maps this to src for fast app builds and tests, but
+      // ng-packagr compiles `export * from 'avatar-player-core'` as if the
+      // dependency were a real package, and a path into raw .ts sources makes
+      // it fail with "Cannot destructure property 'pos' of
+      // file.referencedFiles[index]". Building against dist also proves the
+      // published boundary is self-sufficient — no source can leak in.
+      "avatar-player-core": ["dist/avatar-core/index.d.ts"]
+    }
   },
   "files": ["src/index.ts"],
   "include": ["src/**/*.d.ts"]

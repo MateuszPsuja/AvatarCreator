@@ -1,8 +1,30 @@
 {
-  "name": "@avatar-workspace/avatar-player",
+  "name": "angular-avatar-player",
   "version": "0.1.0",
-  "description": "Drop-in animated avatar: the AvatarPlayerComponent plus the AvatarConfig model, palettes and SVG renderer it needs. Blinking, eye movement, head idle motion and lip sync.",
+  "description": "Animated SVG avatar component for Angular. Blinking, eye movement, head idle motion and lip sync, rendered as pure vector SVG with no images or runtime assets.",
+  "keywords": [
+    "angular",
+    "avatar",
+    "svg",
+    "avatar-generator",
+    "lipsync",
+    "lip-sync",
+    "chat",
+    "assistant",
+    "animation",
+    "component"
+  ],
+  "homepage": "https://mateuszpsuja.github.io/AvatarCreator/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MateuszPsuja/AvatarCreator.git",
+    "directory": "src/libs/avatar-player"
+  },
+  "bugs": {
+    "url": "https://github.com/MateuszPsuja/AvatarCreator/issues"
+  },
   "license": "MIT",
+  "author": "Mateusz Psuja",
   "sideEffects": false,
   "peerDependencies": {
     "@angular/common": "^19.2.0",
@@ -10,6 +32,7 @@
     "@angular/platform-browser": "^19.2.0"
   },
   "dependencies": {
+    "avatar-player-core": "^0.1.0",
     "tslib": "^2.3.0"
   }
 }

@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/svg-parts/glasses-shapes.ts
+// libs/avatar-core/src/svg-parts/glasses-shapes.ts
 // 5 glasses styles: none, round, rectangular, sunglasses, monocle
 // Positioned over eyes at cy=88, cx=74 (left), cx=126 (right)
 // Stroke-only where possible, flat fills, no gradients

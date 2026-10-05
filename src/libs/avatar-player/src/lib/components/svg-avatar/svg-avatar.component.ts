@@ -13,7 +13,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
-import type { AvatarConfig } from '../../shared/avatar.model';
+import type { AvatarConfig } from 'avatar-player-core';
 import {
   avatarCssVars,
   buildAvatarSvgInner,
@@ -22,8 +22,8 @@ import {
   hairClipUrl,
   helmetClipUrl,
   CANVAS,
-} from '../../shared/avatar-renderer';
-import { MOUTH_SHAPES } from '../../shared/svg-parts/mouth-shapes';
+} from 'avatar-player-core';
+import { MOUTH_SHAPES } from 'avatar-player-core';
 import { AvatarAnimationService } from '../../services/avatar-animation.service';
 
 @Component({

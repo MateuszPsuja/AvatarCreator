@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/trait-previews.ts
+// libs/avatar-core/src/trait-previews.ts
 //
 // Small SVG thumbnails for the creator's pickers.
 //

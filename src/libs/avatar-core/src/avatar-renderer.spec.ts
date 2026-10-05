@@ -1,4 +1,4 @@
-// libs/avatar-player/src/lib/shared/avatar-renderer.spec.ts
+// libs/avatar-core/src/avatar-renderer.spec.ts
 //
 // Guards export/preview parity. Before this renderer existed, the exporter
 // was a hand-written copy of the component template that silently dropped
@@ -349,19 +349,48 @@ describe('part geometry stays on the canvas', () => {
   // The chef toque used to be drawn up to y=-48, so a third of it sat outside
   // the 0..200 viewBox and rendered as a shapeless blob. Coordinates outside
   // the canvas are always a bug, so assert none of them exist.
-  const SOURCES: [string, Record<string, string>][] = [
+  //
+  // The values are NOT all plain strings: HAIR_SHAPES entries are
+  // `{back, front}` and PROFESSION_LAYERS entries are `{body, accessory}`.
+  // Stringifying one of those yields "[object Object]", which contains no
+  // digits, so `.match()` returns null and every such `it` threw instead of
+  // asserting anything. Flatten to the leaf strings first.
+  const SOURCES: [string, Record<string, unknown>][] = [
     ['profession', PROFESSION_LAYERS as never],
     ['hair', HAIR_SHAPES as never],
     ['glasses', GLASSES_SHAPES as never],
   ];
 
+  const leafStrings = (value: unknown): string[] => {
+    if (typeof value === 'string') return [value];
+    if (value && typeof value === 'object') {
+      return Object.values(value as Record<string, unknown>).flatMap(leafStrings);
+    }
+    return [];
+  };
+
+  /**
+   * Reduce SVG markup to the numbers that are actually canvas coordinates.
+   *
+   * A naive digit scan reads `fill="#F97316"` as 97316, and prose inside an
+   * `<!-- ... -->` comment ("the previous version ran to y=-48") as a real
+   * coordinate. Groups carrying their own `translate()` are local coordinates,
+   * so their values are relative to the group and must not be judged against
+   * the 0..200 viewBox — the police cap badge sits at 0,-6 inside
+   * translate(100,44), which is well inside the canvas.
+   */
+  const coordinateNumbers = (markup: string): number[] => {
+    const stripped = markup
+      .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/<g\b[^>]*transform="translate\([^"]*\)"[^>]*>[\s\S]*?<\/g>/g, ' ')
+      .replace(/#[0-9a-fA-F]{3,8}\b/g, ' ');
+    return (stripped.match(/-?\d+(?:\.\d+)?/g) ?? []).map(parseFloat);
+  };
+
   for (const [group, map] of SOURCES) {
-    for (const [name, raw] of Object.entries(map)) {
+    for (const name of Object.keys(map)) {
       it(`${group}.${name} has no off-canvas coordinates`, () => {
-        const nums = String(raw)
-          .replace(/\s+/g, ' ')
-          .match(/-?\d+(\.\d+)?/g)!
-          .map((n) => parseFloat(n));
+        const nums = coordinateNumbers(leafStrings(map[name]).join(' '));
         const off = nums.filter((n) => n < 0 || n > 200);
         expect(off).withContext(`${group}.${name} → ${off.join(', ')}`).toEqual([]);
       });
