@@ -23,12 +23,10 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+# Visual Studio Code — editor config is per-machine, so none of it is tracked.
+# `ng new` committed these by default; the shared tasks and debug config they
+# held are reproducible from the npm scripts in package.json.
+.vscode/
 .history/*
 
 # Miscellaneous
