@@ -1,4 +1,4 @@
-# miniAvatar
+# avatar creator
 
 A flat spot-colour **SVG avatar creator** and a drop-in **Angular player** for
 the avatars it makes. Design a face in the browser, export it as data, then
@@ -19,40 +19,7 @@ animate and speak it in any other app.
 Built with Angular 19, Tailwind and Spartan NG. Every avatar is 200×200 vector
 SVG — no images, no fonts, no runtime assets.
 
----
-
-## Screenshots
-
-**Creator — form traits.** Gender, skin tone, hair, eyes. Every thumbnail is
-rendered from the same part geometry the avatar uses, so a preview can never
-drift from the result.
-
-![Creator, form tab](docs/screenshots/creator-form.png)
-
-**Creator — style traits.** Moustache, beard and glasses.
-
-![Creator, style tab](docs/screenshots/creator-style.png)
-
-**Creator — profession layers.** Hats and helmets clip the hair underneath them.
-
-![Creator, trade tab](docs/screenshots/creator-profession.png)
-
-**Test speech.** The avatar mouths its name through the same viseme mapping the
-player uses.
-
-![Creator speaking](docs/screenshots/creator-speaking.png)
-
-**Export gallery (`/demo`).** Every card loads a `.json` this app exported and
-hands it to the real `<app-avatar-player>` — press **Speak** to hear that avatar
-mouth its phrase.
-
-![Export gallery](docs/screenshots/demo-gallery.png)
-
-**The player, idle and speaking.** The exported config, nothing else.
-
-| Idle | Speaking |
-|---|---|
-| ![Player idle](docs/screenshots/player-lightbox.png) | ![Player speaking](docs/screenshots/player-speaking.png) |
+![The creator, form traits](docs/screenshots/creator-form.png)
 
 ---
 
@@ -71,38 +38,10 @@ Open <http://localhost:4200>.
 |---|---|
 | `/` | The creator |
 | `/demo` | Gallery of exported avatars, each played by the real player |
-| `/diag` | Internal beard-geometry diagnostic — temporary, not part of the product |
 
 Requires Node 18+ (developed on Node 20/25).
 
----
-
-## Using the creator
-
-Traits live in three tabs:
-
-- **Form** — gender, skin tone, hair style, hair colour, eye style, eye colour
-- **Style** — moustache, beard, glasses
-- **Trade** — profession layer (doctor, engineer, teacher, chef, police,
-  astronaut, artist, business)
-
-On the press bed:
-
-- **Name plate** — display name; also the download filename.
-- **Test speech** — lip-syncs the name (or a default line) so you can check the
-  mouth shapes for that face.
-- **Randomize** — rolls a whole character, weighted toward the realistic
-  options.
-
-In the footer:
-
-- **Undo / Redo** — 60 steps. Name edits collapse into a single step, so typing
-  doesn't flood the history.
-- **Reset** — back to defaults.
-- **Save** — stores the config in `localStorage` and restores it on reload.
-- **Export Bundle** — downloads a `.zip`.
-
-### The export bundle
+## The export bundle
 
 ```
 nova.zip
@@ -151,8 +90,6 @@ One `AvatarConfig` object, no wrapper and no version envelope:
 **Unknown values are not rejected.** A missing or misspelled field falls back to
 that trait's default instead of raising, so a bad config renders *plausible but
 wrong*. When a face looks subtly off, check it against this table first.
-
----
 
 ## Using the player
 
@@ -229,7 +166,8 @@ export class ChatBubble {}
 > **Why `idsPrefix` matters.** Every avatar emits `url(#hat-clip)`, which
 > resolves against the *first* matching element in the document. Without a unique
 > prefix per avatar, they all clip against whichever rendered first and hats
-> stop hiding hair. Pass one id per player instance.
+> stop hiding hair. The same applies if you inline several exported `avatar.svg`
+> files into one page — namespacing the `clipPath` ids is the consumer's job.
 
 ### Driving the mouth yourself
 
@@ -270,7 +208,9 @@ the viseme:
 | `viseme` | `number` | `0` | `0`–`5`; `0` is silence |
 | `idsPrefix` | `string` | `''` | See above |
 
----
+The exported `avatar.svg` is static on purpose: no blinking, no head motion, no
+lip sync. Use it for avatars, thumbnails and chat-list icons; use `avatar.json`
+when the avatar needs to animate or speak.
 
 ## Using the renderer without Angular
 
@@ -288,47 +228,7 @@ const visemes = textToVisemes('hello');
 back to the "spread" shape, so it reads as *the mouth is moving* rather than
 accurate speech. Don't present it as phonetics.
 
----
-
-## Gotchas worth knowing
-
-- **Inlining several exported `avatar.svg` files into one page breaks.** The
-  `clipPath` ids inside them (`face-clip`, `hat-clip`, `helmet-clip`) collide,
-  and `url(#hat-clip)` then resolves against the first match, so every avatar
-  clips identically. Namespacing is the consumer's job — the Angular player does
-  it via `idsPrefix`.
-- **The exported SVG is static on purpose.** No blinking, no head motion, no lip
-  sync. Use it for avatars, thumbnails and chat-list icons; use `avatar.json`
-  when the avatar needs to animate or speak.
-- **Unknown config values fail silently**, as described above.
-
----
-
-## Project layout
-
-```
-AvatarCreator/
-├── docs/
-│   ├── images/avatars.png          README hero, generated from the demo SVGs
-│   └── screenshots/                captured from the running app
-├── src/
-│   ├── app/
-│   │   ├── pages/creator/          the creator page
-│   │   ├── demo/                   export gallery + its committed assets
-│   │   ├── diag/                   temporary beard diagnostic
-│   │   ├── services/               avatar state, persistence, export, zip
-│   │   └── ui/                     trait + swatch pickers, Spartan wrappers
-│   └── libs/
-│       ├── avatar-shared/          model, palettes, SVG renderer, visemes
-│       └── avatar-player/          components + animation and lip-sync services
-└── scripts/                        demo generation, bundle check, doc images
-```
-
-The `src/libs/*` folders are the product. `src/app` is one consumer of them.
-
 ## Scripts
-
-Run from the repo root:
 
 | Command | What it does |
 |---|---|
@@ -338,26 +238,6 @@ Run from the repo root:
 | `npm test` | Karma/Jasmine unit tests |
 | `npm run demo:build` | Regenerates `demo-assets/*.svg` and `*.json` from the manifest |
 | `npm run verify:bundle` | Asserts the export bundle's exact payload |
-| `npm run gallery` | Rebuilds `docs/images/avatars.png` (needs `@resvg/resvg-js`) |
-| `npm run screenshots` | Recaptures `docs/screenshots/` (needs `playwright`) |
-
-## Regenerating the README images
-
-The avatar grid needs no browser:
-
-```bash
-npm i -D @resvg/resvg-js
-npm run gallery
-```
-
-The UI screenshots do — it drives the running app, so what you get is what a
-user sees:
-
-```bash
-npm i -D playwright && npx playwright install chromium
-npm start -- --port 4210      # in another terminal
-npm run screenshots
-```
 
 ## License
 
