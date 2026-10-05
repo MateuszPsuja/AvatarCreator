@@ -19,7 +19,6 @@
     "module": "ES2022",
     "baseUrl": ".",
     "paths": {
-      "@avatar-workspace/avatar-shared": ["src/libs/avatar-shared/src/index.ts"],
       "@avatar-workspace/avatar-player": ["src/libs/avatar-player/src/index.ts"]
     }
   },

@@ -21,7 +21,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import type { AvatarConfig } from '@avatar-workspace/avatar-player';
 import { AvatarPlayerComponent } from '@avatar-workspace/avatar-player';
 import { DEMO_AVATARS, DEMO_ASSET_DIR, DemoAvatar } from './demo-manifest';
 

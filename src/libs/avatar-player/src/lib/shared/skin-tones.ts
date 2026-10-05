@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/skin-tones.ts
+// libs/avatar-player/src/lib/shared/skin-tones.ts
 import { SkinTone } from './avatar.model';
 
 /**

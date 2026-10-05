@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/svg-parts/profession-layers.ts
+// libs/avatar-player/src/lib/shared/svg-parts/profession-layers.ts
 // 9 professions: none, doctor, engineer, teacher, chef, police, astronaut, artist, business
 // Each provides: body (shoulders/clothing) + accessory (badge/hat/item on top of head)
 // Canvas: 200×200. Face center (100,88). Neck x=88–112, y=135–157.

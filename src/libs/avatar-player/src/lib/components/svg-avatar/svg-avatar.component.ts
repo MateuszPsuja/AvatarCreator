@@ -13,7 +13,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
-import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import type { AvatarConfig } from '../../shared/avatar.model';
 import {
   avatarCssVars,
   buildAvatarSvgInner,
@@ -22,8 +22,8 @@ import {
   hairClipUrl,
   helmetClipUrl,
   CANVAS,
-  MOUTH_SHAPES,
-} from '@avatar-workspace/avatar-shared';
+} from '../../shared/avatar-renderer';
+import { MOUTH_SHAPES } from '../../shared/svg-parts/mouth-shapes';
 import { AvatarAnimationService } from '../../services/avatar-animation.service';
 
 @Component({
@@ -114,7 +114,7 @@ export class SvgAvatarComponent implements OnInit, OnDestroy {
     ),
   );
 
-  // Public shape helpers — the geometry itself lives in avatar-shared.
+  // Public shape helpers — the geometry itself lives in lib/shared.
   readonly isAstronaut = computed(() => isAstronaut(this.config()));
   readonly hasHat = computed(() => hasHat(this.config()));
   readonly hairClipUrl = computed(() => hairClipUrl(this.config(), this.idsPrefix()));

@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/svg-parts/beard-shapes.ts
+// libs/avatar-player/src/lib/shared/svg-parts/beard-shapes.ts
 // 5 beard styles: none, stubble, short, long, goatee
 //
 // The outer edge of both full beards follows the face ellipse

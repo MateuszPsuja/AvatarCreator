@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/svg-parts/hair-shapes.ts
+// libs/avatar-player/src/lib/shared/svg-parts/hair-shapes.ts
 // 7 haircut styles: short, long, curly, bald, bun, ponytail, mohawk
 // Each provides back (rendered behind face) + front (rendered on top)
 // All shapes: solid fill, no gradients, no strokes > 2.5, flat silhouettes

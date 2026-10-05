@@ -1,7 +1,0 @@
-{
-  "name": "@avatar-workspace/avatar-shared",
-  "version": "0.1.0",
-  "description": "Framework-free avatar model, palettes, SVG renderer and viseme mapping shared by the Avatar Creator and the Avatar Player.",
-  "license": "MIT",
-  "sideEffects": false
-}

@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/avatar.model.ts
+// libs/avatar-player/src/lib/shared/avatar.model.ts
 
 export type Gender = 'man' | 'woman';
 export type SkinTone = 'light' | 'medium' | 'tan' | 'dark' | 'deep';

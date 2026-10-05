@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/svg-parts/beard-path.ts
+// libs/avatar-player/src/lib/shared/svg-parts/beard-path.ts
 //
 // Facial hair is authored as artwork, then FITTED to the head at render
 // time.

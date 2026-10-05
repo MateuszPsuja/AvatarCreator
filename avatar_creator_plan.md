@@ -19,15 +19,14 @@ Two deliverables from one Angular workspace:
 | Deliverable | Path | Purpose |
 |---|---|---|
 | **Avatar Creator** | `src/app` | Full-page editor: pick traits, watch the SVG update, export the result |
-| **`avatar-shared`** | `src/libs/avatar-shared` | `AvatarConfig` model, palettes, the SVG renderer, viseme mapping. No Angular, no DOM. |
-| **`avatar-player`** | `src/libs/avatar-player` | Publishable Angular library: blinking, eye movement, head idle, lip sync |
+| **`avatar-player`** | `src/libs/avatar-player` | The single publishable library: `AvatarConfig` model, palettes, SVG renderer, viseme mapping, plus the components (blinking, eye movement, head idle, lip sync). Geometry sits in `src/lib/shared`, re-exported from the one entry point. |
 
 The creator is *one consumer* of the libraries. The libraries are the product.
 Anything that only the creator needs belongs in `src/app`, not in `src/libs`.
 
 **Non-negotiable architectural rule:** there is exactly one implementation of
 "turn an `AvatarConfig` into an SVG" — `buildAvatarSvg` in
-`src/libs/avatar-shared/src/lib/avatar-renderer.ts`. The live preview, the
+`src/libs/avatar-player/src/lib/shared/avatar-renderer.ts`. The live preview, the
 exported `.svg` and the player all call it. This rule exists because the
 project previously had two renderers that silently drifted: the exporter
 ignored gender, omitted `clipPath` defs and hardcoded the mouth, so exported
@@ -99,7 +98,7 @@ disappeared).
 
 ### 2.2 Data model
 
-`src/libs/avatar-shared/src/lib/avatar.model.ts` — one flat `AvatarConfig`
+`src/libs/avatar-player/src/lib/shared/avatar.model.ts` — one flat `AvatarConfig`
 with twelve fields: `id`, `name`, `gender`, `skinTone`, `haircut`, `hairColor`,
 `eyeColor`, `mustache`, `beard`, `eyeStyle`, `glasses`, `profession`. Enumerated
 value sets are in the same file and are mirrored in the bundle README.
@@ -285,7 +284,7 @@ bob, wardrobe colour, per-eye-style eyelids — is blocked on this.
 
 **Tasks**
 
-1. Add a shared geometry module to `avatar-shared`: `FACE`, `EYES`, `EARS`,
+1. Add a shared geometry module under `lib/shared`: `FACE`, `EYES`, `EARS`,
    `NECK`, `SHOULDERS`, `BODY_PATH`. The body path is currently
    **copy-pasted 11×** in `profession-layers.ts`; ear and brow coordinates
    appear in three files.
@@ -390,19 +389,17 @@ To make `npm install` real:
 
 1. **Rename the scope.** `@avatar-workspace` is not the owner's, and npm only
    lets you publish to scopes your account owns. This is a mechanical change
-   across 17 files / 27 references (both lib `package.json`s,
-   `ng-package.json`'s `allowedNonPeerDependencies`, `tsconfig.json` paths, both
-   `tsconfig.lib.json`s, and the app's own imports). Consumer-facing *syntax*
-   does not change, only the package name.
-2. **Add publish metadata** to both libs: `repository`, `homepage`, `bugs`,
+   across the lib `package.json`, `tsconfig.json` paths, `tsconfig.lib.json` and
+   the app's own imports. Consumer-facing *syntax* does not change, only the
+   package name.
+2. **Add publish metadata** to the lib: `repository`, `homepage`, `bugs`,
    `keywords`, keep `license` and `sideEffects: false`.
-3. **Add a `LICENSE` file** at the repo root. Both libs declare MIT; the
+3. **Add a `LICENSE` file** at the repo root. The lib declares MIT; the
    repository does not yet have the file.
 4. **Add a publish workflow** (GitHub Actions, on release). Build, then
-   `npm publish dist/avatar-shared` **before** `dist/avatar-player` — the
-   player's manifest hard-depends on the exact shared version, and both must be
-   bumped in lockstep on every release. Use `--provenance` so the tarball is
-   verifiably tied to the commit.
+   `npm publish dist/avatar-player`. There is a single package, so there is no
+   second tarball to order and no cross-package version to keep in lockstep. Use
+   `--provenance` so the tarball is verifiably tied to the commit.
 5. **Tag releases.** A published version is immutable after 72 hours, so the
    git tag is the version.
 

@@ -4,7 +4,7 @@
 // this and writes the .svg + .json pairs; the viewer page imports the same list
 // and loads those .json files into the player. One manifest, so the committed
 // files and the page can never disagree about what exists.
-import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
+import type { AvatarConfig } from '@avatar-workspace/avatar-player';
 
 export interface DemoAvatar {
   /** Filesystem-safe id. The SVG file is `<slug>.svg`. */

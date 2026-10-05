@@ -1,4 +1,4 @@
-// libs/avatar-shared/src/lib/avatar-renderer.spec.ts
+// libs/avatar-player/src/lib/shared/avatar-renderer.spec.ts
 //
 // Guards export/preview parity. Before this renderer existed, the exporter
 // was a hand-written copy of the component template that silently dropped

@@ -14,8 +14,8 @@ import type {
   EyeStyle,
   GlassesStyle,
   ProfessionType,
-} from '@avatar-workspace/avatar-shared';
-import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, buildTraitPreview, PreviewKind } from '@avatar-workspace/avatar-shared';
+} from '@avatar-workspace/avatar-player';
+import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, buildTraitPreview, PreviewKind } from '@avatar-workspace/avatar-player';
 
 import { AvatarService } from '../../services/avatar.service';
 import { SvgAvatarComponent, LipSyncService } from '@avatar-workspace/avatar-player';

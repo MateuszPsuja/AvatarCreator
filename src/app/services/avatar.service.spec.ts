@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AvatarService } from './avatar.service';
-import type { AvatarConfig } from '@avatar-workspace/avatar-shared';
-import { buildAvatarSvg } from '@avatar-workspace/avatar-shared';
+import type { AvatarConfig } from '@avatar-workspace/avatar-player';
+import { buildAvatarSvg } from '@avatar-workspace/avatar-player';
 
 describe('AvatarService', () => {
   let service: AvatarService;

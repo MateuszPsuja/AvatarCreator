@@ -125,29 +125,6 @@
         }
       }
     },
-    "avatar-shared": {
-      "projectType": "library",
-      "root": "src/libs/avatar-shared",
-      "sourceRoot": "src/libs/avatar-shared/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "src/libs/avatar-shared/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "src/libs/avatar-shared/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "src/libs/avatar-shared/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        }
-      }
-    },
     "avatar-player": {
       "projectType": "library",
       "root": "src/libs/avatar-player",

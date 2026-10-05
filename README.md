@@ -8,10 +8,9 @@ animate and speak it in any other app.
 
 - **Creator** — 11 traits, live SVG preview, undo/redo, randomize, lip-sync
   preview, `.zip` export.
-- **`avatar-shared`** — the `AvatarConfig` model and the single SVG renderer.
-  No Angular, no DOM.
-- **`avatar-player`** — blinking, eye movement, head idle motion and lip sync
-  as a single component you drop into your app.
+- **One package** — `@avatar-workspace/avatar-player`. The `AvatarConfig` model,
+  the SVG renderer, the palettes and the animated component all come from a
+  single import path, so there is nothing to install twice and no ordering.
 - **Export fidelity is enforced, not hoped for.** The on-screen avatar, the
   exported `avatar.svg` and the player all render through the same function, so
   what you design is what ships.
@@ -93,31 +92,29 @@ wrong*. When a face looks subtly off, check it against this table first.
 
 ## Using the player
 
-### 1. Get the two libraries
+### 1. Get the library
 
-**In this repo** they resolve through `tsconfig.json` paths — nothing to install:
+**In this repo** it resolves through `tsconfig.json` paths — nothing to install:
 
 ```jsonc
 "paths": {
-  "@avatar-workspace/avatar-shared": ["src/libs/avatar-shared/src/index.ts"],
   "@avatar-workspace/avatar-player": ["src/libs/avatar-player/src/index.ts"]
 }
 ```
 
-**In another app**, build them and install the output:
+**In another app**, build it and install the output:
 
 ```bash
-npm run build:libs        # → dist/avatar-shared, dist/avatar-player
+npm run build:libs        # → dist/avatar-player
 ```
 
 ```bash
-npm install file:../AvatarCreator/dist/avatar-shared \
-            file:../AvatarCreator/dist/avatar-player
+npm install file:../AvatarCreator/dist/avatar-player
 ```
 
-Both are `ng-packagr` libraries, so they arrive as proper Angular packages with
-partial-Ivy output. `avatar-player` depends on `avatar-shared`, and both peer-depend
-on Angular 19.
+It is an `ng-packagr` library with partial-Ivy output and peer-depends on Angular 19.
+The model, palettes, viseme mapping and SVG renderer are all part of this one
+package — there is no second library to install or keep in version step.
 
 ### 2. Register it
 
@@ -214,11 +211,12 @@ when the avatar needs to animate or speak.
 
 ## Using the renderer without Angular
 
-`avatar-shared` has no Angular or DOM dependency, so it also works in Node — a
-build script, a test, or a server-side generator:
+`buildAvatarSvg` and `textToVisemes` touch neither Angular nor the DOM, so they
+also work in Node — a build script, a test, or a server-side generator — from the
+same import as the component:
 
 ```ts
-import { buildAvatarSvg, textToVisemes } from '@avatar-workspace/avatar-shared';
+import { buildAvatarSvg, textToVisemes } from '@avatar-workspace/avatar-player';
 
 const svg = buildAvatarSvg(config);   // standalone 200×200 SVG document
 const visemes = textToVisemes('hello');
@@ -234,12 +232,12 @@ accurate speech. Don't present it as phonetics.
 |---|---|
 | `npm start` | Dev server on <http://localhost:4200> |
 | `npm run build` | Production build of the app |
-| `npm run build:libs` | Builds both libraries into `dist/` |
+| `npm run build:libs` | Builds the library into `dist/avatar-player` |
 | `npm test` | Karma/Jasmine unit tests |
 | `npm run demo:build` | Regenerates `demo-assets/*.svg` and `*.json` from the manifest |
 | `npm run verify:bundle` | Asserts the export bundle's exact payload |
 
 ## License
 
-MIT, as declared by both libraries' `package.json`. The repository root has no
+MIT, as declared in the library's `package.json`. The repository root has no
 `LICENSE` file yet — add one before publishing.
