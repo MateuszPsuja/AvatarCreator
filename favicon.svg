@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!--
+    Riso-style mark: paper stock, one spot-ink plate printed slightly off.
+    Kept to four shapes so it still reads at 16px in a tab bar.
+  -->
+  <rect width="64" height="64" fill="#F4F1EA"/>
+  <!-- misregistered second plate -->
+  <rect x="6" y="10" width="48" height="48" fill="#FF6C2F"/>
+  <!-- primary plate -->
+  <rect x="4" y="8" width="48" height="48" fill="#141210"/>
+
+  <!-- head -->
+  <ellipse cx="28" cy="32" rx="15" ry="16" fill="#F0AC78"/>
+  <!-- hair -->
+  <path d="M13,30 C13,17 20,11 28,11 C36,11 43,17 43,30
+           C43,25 37,21 28,21 C19,21 13,25 13,30 Z" fill="#141210"/>
+  <!-- eyes -->
+  <circle cx="22" cy="31" r="2.4" fill="#141210"/>
+  <circle cx="34" cy="31" r="2.4" fill="#141210"/>
+  <!-- mouth -->
+  <path d="M23,39 Q28,43 33,39" stroke="#141210" stroke-width="2"
+        fill="none" stroke-linecap="round"/>
+</svg>

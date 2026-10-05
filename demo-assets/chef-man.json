@@ -1,0 +1,14 @@
+{
+  "id": "d4",
+  "name": "Chef",
+  "gender": "man",
+  "skinTone": "medium",
+  "haircut": "curly",
+  "hairColor": "black",
+  "eyeColor": "brown",
+  "mustache": "thick",
+  "beard": "goatee",
+  "eyeStyle": "round",
+  "glasses": "none",
+  "profession": "chef"
+}

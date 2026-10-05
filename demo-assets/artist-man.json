@@ -1,0 +1,14 @@
+{
+  "id": "d7",
+  "name": "Artist",
+  "gender": "man",
+  "skinTone": "medium",
+  "haircut": "mohawk",
+  "hairColor": "red",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "none",
+  "eyeStyle": "round",
+  "glasses": "round",
+  "profession": "artist"
+}

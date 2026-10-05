@@ -1,0 +1,14 @@
+{
+  "id": "d1",
+  "name": "Doctor",
+  "gender": "woman",
+  "skinTone": "light",
+  "haircut": "bun",
+  "hairColor": "black",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "none",
+  "eyeStyle": "round",
+  "glasses": "none",
+  "profession": "doctor"
+}

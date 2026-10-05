@@ -1,0 +1,14 @@
+{
+  "id": "d2",
+  "name": "Engineer",
+  "gender": "man",
+  "skinTone": "tan",
+  "haircut": "long",
+  "hairColor": "black",
+  "eyeColor": "brown",
+  "mustache": "none",
+  "beard": "short",
+  "eyeStyle": "round",
+  "glasses": "none",
+  "profession": "engineer"
+}

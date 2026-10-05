@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="--skin-base: #F0AC78;--skin-ear: #E09A62;--skin-shadow: #C67C45;--lip-color: #C97050;--hair-color: #C0392B;--eye-color: #6B3A2A"><defs><clipPath id="face-clip"><path d="M48,88 A52,56 0 0 1 152,88 L152,192 L48,192 Z"/></clipPath><clipPath id="hat-clip"><rect x="0" y="56" width="200" height="144"/></clipPath><clipPath id="helmet-clip"><ellipse cx="100" cy="78" rx="57" ry="62"/></clipPath></defs><g class="layer-body">
+      <!-- Dark striped undershirt -->
+      <path d="M30,200 Q30,158 55,150 Q75,143 88,140
+              L88,145 Q90,148 100,148 Q110,148 112,145 L112,140
+              Q125,143 145,150 Q170,158 170,200 Z" fill="#333A45"/>
+      <!-- Horizontal stripes on shirt -->
+      <line x1="42" y1="168" x2="158" y2="168" stroke="#4E5563" stroke-width="2"/>
+      <line x1="36" y1="180" x2="164" y2="180" stroke="#4E5563" stroke-width="2"/>
+      <line x1="34" y1="192" x2="166" y2="192" stroke="#4E5563" stroke-width="2"/>
+      <!-- Canvas-colored apron over shirt -->
+      <path d="M72,152 L72,200 L128,200 L128,152
+              Q128,148 120,148 L100,148 L80,148 Q72,148 72,152 Z" fill="#E8DCCA"/>
+      <!-- Apron neck strap (V-shape) -->
+      <path d="M88,140 L80,148" stroke="#D4C4A8" stroke-width="2" stroke-linecap="round"/>
+      <path d="M112,140 L120,148" stroke="#D4C4A8" stroke-width="2" stroke-linecap="round"/>
+      <!-- Apron pocket -->
+      <rect x="84" y="170" width="32" height="16" rx="2" fill="none" stroke="#C4B498" stroke-width="1"/>
+      <!-- Paintbrush in pocket -->
+      <line x1="92" y1="163" x2="92" y2="172" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round"/>
+      <rect x="90" y="160" width="4" height="5" rx="1" fill="#3B82F6"/>
+      <!-- Paint smudge on apron — natural drip shapes -->
+      <path d="M110,175 Q112,173 114,176 Q113,178 110,177 Z" fill="#EF4444" opacity="0.6"/>
+      <path d="M78,188 Q80,186 83,188 Q82,191 79,190 Z" fill="#7C3AED" opacity="0.5"/>
+      <circle cx="120" cy="190" r="2" fill="#FBBF24" opacity="0.5"/></g><rect class="layer-neck" x="88" y="135" width="24" height="22" rx="8" fill="var(--skin-base)"/><g class="layer-head"><g class="layer-ears"><ellipse cx="48" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/><ellipse cx="152" cy="90" rx="8" ry="10" fill="var(--skin-ear)"/></g><g class="layer-hair-back" clip-path="url(#hat-clip)"></g><ellipse class="layer-face" cx="100" cy="88" rx="52" ry="56" fill="var(--skin-base)"/><g class="layer-eyes"><g>
+      <circle cx="74" cy="88" r="11" fill="#FFF"/>
+      <circle cx="126" cy="88" r="11" fill="#FFF"/></g><g class="pupils"><g>
+      <circle cx="74" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="74" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="77" cy="85" r="2" fill="#FFF"/>
+      <circle cx="126" cy="88" r="9" fill="var(--eye-color)"/>
+      <circle cx="126" cy="88" r="5" fill="#1A1A2E"/>
+      <circle cx="129" cy="85" r="2" fill="#FFF"/></g></g></g><g class="layer-brows"><rect x="63" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/><rect x="115" y="72" width="22" height="5" rx="3" fill="var(--hair-color)"/></g><path class="layer-nose" d="M97,105 Q100,112 103,105" stroke="var(--skin-shadow)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="layer-mouth" d="M84,120 Q100,132 116,120" stroke="var(--lip-color)" stroke-width="2.5" fill="none" stroke-linecap="round"></path><g class="layer-mustache"><g clip-path="url(#face-clip)"></g></g><g class="layer-beard"><g clip-path="url(#face-clip)"></g></g><g class="layer-glasses">
+    <circle cx="74" cy="88" r="16" fill="none" stroke="#1A1A2E" stroke-width="2"/>
+    <circle cx="126" cy="88" r="16" fill="none" stroke="#1A1A2E" stroke-width="2"/>
+    <line x1="90" y1="88" x2="110" y2="88" stroke="#1A1A2E" stroke-width="2"/>
+    <line x1="58" y1="88" x2="48" y2="86" stroke="#1A1A2E" stroke-width="1.5"/>
+    <line x1="142" y1="88" x2="152" y2="86" stroke="#1A1A2E" stroke-width="1.5"/></g><g class="layer-hair-front" clip-path="url(#hat-clip)">
+      <!-- Shaved sides – faint stubble -->
+      <path d="M54,70 Q54,42 100,34 Q146,42 146,70 Q136,56 100,52 Q64,56 54,70 Z"
+            fill="var(--hair-color)" opacity="0.12"/>
+      <!-- Mohawk crest – 5 pointed spikes -->
+      <path d="M84,64 Q84,48 86,40
+               L80,20 L89,36
+               L86,6  L95,30
+               L100,2 L105,30
+               L114,6 L111,36
+               L120,20 L114,40
+               Q116,48 116,64
+               Q108,54 100,52 Q92,54 84,64 Z"
+            fill="var(--hair-color)"/></g><g class="layer-accessory">
+      <!-- Hair cover -->
+      <ellipse cx="100" cy="54" rx="56" ry="20" fill="#DC2626"/>
+      <!-- Beret — classic flat shape sitting on head -->
+      <path d="M50,54 Q50,36 70,28 Q86,22 100,22 Q120,22 140,30 Q156,38 156,54 Z" fill="#DC2626"/>
+      <!-- Beret puff — floppy top drooping to the right -->
+      <path d="M100,22 Q120,14 145,18 Q164,24 162,38 Q160,48 156,54
+              Q152,40 130,30 Q110,22 100,22 Z" fill="#EF4444"/>
+      <!-- Band (rim that hugs the forehead) -->
+      <path d="M50,54 Q50,60 100,62 Q150,60 156,54" fill="none"
+            stroke="#B91C1C" stroke-width="2.5"/>
+      <!-- Nub on top -->
+      <circle cx="138" cy="20" r="3.5" fill="#B91C1C"/></g></g></svg>
