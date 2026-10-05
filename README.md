@@ -4,8 +4,6 @@ A flat spot-colour **SVG avatar creator** and a drop-in **Angular player** for
 the avatars it makes. Design a face in the browser, export it as data, then
 animate and speak it in any other app.
 
-![Avatar grid rendered from the app's own exported SVGs](docs/images/avatars.png)
-
 - **Creator** — 11 traits, live SVG preview, undo/redo, randomize, lip-sync
   preview, `.zip` export.
 - **One package** — `@avatar-workspace/avatar-player`. The `AvatarConfig` model,
