@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ASSETS = path.join(HERE, '../src/app/demo/demo-assets');
-const OUT = path.join(HERE, '../../docs/images/avatars.png');
+const OUT = path.join(HERE, '../docs/images/avatars.png');
 
 let Resvg;
 try {

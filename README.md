@@ -59,8 +59,8 @@ mouth its phrase.
 ## Quick start
 
 ```bash
-git clone <this-repo>
-cd miniAvatar/avatar-workspace
+git clone https://github.com/MateuszPsuja/AvatarCreator.git
+cd AvatarCreator
 npm install
 npm start
 ```
@@ -174,8 +174,8 @@ npm run build:libs        # → dist/avatar-shared, dist/avatar-player
 ```
 
 ```bash
-npm install file:../miniAvatar/avatar-workspace/dist/avatar-shared \
-            file:../miniAvatar/avatar-workspace/dist/avatar-player
+npm install file:../AvatarCreator/dist/avatar-shared \
+            file:../AvatarCreator/dist/avatar-player
 ```
 
 Both are `ng-packagr` libraries, so they arrive as proper Angular packages with
@@ -307,29 +307,28 @@ accurate speech. Don't present it as phonetics.
 ## Project layout
 
 ```
-miniAvatar/
+AvatarCreator/
 ├── docs/
 │   ├── images/avatars.png          README hero, generated from the demo SVGs
 │   └── screenshots/                captured from the running app
-└── avatar-workspace/
-    ├── src/
-    │   ├── app/
-    │   │   ├── pages/creator/      the creator page
-    │   │   ├── demo/               export gallery + its committed assets
-    │   │   ├── diag/               temporary beard diagnostic
-    │   │   ├── services/           avatar state, persistence, export, zip
-    │   │   └── ui/                 trait + swatch pickers, Spartan wrappers
-    │   └── libs/
-    │       ├── avatar-shared/      model, palettes, SVG renderer, visemes
-    │       └── avatar-player/      components + animation and lip-sync services
-    └── scripts/                    demo generation, bundle check, doc images
+├── src/
+│   ├── app/
+│   │   ├── pages/creator/          the creator page
+│   │   ├── demo/                   export gallery + its committed assets
+│   │   ├── diag/                   temporary beard diagnostic
+│   │   ├── services/               avatar state, persistence, export, zip
+│   │   └── ui/                     trait + swatch pickers, Spartan wrappers
+│   └── libs/
+│       ├── avatar-shared/          model, palettes, SVG renderer, visemes
+│       └── avatar-player/          components + animation and lip-sync services
+└── scripts/                        demo generation, bundle check, doc images
 ```
 
 The `src/libs/*` folders are the product. `src/app` is one consumer of them.
 
 ## Scripts
 
-Run from `avatar-workspace/`:
+Run from the repo root:
 
 | Command | What it does |
 |---|---|

@@ -22,7 +22,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(HERE, '../../docs/screenshots');
+const OUT = path.resolve(HERE, '../docs/screenshots');
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`);
