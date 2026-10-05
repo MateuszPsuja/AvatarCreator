@@ -1,14 +1,15 @@
 # AvatarCreator
 
-A flat spot-colour **SVG avatar creator** and a drop-in **Angular player** for
+A flat spot-colour **SVG avatar creator** and drop-in **animated players** for
 the avatars it makes. Design a face in the browser, export it as data, then
 animate and speak it in any other app.
 
 - **Creator** — 11 traits, live SVG preview, undo/redo, randomize, lip-sync
   preview, `.zip` export.
-- **One package** — `@avatar-workspace/avatar-player`. The `AvatarConfig` model,
-  the SVG renderer, the palettes and the animated component all come from a
-  single import path, so there is nothing to install twice and no ordering.
+- **Three packages, one avatar.** `avatar-player-core` holds the geometry and
+  the model; `angular-avatar-player` and `react-avatar-player` are thin
+  wrappers over it. An avatar designed here renders identically in either
+  framework, and a plain Node script with no UI framework at all.
 - **Export fidelity is enforced, not hoped for.** The on-screen avatar, the
   exported `avatar.svg` and the player all render through the same function, so
   what you design is what ships.
@@ -33,25 +34,10 @@ Open <http://localhost:4200>.
 
 | Route | What it is | Live on GitHub Pages |
 |---|---|---|
-| `/` | The creator | <https://matesuszpsuja.github.io/AvatarCreator/> |
-| `/demo` | Gallery of exported avatars, each played by the real player | <https://matesuszpsuja.github.io/AvatarCreator/demo> |
+| `/` | The creator | <https://mateuszpsuja.github.io/AvatarCreator/> |
+| `/demo` | Gallery of exported avatars, each played by the real player | <https://mateuszpsuja.github.io/AvatarCreator/demo> |
 
 Requires Node 18+ (developed on Node 20/25).
-
-### Run it from GitHub Pages
-
-The app is served from the `gh-pages` branch at
-<https://matesuszpsuja.github.io/AvatarCreator/>.
-
-```bash
-npm run deploy:pages          # build with baseHref=/AvatarCreator/ and publish
-npm run deploy:pages:dry      # build and check the output, push nothing
-```
-
-`main` is the source; `gh-pages` holds only the built site and is rewritten
-from scratch on every publish, so it is never edited by hand. Deep links work
-because the publish also ships `404.html` as a copy of `index.html` — Pages has
-no SPA rewrite, so an unknown path has to boot the app instead of erroring.
 
 ## The export bundle
 
@@ -107,27 +93,40 @@ wrong*. When a face looks subtly off, check it against this table first.
 
 ### 1. Get the library
 
-**In this repo** it resolves through `tsconfig.json` paths — nothing to install:
+```bash
+npm install angular-avatar-player   # Angular
+npm install react-avatar-player     # React
+npm install avatar-player-core      # renderer only, no UI framework
+```
+
+The UI packages re-export everything core provides, so each is a single import
+path — you never install the renderer separately just to reach the model. React
+users also import the stylesheet once:
+
+```ts
+import 'react-avatar-player/styles.css';
+```
+
+**In this repo** everything resolves through `tsconfig.json` paths — nothing to
+install:
 
 ```jsonc
 "paths": {
-  "@avatar-workspace/avatar-player": ["src/libs/avatar-player/src/index.ts"]
+  "angular-avatar-player": ["src/libs/avatar-player/src/index.ts"],
+  "avatar-player-core": ["src/libs/avatar-core/src/index.ts"]
 }
 ```
 
-**In another app**, build it and install the output:
+To try them in another app from source, build and install the output locally:
 
 ```bash
-npm run build:libs        # → dist/avatar-player
-```
-
-```bash
+npm run build:libs        # → dist/avatar-core, dist/avatar-player, dist/avatar-player-react
 npm install file:../AvatarCreator/dist/avatar-player
 ```
 
-It is an `ng-packagr` library with partial-Ivy output and peer-depends on Angular 19.
-The model, palettes, viseme mapping and SVG renderer are all part of this one
-package — there is no second library to install or keep in version step.
+`angular-avatar-player` is an `ng-packagr` library with partial-Ivy output and
+peer-depends on Angular 19. `avatar-player-core` is plain TypeScript and also
+runs in Node, which is what lets the exporter bake avatars server-side.
 
 ### 2. Register it
 
@@ -135,7 +134,7 @@ Module-style, once, in `app.config.ts`:
 
 ```ts
 import { importProvidersFrom } from '@angular/core';
-import { AvatarPlayerModule } from '@avatar-workspace/avatar-player';
+import { AvatarPlayerModule } from 'angular-avatar-player';
 
 export const appConfig: ApplicationConfig = {
   providers: [importProvidersFrom(AvatarPlayerModule)],
@@ -145,7 +144,7 @@ export const appConfig: ApplicationConfig = {
 Or skip the module and import the standalone component where you need it:
 
 ```ts
-import { AvatarPlayerComponent } from '@avatar-workspace/avatar-player';
+import { AvatarPlayerComponent } from 'angular-avatar-player';
 
 @Component({
   imports: [AvatarPlayerComponent],
@@ -185,7 +184,7 @@ For full control, bypass `speaking`/`message` and use the service. It returns a
 cancel function, and `onEnd` fires exactly once per utterance:
 
 ```ts
-import { LipSyncService } from '@avatar-workspace/avatar-player';
+import { LipSyncService } from 'angular-avatar-player';
 
 private lipSync = inject(LipSyncService);
 
@@ -229,7 +228,7 @@ also work in Node — a build script, a test, or a server-side generator — fro
 same import as the component:
 
 ```ts
-import { buildAvatarSvg, textToVisemes } from '@avatar-workspace/avatar-player';
+import { buildAvatarSvg, textToVisemes } from 'angular-avatar-player';
 
 const svg = buildAvatarSvg(config);   // standalone 200×200 SVG document
 const visemes = textToVisemes('hello');
@@ -245,7 +244,11 @@ accurate speech. Don't present it as phonetics.
 |---|---|
 | `npm start` | Dev server on <http://localhost:4200> |
 | `npm run build` | Production build of the app |
-| `npm run build:libs` | Builds the library into `dist/avatar-player` |
+| `npm run build:libs` | Builds all three packages into `dist/` (core first — the wrappers compile against its types) |
+| `npm run build:core` | Builds only `avatar-player-core` |
+| `npm run verify:react` | Renders the built React player and asserts on the markup |
+| `npm run publish:lib:dry` | Builds everything and prints what npm would publish |
+| `npm run publish:lib` | Builds everything and publishes all three packages, in dependency order |
 | `npm run deploy:pages` | Builds the app and publishes it to the `gh-pages` branch |
 | `npm test` | Karma/Jasmine unit tests |
 | `npm run demo:build` | Regenerates `demo-assets/*.svg` and `*.json` from the manifest |
@@ -253,5 +256,4 @@ accurate speech. Don't present it as phonetics.
 
 ## License
 
-MIT, as declared in the library's `package.json`. The repository root has no
-`LICENSE` file yet — add one before publishing.
+MIT — see [`LICENSE`](LICENSE).

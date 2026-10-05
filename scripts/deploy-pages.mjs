@@ -13,10 +13,19 @@
 //    from https://<user>.github.io/AvatarCreator/. Every router link, lazy
 //    chunk URL and asset path in index.html is emitted relative to it.
 //
-// 2. Pages has no SPA rewrite. A deep link like /AvatarCreator/demo is a 404
-//    on the server, so 404.html — a copy of index.html — is published next to
-//    it. The browser then boots the app, which reads the real path out of the
-//    URL and renders the matching route.
+// 2. Pages has no SPA rewrite, so a deep link like /AvatarCreator/demo has no
+//    file to serve. Two mitigations, and both are needed:
+//
+//    a. Every route gets a real `demo/index.html`, so a known deep link returns
+//       HTTP 200. Without it Pages serves the fallback below with a 404 *status*
+//       — the app still boots in a browser, but link previews, crawlers and
+//       `curl` all see a broken link.
+//    b. 404.html — a copy of index.html — stays as the catch-all, so an unknown
+//       URL boots the app instead of showing a raw Pages 404. That one is 404 by
+//       design; it is the fallback, not a route.
+//
+//    The route list is read out of src/app/app.routes.ts so a new route cannot
+//    be added without also getting a directory.
 //
 // The publish is a hand-rolled orphan branch rather than the `gh-pages` npm
 // package: that tool stages into a clone of the repo, and its first run copied
@@ -29,6 +38,7 @@ import {
   copyFileSync,
   cpSync,
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -41,7 +51,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist/avatar-workspace/browser');
 const BRANCH = 'gh-pages';
-const SITE_URL = 'https://matesuszpsuja.github.io/AvatarCreator/';
+const SITE_URL = 'https://mateuszpsuja.github.io/AvatarCreator/';
 const dryRun = process.argv.includes('--dry-run');
 
 function run(cmd, args, cwd = ROOT) {
@@ -61,7 +71,28 @@ if (!existsSync(index)) {
   process.exit(1);
 }
 
-// Deep links fall back to the app shell.
+// One directory per route, each holding a copy of the app shell, so a deep
+// link resolves to a real file and returns HTTP 200 instead of the 404
+// fallback. The route list comes from the router itself, so adding a route to
+// app.routes.ts is enough — nothing here has to be kept in sync by hand.
+const routesFile = readFileSync(join(ROOT, 'src/app/app.routes.ts'), 'utf8');
+const routes = [...routesFile.matchAll(/path:\s*'([^']*)'/g)]
+  .map((m) => m[1])
+  .filter((route) => route.length > 0); // '' is the root, index.html already covers it
+
+if (routes.length === 0) {
+  console.error('No routes found in src/app/app.routes.ts — refusing to publish.');
+  process.exit(1);
+}
+
+for (const route of routes) {
+  const dir = join(OUT, route);
+  mkdirSync(dir, { recursive: true });
+  copyFileSync(index, join(dir, 'index.html'));
+}
+
+// Catch-all for unknown URLs. Served with a 404 status by design — this is the
+// fallback, not a route.
 copyFileSync(index, join(OUT, '404.html'));
 
 // Disable Jekyll. It only processes underscore-prefixed names, but the
@@ -78,7 +109,9 @@ if (!html.includes('<base href="/AvatarCreator/">')) {
 }
 
 if (dryRun) {
-  console.log(`\nDry run: built ${OUT} with 404.html + .nojekyll. Nothing pushed.`);
+  console.log(
+    `\nDry run: built ${OUT} with route dirs [${routes.join(', ')}], 404.html + .nojekyll. Nothing pushed.`,
+  );
   process.exit(0);
 }
 
@@ -102,13 +135,14 @@ try {
     (f) =>
       /\.(ts|scss)$/.test(f) ||
       (f.endsWith('.json') && !f.startsWith('demo-assets/')) ||
-      (f.endsWith('.html') && f !== 'index.html' && f !== '404.html'),
+      // The generated per-route index.html files are the app shell on purpose.
+      (f.endsWith('.html') && !/^(index|404)\.html$/.test(f) && !routes.some((r) => f === `${r}/index.html`)),
   );
   if (stray.length) {
     console.warn(`\nWarning: unexpected source-looking files published: ${stray.join(', ')}`);
   }
 
-  console.log(`\nPublished ${files.length} files to ${BRANCH}.`);
+  console.log(`\nPublished ${files.length} files to ${BRANCH} (routes: ${routes.join(', ')}).`);
   console.log(`Live at ${SITE_URL} (first build can take a minute).`);
   console.log('If it 404s: Settings → Pages → Source → Deploy from a branch → gh-pages / root.');
 } finally {
