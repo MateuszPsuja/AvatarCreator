@@ -1,4 +1,4 @@
-# avatar creator
+# AvatarCreator
 
 A flat spot-colour **SVG avatar creator** and a drop-in **Angular player** for
 the avatars it makes. Design a face in the browser, export it as data, then
@@ -37,6 +37,21 @@ Open <http://localhost:4200>.
 | `/demo` | Gallery of exported avatars, each played by the real player |
 
 Requires Node 18+ (developed on Node 20/25).
+
+### Run it from GitHub Pages
+
+<https://matesuszpsuja.github.io/AvatarCreator/> — the app itself, served from
+the `gh-pages` branch.
+
+```bash
+npm run deploy:pages          # build with baseHref=/AvatarCreator/ and publish
+npm run deploy:pages:dry      # build and check the output, push nothing
+```
+
+`main` is the source; `gh-pages` holds only the built site and is rewritten
+from scratch on every publish, so it is never edited by hand. Deep links work
+because the publish also ships `404.html` as a copy of `index.html` — Pages has
+no SPA rewrite, so an unknown path has to boot the app instead of erroring.
 
 ## The export bundle
 
@@ -231,6 +246,7 @@ accurate speech. Don't present it as phonetics.
 | `npm start` | Dev server on <http://localhost:4200> |
 | `npm run build` | Production build of the app |
 | `npm run build:libs` | Builds the library into `dist/avatar-player` |
+| `npm run deploy:pages` | Builds the app and publishes it to the `gh-pages` branch |
 | `npm test` | Karma/Jasmine unit tests |
 | `npm run demo:build` | Regenerates `demo-assets/*.svg` and `*.json` from the manifest |
 | `npm run verify:bundle` | Asserts the export bundle's exact payload |

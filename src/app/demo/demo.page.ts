@@ -68,6 +68,9 @@ export class DemoPageComponent implements OnInit {
   }
 
   src(avatar: DemoAvatar): string {
+    // Resolved against <base href>, not the current URL: on /demo a relative
+    // path would look for /demo/demo-assets/<slug>.json, which 404s once the app
+    // is served from a subpath such as GitHub Pages.
     return `${this.assetDir}/${avatar.slug}.json`;
   }
 
