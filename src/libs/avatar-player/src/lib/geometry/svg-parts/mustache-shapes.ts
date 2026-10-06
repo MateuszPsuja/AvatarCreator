@@ -1,4 +1,4 @@
-// libs/avatar-core/src/svg-parts/mustache-shapes.ts
+// libs/avatar-player/src/lib/geometry/svg-parts/mustache-shapes.ts/svg-parts/mustache-shapes.ts
 // 5 mustache styles: none, thin, thick, handlebar, chevron
 // Positioned below nose (~y=112) and above mouth (~y=119)
 // Flat fill only, no gradients, stroke-width ≤ 3

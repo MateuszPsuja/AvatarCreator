@@ -5,7 +5,7 @@ import {
   CANVAS,
   MOUTH_SHAPES,
   type AvatarConfig,
-} from 'avatar-player-core';
+} from '../../avatar-player/src/lib/geometry';
 import { useAvatarAnimation } from './use-avatar-animation';
 
 export interface SvgAvatarProps {

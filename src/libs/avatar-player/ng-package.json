@@ -3,8 +3,5 @@
   "dest": "../../../dist/avatar-player",
   "lib": {
     "entryFile": "src/index.ts"
-  },
-  "allowedNonPeerDependencies": [
-    "avatar-player-core"
-  ]
+  }
 }

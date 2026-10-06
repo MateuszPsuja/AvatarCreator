@@ -1,4 +1,4 @@
-// libs/avatar-core/src/eye-colors.ts
+// libs/avatar-player/src/lib/geometry/eye-colors.ts/eye-colors.ts
 import { EyeColor } from './avatar.model';
 
 export const EYE_COLORS: Record<EyeColor, string> = {

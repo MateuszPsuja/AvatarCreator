@@ -6,11 +6,10 @@
 //   1. tsc runs INSIDE the script, after the clean. Running it from package.json
 //      and then cleaning the output directory here would delete the .d.ts tree
 //      and ship a package with no types.
-//   2. Both `react` and `avatar-player-core` are external. React is a peer
-//      dependency, so bundling it would give a consumer two Reacts and break
-//      hooks. avatar-player-core is a real dependency, so bundling it would ship
-//      a second copy of the renderer — and if an app also uses
-//      angular-avatar-player, two AvatarConfig types that do not compare equal.
+//   2. React stays external — it is a peer dependency, and bundling it would
+//      give the consumer a second React and break hooks. The avatar geometry is
+//      imported from the sibling Angular library with a relative specifier, so
+//      esbuild inlines it and the tarball is self-contained.
 //
 // Usage: node scripts/build-react-lib.mjs
 import { execFileSync } from 'node:child_process';
@@ -46,7 +45,6 @@ execFileSync(
     '--external:react',
     '--external:react-dom',
     '--external:react/jsx-runtime',
-    '--external:avatar-player-core',
     `--outfile=${join(OUT, 'index.js')}`,
     '--log-level=warning',
   ],

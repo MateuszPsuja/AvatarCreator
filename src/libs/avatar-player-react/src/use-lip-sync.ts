@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { LipSyncPlayer } from 'avatar-player-core';
+import { LipSyncPlayer } from '../../avatar-player/src/lib/geometry';
 
 export interface UseLipSyncOptions {
   /** Play the sequence. When false the mouth returns to silence. */

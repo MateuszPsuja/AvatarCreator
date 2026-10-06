@@ -7,10 +7,10 @@ images, no fonts and no runtime assets to ship.
 Every avatar is a plain `AvatarConfig` object, so an avatar designed in one app
 can be stored, sent over the wire and rendered in another.
 
-The geometry and lip-sync logic live in
-[`avatar-player-core`](https://github.com/MateuszPsuja/AvatarCreator/tree/main/src/libs/avatar-core), which this package depends on. There is
-one implementation of the avatar — the Angular package
-(`angular-avatar-player`) uses the same core, so the two cannot drift.
+The geometry and lip-sync logic are compiled into this package, so
+`npm install react-avatar-player` is a single self-contained step — there is no
+second package to resolve. The source of that geometry is shared with the
+Angular package rather than copied, so the two players cannot drift apart.
 
 ## Install
 
@@ -18,8 +18,8 @@ one implementation of the avatar — the Angular package
 npm install react-avatar-player
 ```
 
-`react` (18 or 19) is a peer dependency. `avatar-player-core` is a regular
-dependency and is not bundled.
+`react` (18 or 19) is a peer dependency and is not bundled — bundling it would
+give your app a second React and break hooks.
 
 ## Usage
 
@@ -88,14 +88,19 @@ so it costs no JavaScript and no re-render.
 
 ### Rendering outside React
 
-For a build step, an email or a PDF, depend on `avatar-player-core` directly —
-no UI framework involved:
+`buildAvatarSvg` is pure and dependency-free, so it runs in Node too — useful
+for a build step, an email or a PDF:
 
 ```ts
-import { buildAvatarSvg, textToVisemes } from 'avatar-player-core';
+import { buildAvatarSvg, textToVisemes } from 'react-avatar-player';
 
-const svg = buildAvatarSvg(config);
+const svg = buildAvatarSvg(config);   // standalone 200×200 SVG document
 ```
+
+Note that importing the package root also pulls in React, so a build script that
+never touches the components can import the renderer file directly
+(`react-avatar-player` ships the geometry as plain modules) or use
+`angular-avatar-player`, which contains the same renderer with no React in it.
 
 ## Peer dependencies
 

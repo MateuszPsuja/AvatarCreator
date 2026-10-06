@@ -1,4 +1,4 @@
-// libs/avatar-core/src/avatar.model.ts
+// libs/avatar-player/src/lib/geometry/avatar.model.ts/avatar.model.ts
 
 export type Gender = 'man' | 'woman';
 export type SkinTone = 'light' | 'medium' | 'tan' | 'dark' | 'deep';

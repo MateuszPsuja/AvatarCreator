@@ -1,6 +1,6 @@
 import { SvgAvatar } from './svg-avatar';
 import { useLipSync } from './use-lip-sync';
-import type { AvatarConfig } from 'avatar-player-core';
+import type { AvatarConfig } from '../../avatar-player/src/lib/geometry';
 
 export interface AvatarPlayerProps {
   config: AvatarConfig;
@@ -28,7 +28,7 @@ export interface AvatarPlayerProps {
  * sync.
  *
  * Mirrors the Angular `AvatarPlayerComponent` prop for prop, and shares its
- * renderer and animation logic through avatar-player-core — the only
+ * renderer and animation logic from the shared geometry — the only
  * difference is the framework syntax.
  *
  * Sizes itself inline from `size`, so a consumer can drop a player at any scale

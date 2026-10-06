@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SvgAvatarComponent } from './svg-avatar.component';
 import { AvatarAnimationService } from '../../services/avatar-animation.service';
-import type { AvatarConfig } from 'avatar-player-core';
-import { MOUTH_SHAPES } from 'avatar-player-core';
+import type { AvatarConfig } from '../../geometry';
+import { MOUTH_SHAPES } from '../../geometry';
 
 describe('SvgAvatarComponent', () => {
   let component: SvgAvatarComponent;

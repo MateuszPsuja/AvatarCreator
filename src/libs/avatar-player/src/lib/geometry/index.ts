@@ -1,14 +1,27 @@
 /**
- * Public entry point of the framework-free avatar engine.
+ * Public entry point of the avatar geometry.
  *
- * Everything here is plain TypeScript with no DOM reads and no framework
- * imports, which is what lets the same geometry power the Angular player, the
- * React player and a Node-side SVG export. If you only need to render an
- * avatar to a string — for a build step, an email, a PDF — this package is
- * enough and pulls in no UI framework.
+ * WHY THIS LIVES INSIDE THE ANGULAR LIBRARY
  *
- * For UI components use `angular-avatar-player` or `react-avatar-player`,
- * which are thin wrappers over this.
+ * The code below is plain TypeScript with no framework imports — it could sit in
+ * a package of its own, and that is where it used to live. It lives here
+ * because of a hard limit in ng-packagr:
+ *
+ *   - ng-packagr treats EVERY bare specifier as external
+ *     (`isExternalDependency`, ng-packagr/lib/flatten/rollup.js), so a
+ *     `from 'avatar-core'` import ships unresolved and breaks the tarball.
+ *   - a relative import into another package does not work either: ng-packagr
+ *     compiles src/ -> dist/avatar-player/esm2022/ first and only then bundles,
+ *     so a path valid from src/ points at nothing from the intermediate dir.
+ *
+ * Living inside the library means ng-packagr compiles it as first-party source
+ * and inlines it into the published bundle. The React package imports these
+ * same files with a relative specifier at build time, so there is still exactly
+ * ONE copy of the geometry in the repository and in CI.
+ *
+ * Consequence: consumers of angular-avatar-player and react-avatar-player get
+ * their own copy of the renderer inside the tarball. That is deliberate — it
+ * means `npm i angular-avatar-player` is a single, self-contained install.
  */
 
 // ── Model & types ───────────────────────────────────────────

@@ -9,7 +9,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import type { AvatarConfig } from 'avatar-player-core';
+import type { AvatarConfig } from '../../geometry';
 import { LipSyncService } from '../../services/lip-sync.service';
 import { SvgAvatarComponent } from '../svg-avatar/svg-avatar.component';
 

@@ -32,7 +32,6 @@
     "@angular/platform-browser": "^19.2.0"
   },
   "dependencies": {
-    "avatar-player-core": "^0.1.0",
     "tslib": "^2.3.0"
   }
 }

@@ -380,46 +380,53 @@ Carried over from the old plan's Phase 2 functional list, not yet started:
 
 ### 5.6 F — Distribution
 
-**Status: done.** Three packages, published in dependency order.
+**Status: done.** Two packages, each self-contained.
 
 | Package | Contents | Registry |
 |---|---|---|
-| `avatar-player-core` | Model, SVG geometry, palettes, visemes, animation drivers. Plain TS, runs in Node. | unscoped |
-| `angular-avatar-player` | `AvatarPlayerComponent`, `SvgAvatarComponent`, NgModule, Angular services. `ng-packagr`, partial Ivy, peers on Angular 19. | unscoped |
-| `react-avatar-player` | `AvatarPlayer`, `SvgAvatar`, `useAvatarAnimation`, `useLipSync`, `styles.css`. Peers on React 18/19. | unscoped |
+| `angular-avatar-player` | `AvatarPlayerComponent`, `SvgAvatarComponent`, NgModule, Angular services, plus the geometry. `ng-packagr`, partial Ivy, peers on Angular 19. | unscoped |
+| `react-avatar-player` | `AvatarPlayer`, `SvgAvatar`, `useAvatarAnimation`, `useLipSync`, `styles.css`, plus the geometry. Peers on React 18/19. | unscoped |
 
-Both UI packages re-export core's entire surface, so each stays a single import
-path and an Angular consumer never has to install a second package to reach the
-renderer.
+Each re-exports the geometry, so either is a single import path and a consumer
+never installs the renderer separately to reach the model.
 
 What the layout rests on:
 
-1. **Core is genuinely framework-free.** `lib/shared` had no Angular imports,
-   and the two services were pure `setTimeout` / `requestAnimationFrame` behind
-   an `@Injectable()` decorator. So the geometry and the drivers moved to core
-   unchanged, and the Angular services became one-line subclasses. Export
-   fidelity is now structural: there is only one renderer, so the exported SVG,
-   the Angular player and the React player cannot disagree.
-2. **The wrappers compile against core's built `.d.ts`,** not its sources
-   (`tsconfig.lib.json` overrides `paths`). ng-packagr failed on
-   `export * from 'avatar-player-core'` when it resolved to raw `.ts`
-   ("Cannot destructure property 'pos' of file.referencedFiles[index]"), and
-   building against `dist` also proves the published boundary is
-   self-sufficient. `build:libs` therefore builds core first.
-3. **Core's runtime is bundled by esbuild, its types by tsc.** Plain `tsc` emits
-   extensionless relative imports, which Node's ESM loader rejects — the package
-   would work in a bundler and break in Node, and it advertises Node support for
-   offline export. Per-file `.d.ts` is kept so editors can navigate into the
-   model.
-4. **React and core are external to the React bundle.** Bundling either would
-   give a consumer two Reacts (breaking hooks) or a second copy of the renderer
-   (two `AvatarConfig` types that do not compare equal).
-5. **Publish metadata** is on each manifest: `repository`, `homepage`, `bugs`,
+1. **The geometry lives inside the Angular library**, in
+   `src/libs/avatar-player/src/lib/geometry`, rather than in a package of its
+   own. This is forced by ng-packagr, not preference:
+   - `isExternalDependency` (ng-packagr/lib/flatten/rollup.js) marks EVERY
+     bare specifier external, so `from 'avatar-player-core'` ships unresolved
+     and the published tarball breaks for anyone installing it;
+   - a relative import into another package fails too — ng-packagr compiles
+     `src/` → `dist/avatar-player/esm2022/` first and bundles from there, so a
+     path valid from `src/` resolves to nothing at bundle time
+     (`Could not resolve "../../../../dist/avatar-core" from
+     "dist/avatar-player/esm2022/index.mjs"`);
+   - a relative import into another package's *sources* crashes the compiler
+     with `Cannot destructure property 'pos' of file.referencedFiles[index]`.
+
+   All three were tried and all three are recorded here so the next person does
+   not repeat them.
+2. **`react-avatar-player` imports those same files** with a relative specifier
+   at build time. One copy of the geometry in the repository and in CI; two
+   self-contained tarballs. The renderer ships twice, deliberately — that is
+   the cost of a single-install consumer, and a geometry fix must go out in
+   both releases.
+3. **React stays external** to the React bundle. It is a peer dependency, and
+   bundling it would hand the consumer a second React and break hooks.
+4. **The geometry is plain TypeScript** — no Angular imports, no DOM reads — so
+   `buildAvatarSvg` also runs in Node. That is what lets the creator bake
+   avatars server-side.
+5. **Publish metadata** on both manifests: `repository`, `homepage`, `bugs`,
    `keywords`, `license`, `sideEffects`. `LICENSE` and a per-package `README.md`
-   ship in the tarballs.
+   ship in each tarball. Cross-package links inside those READMEs are absolute
+   GitHub URLs, because relative links resolve against the package page on npm
+   and would be dead there.
 6. **`.github/workflows/publish-lib.yml`** builds and publishes on a GitHub
-   release, with `--provenance`, failing if the tag does not match
-   `avatar-player-core`'s version.
+   release, with `--provenance`, failing unless the tag matches both package
+   versions — they share one geometry, so a version skew would ship divergent
+   renderers under the same avatar name.
 
 ### 5.7 G — Housekeeping
 

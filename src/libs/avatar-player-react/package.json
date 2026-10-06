@@ -32,23 +32,22 @@
   "type": "module",
   "main": "./index.js",
   "module": "./index.js",
-  "types": "./index.d.ts",
+  "types": "./avatar-player-react/src/index.d.ts",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
-      "types": "./index.d.ts",
+      "types": "./avatar-player-react/src/index.d.ts",
       "default": "./index.js"
     },
     "./styles.css": "./styles.css"
   },
   "files": [
     "index.js",
-    "index.d.ts",
-    "*.d.ts",
-    "*.d.ts.map",
-    "styles.css"
+    "styles.css",
+    "avatar-player-react",
+    "avatar-player"
   ],
   "scripts": {
     "build": "node ../../../scripts/build-react-lib.mjs"
@@ -57,7 +56,6 @@
     "react": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "avatar-player-core": "^0.1.0",
     "tslib": "^2.3.0"
   }
 }

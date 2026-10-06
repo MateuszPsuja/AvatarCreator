@@ -1,15 +1,14 @@
 # Publishes the avatar packages to npm when a GitHub release is published.
 #
-# Three packages, published in dependency order because npm resolves them:
+# Two packages, each self-contained: the avatar geometry is compiled into both,
+# so neither depends on the other and there is no ordering requirement.
 #
-#   avatar-player-core      no dependencies
-#   angular-avatar-player   → core
-#   react-avatar-player     → core
+#   angular-avatar-player   ng-packagr, partial Ivy, peers on Angular 19
+#   react-avatar-player     components + hooks, peers on React 18/19
 #
-# The wrappers declare core with a caret range, so core is published first and
-# resolves. The published version comes from each package's own package.json,
-# and the release tag must match the core version (npm tags are immutable after
-# 72 hours, so the tag is the version of record).
+# The published version comes from each package's own package.json, and the
+# release tag must match both — they share one geometry, so releasing them at
+# different versions would ship divergent renderers under the same avatar name.
 name: Publish avatar packages to npm
 
 on:
@@ -35,25 +34,19 @@ jobs:
 
       - run: npm ci
 
-      - name: Check the tag matches the core version
+      - name: Check the tag matches both package versions
         if: github.event_name == 'release'
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          CORE_VERSION=$(node -p "require('./src/libs/avatar-core/package.json').version")
-          if [ "$TAG" != "$CORE_VERSION" ]; then
-            echo "Tag $TAG does not match avatar-player-core version $CORE_VERSION" >&2
+          NG=$(node -p "require('./src/libs/avatar-player/package.json').version")
+          REACT=$(node -p "require('./src/libs/avatar-player-react/package.json').version")
+          if [ "$TAG" != "$NG" ] || [ "$TAG" != "$REACT" ]; then
+            echo "Tag $TAG does not match angular=$NG react=$REACT" >&2
             exit 1
           fi
 
-      # Build order matters: the two UI packages compile against core's built
-      # .d.ts, not its sources (see their tsconfig.lib.json).
-      - name: Build all packages
+      - name: Build both packages
         run: npm run build:libs
-
-      - name: Publish avatar-player-core
-        run: npm publish dist/avatar-core --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish angular-avatar-player
         run: npm publish dist/avatar-player --provenance --access public

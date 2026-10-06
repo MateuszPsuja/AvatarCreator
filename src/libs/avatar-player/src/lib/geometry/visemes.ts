@@ -1,4 +1,4 @@
-// libs/avatar-core/src/visemes.ts
+// libs/avatar-player/src/lib/geometry/visemes.ts/visemes.ts
 //
 // Pure text -> viseme mapping, shared by the runtime lip-sync service and the
 // offline generator that bakes an animated mouth into an exported SVG.

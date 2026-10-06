@@ -91,14 +91,14 @@ MIT © Mateusz Psuja — see [LICENSE](https://github.com/MateuszPsuja/AvatarCre
 
 ## Related packages
 
-The geometry, palettes and lip-sync mapping live in `avatar-player-core`, which
-this package depends on and re-exports — which is why everything above is
-importable from this single path. `avatar-player-core` is also usable on its
-own, in Node, for offline SVG export.
+The geometry, palettes and lip-sync mapping ship **inside** this package (see
+`src/lib/geometry`) — no second install, and everything above is importable from
+this single path. They are plain TypeScript, so `buildAvatarSvg` also runs in
+Node for offline SVG export.
 
 [`react-avatar-player`](https://www.npmjs.com/package/react-avatar-player) is
-the same player for React. Both wrappers share one core, so an avatar looks and
-animates identically in either framework.
+the same player for React, compiled from the same geometry files, so an avatar
+looks and animates identically in either framework.
 
 Part of [AvatarCreator](https://github.com/MateuszPsuja/AvatarCreator), which
 includes a full browser-based avatar creator. Report issues

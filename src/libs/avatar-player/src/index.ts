@@ -5,11 +5,12 @@
  *
  *   import { AvatarPlayerComponent } from 'angular-avatar-player';
  *
- * The SVG geometry, palettes and viseme mapping live in the framework-free
- * `avatar-player-core` package and are re-exported below, so there is one
- * import path, and an Angular consumer never has to add a second package to
- * get the renderer. `react-avatar-player` re-exports the same surface, which is
- * what keeps the two UI packages from drifting apart.
+ * The SVG geometry, palettes and viseme mapping live in ./lib/geometry — plain
+ * TypeScript with no Angular imports, but shipped inside this package. They are
+ * re-exported below, so there is one import path and a consumer never needs a
+ * second package to reach the renderer. `react-avatar-player` compiles the same
+ * geometry files into its own bundle, which is what keeps the two players from
+ * drifting apart.
  */
 
 // ── Components ──────────────────────────────────────────────
@@ -23,5 +24,5 @@ export { AvatarPlayerModule } from './lib/avatar-player.module';
 export { LipSyncService } from './lib/services/lip-sync.service';
 export { AvatarAnimationService } from './lib/services/avatar-animation.service';
 
-// Everything below comes from avatar-player-core and is re-exported verbatim.
-export * from 'avatar-player-core';
+// The geometry, shipped in this package and re-exported verbatim.
+export * from './lib/geometry';

@@ -6,10 +6,11 @@ animate and speak it in any other app.
 
 - **Creator** — 11 traits, live SVG preview, undo/redo, randomize, lip-sync
   preview, `.zip` export.
-- **Three packages, one avatar.** `avatar-player-core` holds the geometry and
-  the model; `angular-avatar-player` and `react-avatar-player` are thin
-  wrappers over it. An avatar designed here renders identically in either
-  framework, and a plain Node script with no UI framework at all.
+- **Two packages, one avatar.** `angular-avatar-player` and
+  `react-avatar-player` each ship the geometry inside them, so either is a
+  single self-contained install. Both are compiled from the *same* geometry
+  source, so an avatar designed here renders identically in either framework —
+  and a plain Node script with no UI framework at all.
 - **Export fidelity is enforced, not hoped for.** The on-screen avatar, the
   exported `avatar.svg` and the player all render through the same function, so
   what you design is what ships.
@@ -96,12 +97,11 @@ wrong*. When a face looks subtly off, check it against this table first.
 ```bash
 npm install angular-avatar-player   # Angular
 npm install react-avatar-player     # React
-npm install avatar-player-core      # renderer only, no UI framework
 ```
 
-The UI packages re-export everything core provides, so each is a single import
-path — you never install the renderer separately just to reach the model. React
-users also import the stylesheet once:
+Each package is self-contained — the model, palettes, viseme mapping and SVG
+renderer all come from one import path, so there is nothing to install twice
+and no ordering to get right. React users also import the stylesheet once:
 
 ```ts
 import 'react-avatar-player/styles.css';
@@ -112,21 +112,26 @@ install:
 
 ```jsonc
 "paths": {
-  "angular-avatar-player": ["src/libs/avatar-player/src/index.ts"],
-  "avatar-player-core": ["src/libs/avatar-core/src/index.ts"]
+  "angular-avatar-player": ["src/libs/avatar-player/src/index.ts"]
 }
 ```
 
 To try them in another app from source, build and install the output locally:
 
 ```bash
-npm run build:libs        # → dist/avatar-core, dist/avatar-player, dist/avatar-player-react
+npm run build:libs        # → dist/avatar-player, dist/avatar-player-react
 npm install file:../AvatarCreator/dist/avatar-player
 ```
 
 `angular-avatar-player` is an `ng-packagr` library with partial-Ivy output and
-peer-depends on Angular 19. `avatar-player-core` is plain TypeScript and also
-runs in Node, which is what lets the exporter bake avatars server-side.
+peer-depends on Angular 19. The geometry in `src/lib/geometry` is plain
+TypeScript, which is what lets the exporter bake avatars server-side.
+
+The geometry lives inside the Angular library rather than in a package of its
+own because ng-packagr cannot bundle a sibling dependency: it treats every bare
+specifier as external, and a relative import resolves from a different
+directory by the time it bundles. `react-avatar-player` therefore imports those
+same files at build time. One copy in the repo, two self-contained tarballs.
 
 ### 2. Register it
 
@@ -244,11 +249,10 @@ accurate speech. Don't present it as phonetics.
 |---|---|
 | `npm start` | Dev server on <http://localhost:4200> |
 | `npm run build` | Production build of the app |
-| `npm run build:libs` | Builds all three packages into `dist/` (core first — the wrappers compile against its types) |
-| `npm run build:core` | Builds only `avatar-player-core` |
+| `npm run build:libs` | Builds both packages into `dist/` |
 | `npm run verify:react` | Renders the built React player and asserts on the markup |
 | `npm run publish:lib:dry` | Builds everything and prints what npm would publish |
-| `npm run publish:lib` | Builds everything and publishes all three packages, in dependency order |
+| `npm run publish:lib` | Builds everything and publishes both packages |
 | `npm run deploy:pages` | Builds the app and publishes it to the `gh-pages` branch |
 | `npm test` | Karma/Jasmine unit tests |
 | `npm run demo:build` | Regenerates `demo-assets/*.svg` and `*.json` from the manifest |

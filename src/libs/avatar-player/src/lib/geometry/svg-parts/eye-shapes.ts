@@ -1,4 +1,4 @@
-// libs/avatar-core/src/svg-parts/eye-shapes.ts
+// libs/avatar-player/src/lib/geometry/svg-parts/eye-shapes.ts/svg-parts/eye-shapes.ts
 // 4 eye styles: round, almond, wide, narrow
 // Each style provides sclera + iris SVG strings
 // Eyes are positioned at cx=74 (left) and cx=126 (right), cy=88

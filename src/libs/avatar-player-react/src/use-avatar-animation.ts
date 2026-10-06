@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AvatarAnimator } from 'avatar-player-core';
+import { AvatarAnimator } from '../../avatar-player/src/lib/geometry';
 
 /** Blink state, matching the CSS classes in the stylesheet. */
 export type BlinkState = '' | 'blinking' | 'blink-half';
@@ -13,7 +13,7 @@ export interface AvatarAnimationState {
 
 /**
  * Random blinking and pupil drift, backed by the framework-free
- * {@link AvatarAnimator} from avatar-player-core — the exact same logic the
+ * {@link AvatarAnimator} from the shared geometry — the exact same logic the
  * Angular player runs, so the two cannot drift apart.
  *
  * Head idle is deliberately not here: it is a pure CSS animation, so it costs

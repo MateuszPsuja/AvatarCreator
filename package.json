@@ -5,10 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:player": "npm run build:core && ng build avatar-player",
-    "build:libs": "npm run build:core && ng build avatar-player && npm run build:react",
-    "publish:lib": "npm run build:libs && npm publish dist/avatar-core && npm publish dist/avatar-player && npm publish dist/avatar-player-react",
-    "publish:lib:dry": "npm run build:libs && npm publish dist/avatar-core --dry-run && npm publish dist/avatar-player --dry-run && npm publish dist/avatar-player-react --dry-run",
+    "build:player": "ng build avatar-player",
+    "build:libs": "npm run build:player && npm run build:react",
+    "publish:lib": "npm run build:libs && npm publish dist/avatar-player && npm publish dist/avatar-player-react",
+    "publish:lib:dry": "npm run build:libs && npm publish dist/avatar-player --dry-run && npm publish dist/avatar-player-react --dry-run",
     "deploy:pages": "node scripts/deploy-pages.mjs",
     "deploy:pages:dry": "node scripts/deploy-pages.mjs --dry-run",
     "watch": "ng build --watch --configuration development",
@@ -17,9 +17,8 @@
     "verify:bundle": "esbuild scripts/verify-export-bundle.ts --bundle --platform=node --format=esm --outfile=tmp/verify-bundle.mjs --log-level=error && node tmp/verify-bundle.mjs",
     "gallery": "node scripts/render-avatar-gallery.mjs",
     "screenshots": "node scripts/capture-screenshots.mjs",
-    "build:core": "node scripts/build-core.mjs",
     "build:react": "node scripts/build-react-lib.mjs",
-    "verify:react": "esbuild scripts/verify-react-player.mjs --bundle --format=esm --platform=node --outfile=tmp/verify-react.mjs --log-level=error --external:react --external:react-dom --alias:avatar-player-core=./dist/avatar-core/index.js && node tmp/verify-react.mjs"
+    "verify:react": "esbuild scripts/verify-react-player.mjs --bundle --format=esm --platform=node --outfile=tmp/verify-react.mjs --log-level=error --external:react --external:react-dom && node tmp/verify-react.mjs"
   },
   "private": true,
   "dependencies": {
